@@ -1,5 +1,5 @@
 
-import codecs, itertools, os, random, re, string, sys, time;
+import codecs, itertools, math, os, random, re, string, sys, time;
 
 def smart_open(filename='', mode='rb'):
     if filename:
@@ -23,24 +23,38 @@ def smart_open(filename='', mode='rb'):
     elif filename == '' and mode == 'wb':
 	return codecs.getwriter('utf-8')(sys.stdout);
 
+def llnum2name(number):
+  num_map = {3: 'K', 6: 'M', 9: 'B', 12: 'T', 15: 'Q', 18: 'Qu', 21: 'S'};
+  good_base = 3;
+  for base in sorted(num_map, reverse=True):
+    if math.log(number, 10) >= base:
+      good_base = base;
+      break;
+  if (number%10**good_base):
+    return '%.3f%c' %(float(number)/10**good_base, num_map[good_base]);
+  else:
+    return '%d%c' %(number/10**good_base, num_map[good_base]);
+      
 def lines_from_file(filename):
+    bufsize = 1000000;
     with smart_open(filename) as infile:
 	line_count = 0;
 	for line in infile:
 	    line_count += 1;
 	    yield line.strip();
-	    if not (line_count%1000000): print >>sys.stderr, '(%d)'%line_count,
-	print >>sys.stderr, '(%d)'%line_count;
+	    if not (line_count%bufsize): print >>sys.stderr, '(%s)'%(llnum2name(line_count)),
+	print >>sys.stderr, '(%s)'%(llnum2name(line_count));
     return;
 
 def lines_to_file(filename, lines):
+    bufsize = 1000000;
     with smart_open(filename, mode='wb') as outfile:
 	line_count = 0;
 	for sent in lines:
 	    line_count += 1;
 	    print >>outfile, sent.strip();
-	    if not (line_count%1000000): print >>sys.stderr, '(%d)'%line_count,
-	print >>sys.stderr, '(%d)'%line_count;
+	    if not (line_count%bufsize): print >>sys.stderr, '(%s)'%(llnum2name(line_count)),
+	print >>sys.stderr, '(%s)'%(llnum2name(line_count));
     return True;
 
 def encode_sentence(sentence, vocabulary, id_gen=itertools.count(1)):
