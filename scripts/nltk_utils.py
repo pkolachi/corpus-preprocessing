@@ -43,6 +43,14 @@ def generatePhrases(parseStr):
 	if len(subtree.leaves()) <= 6:
 	    yield (subtree.node, ' '.join(subtree.leaves()));
 
+def leafancestors(parseStr):
+    tree = nltk.tree.Tree(parsestr);
+    leaf_count = len(tree.leaves());
+    for idx in xrange(leaf_count):
+	leafpath_idx = tree.leaf_treeposition(idx);
+	leafpath = [tree[leafpath_idx[:idx]].node for idx in xrange(1, len(leafpath_idx))];
+	yield tuple(leafpath);
+
 def printSyntacticPhrases(treebankfile):
     with codecs.open(treebankfile, 'r') as infile:
 	count = 0;
@@ -53,6 +61,7 @@ def printSyntacticPhrases(treebankfile):
 		continue;
 	    for chunk in generatePhrases(line.strip()):
 		print "%s\t%s" %(chunk[0], chunk[1]);
+
 
 if __name__ == '__main__':
     #wnLemmatize_CoNLL(sys.argv[1]);
