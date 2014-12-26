@@ -1,26 +1,24 @@
 
 import codecs, itertools, multiprocessing, os, os.path, random, re, shlex, subprocess, sys;
 from math import log10;
-import conll_utils;
+import conll_utils, random_utils;
 #import lxml.etree as etree;
 import xml.etree.cElementTree as etree;
 #import xml.etree.ElementTree as etree;
 
 def getSentencesFromMalformedXML(inputfile):
-    with codecs.open(inputfile, 'r', 'utf-8') as infile:
-	sentenceProc = False;
-	sentence = [];
-	for line in infile:
-	    if line.startswith('<sentence'):
-		sentence.append(line.strip());
-		sentenceProc = True;
-	    elif sentenceProc == True and line.startswith('</sentence'):
-		sentence.append(line.strip());
-		sentenceProc = False;
-		yield '\n'.join(sentence);
-		sentence = [];
-	    elif sentenceProc == True:
-		sentence.append(line.strip());
+    sentenceProc, sentence = False, [];
+    for line in random_utils.lines_from_file(inputfile):
+	if line.startswith('<sentence'):
+	    sentenceProc = True;
+	    sentence.append(line.strip());
+	elif sentenceProc == True and line.startswith('</sentence'):
+	    sentence.append(line.strip());
+	    sentenceProc = False;
+	    yield '\n'.join(sentence);
+	    sentence = [];
+	elif sentenceProc == True:
+	    sentence.append(line.strip());
 
 def convertSentenceToConLL(sent_xml_repr):
     sent_node = etree.fromstring(sent_xml_repr);
@@ -50,33 +48,30 @@ def convertSentenceToConLL(sent_xml_repr):
 
 def convertKorpXMLtoCoNLL(inputfile, outputfile):
     conll_sentences = [];
-    with codecs.open(outputfile, 'w', 'utf-8') as outfile:
-	print >>sys.stderr, inputfile;
+    with random_utils.smart_open(outputfile, 'w') as outfile:
 	for sentence in getSentencesFromMalformedXML(inputfile):
 	    conll_sentences.append( convertSentenceToConLL(sentence.encode('utf-8')) );
 	    # memory adjustments
-	    if not len(conll_sentences)%10000:
+	    if len(conll_sentences) > 10000:
 		conll_utils.sentences_to_conll07(outfile, conll_sentences);
 		conll_sentences = [];
-	if len(conll_sentences) != 0:
+	if len(conll_sentences):
 	    conll_utils.sentences_to_conll07(outfile, conll_sentences);
     return;
 
 def extractSentencesFromKorpXML(inputfile, outputfile):
     tok_sentences = [];
-    with codecs.open(outputfile, 'w', 'utf-8') as outfile:
+    with random_utils.smart_open(outputfile, 'w') as outfile:
 	print >>sys.stderr, inputfile;
 	for sentence in getSentencesFromMalformedXML(inputfile):
 	    sent_node = etree.fromstring(sentence.encode('utf-8'));
 	    tok_sentences.append( " ".join([token_node.text.strip() for token_node in sent_node.findall(".//w")]) );
 	    # memory adjustments
-	    if not len(tok_sentences)%10000:
-		for sent in tok_sentences:
-		    print >>outfile, sent.strip();
+	    if len(tok_sentences) > 5000:
+		print >>outfile, "\n".join(tok_sentences);
 		tok_sentences = [];
-	if len(tok_sentences) != 0:
-	    for sent in tok_sentences:
-		print >>outfile, sent.strip();
+	if len(tok_sentences):
+	    print >>outfile, "\n",join(tok_sentences);
     return;
 
 if __name__ == '__main__':

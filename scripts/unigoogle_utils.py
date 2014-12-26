@@ -1,5 +1,5 @@
 
-import codecs, itertools, multiprocessing, os, os.path, re, string, sys, time;
+import itertools, multiprocessing, os, os.path, re, string, sys, time;
 from operator import itemgetter;
 import random_utils;
 

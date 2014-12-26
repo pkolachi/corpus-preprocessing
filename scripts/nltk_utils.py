@@ -1,20 +1,18 @@
 
-import codecs, sys;
-from nltk.stem import wordnet;
+import sys;
 import nltk.tree;
-import conll_utils;
+from nltk.stem import wordnet;
+import conll_utils, random_utils;
 
 #sys.stdout = codecs.getwriter('utf-8')(sys.stdout);
 
 def getTokenizedTreebank(treebankfile):
-    #with codecs.open(treebankfile, 'r', 'utf-8') as infile:
-    with codecs.open(treebankfile, 'r') as infile:
-	for line in infile:
-	    if line.strip() == 'NONE':
-		yield line.strip();
-		continue;
-	    tree = nltk.tree.Tree.parse(line.strip());
-	    yield ' '.join(tree.leaves());
+    for line in random_utils.lines_from_file(treebankfile):
+	if line.strip() == 'NONE':
+	    yield line.strip();
+	    continue;
+	tree = nltk.tree.Tree.parse(line.strip());
+	yield ' '.join(tree.leaves());
     
 def get_wordnet_category(treebank_tag):
     if treebank_tag.startswith('J'):   return 'a';
@@ -31,7 +29,7 @@ def wnLemmatize_tagged(conll_sentence):
     yield ('', '');
 
 def wnLemmatize_CoNLL(conllfile):
-    with codecs.open(conllfile, 'r', 'utf-8') as infile:
+    with random_utils.smart_open(conllfile) as infile:
 	for sentence in conll_utils.sentences_from_conll(infile):
 	    for token, lemma in wnLemmatize_tagged(sentence):
 		print '%s\t%s' %(token, lemma);
@@ -52,15 +50,11 @@ def leafancestors(parseStr):
 	yield tuple(leafpath);
 
 def printSyntacticPhrases(treebankfile):
-    with codecs.open(treebankfile, 'r') as infile:
-	count = 0;
-	for line in infile:
-	    count += 1;
-	    #if not count%100000: print >>sys.stderr, ".",
-	    if line.strip() in ['(ROOT ())', '(())']:
-		continue;
-	    for chunk in generatePhrases(line.strip()):
-		print "%s\t%s" %(chunk[0], chunk[1]);
+    for line in random_utils.lines_from_file(treebankfile):
+	if line.strip() in ['(ROOT ())', '(())']:
+	    continue;
+	for chunk in generatePhrases(line.strip()):
+	    print "%s\t%s" %(chunk[0], chunk[1]);
 
 
 if __name__ == '__main__':

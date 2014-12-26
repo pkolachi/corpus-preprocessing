@@ -36,9 +36,9 @@ def sentences_from_conll(handle):
         if not len(lines):
             break;
 	sent_count += 1;
-	if not sent_count%100000: print >>sys.stderr, "(%d)" %(sent_count),
+	if not sent_count%100000: print >>sys.stderr, "(%s)" %(random_utils.llnum2name(sent_count)),
 	yield words_from_conll(lines, fields=fields);
-    if sent_count > 100000: print >>sys.stderr, "(%d)" %(sent_count);
+    print >>sys.stderr, "(%s)" %(random_utils.llnum2name(sent_count));
 
 def words_to_conll07(sent, fields):
     str_repr = [];

@@ -27,9 +27,12 @@ def llnum2name(number):
   num_map = {3: 'K', 6: 'M', 9: 'B', 12: 'T', 15: 'Q', 18: 'Qu', 21: 'S'};
   good_base = 3;
   for base in sorted(num_map, reverse=True):
-    if math.log(number, 10) >= base:
-      good_base = base;
-      break;
+    try:
+      if math.log(number, 10) >= base:
+        good_base = base;
+        break;
+    except ValueError:
+      print >>sys.stderr, number;
   if (number%10**good_base):
     return '%.3f%c' %(float(number)/10**good_base, num_map[good_base]);
   else:
