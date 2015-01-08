@@ -115,7 +115,6 @@ def splitTextFileIntoSizedChunks(filename, outfileprefix=None):
 	line_count += 1;
 	buf.append(line.strip());
 	if not line_count%5000:
-	    print >>sys.stderr, "writing temporary output";
 	    lines_to_file('%s.%d' %(outfileprefix, foldidx), buf);
 	    buf = [];
 	    foldidx += 1;
