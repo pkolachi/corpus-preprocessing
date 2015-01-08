@@ -109,7 +109,7 @@ def splitTextFileIntoChunks(filename, outfileprefix=None):
 	return folded_sentences;
 
 def splitTextFileIntoSizedChunks(filename, outfileprefix=None):
-    outfileprefix = outfileprefix+repr(os.getpid()) if outfileprefix else repr(os.getpid());
+    outfileprefix = outfileprefix if outfileprefix else repr(os.getpid());
     line_count, buf, foldidx = 0, [], 1;
     for line in lines_from_file(filename):
 	line_count += 1;
