@@ -5,7 +5,6 @@ try:
     import random_utils;
     import lxml.etree as etree;
 except ImportError:
-    print >>sys.stderr, "Missing random_utils module."
     import xml.etree.cElementTree as etree; #incompatible due to pretty_print functionality of writing xml
 #import xml.etree.ElementTree as etree;  #same reason as above
 
@@ -17,7 +16,8 @@ def sortFileNamesByNumber(filesList):
 	filename = os.path.split(filepath)[1];
 	try:
 	    #sortKeys[int(filename.split('.', 1)[0])] = filepath;
-	    sortKeys[int(filename.rsplit('.', 2)[1])] = filepath;
+	    #sortKeys[int(filename.rsplit('.', 2)[1])] = filepath;
+	    sortKeys[int(filename.split('.')[1])] = filepath;
 	except ValueError:
 	    yield filepath
     for key in sorted(sortKeys.keys()):
@@ -83,60 +83,6 @@ def splitCoreNLPOutputForSentences(doc, outputDirectory, elem_attr):
 	elem_attr.update(sent_node.attrib);
     return;
 
-def splitCoreNLPOutputForWiki(doc, outputDirectory, elem_attr):
-    # small lambda functions to deal especially with wiki 
-    import re;
-    first_token  = lambda sentence_node: sentence_node.find(".//token").find("word").text;
-    second_token = lambda sentence_node: sentence_node.findall(".//token")[1].find("word").text \
-	    if len(sentence_node.findall(".//token")) > 1 else 'MySpecialNone';
-    wiki_header = lambda raw_token: raw_token.startswith('<doc') and raw_token.endswith('>');
-    wiki_identifier = lambda raw_token: re.findall("[0-9]+", raw_token)[0];
-
-    root = doc.getroot();
-    root_mainNode = root.find(".//sentences");
-    sentences = root.findall(".//sentence");
-    newroot_mainNode = etree.Element("sentences");
-    for sent_node in sentences:
-	#print first_token(sent_node);
-	if wiki_header( first_token(sent_node) ):
-	    print first_token(sent_node);
-	    print wiki_identifier( first_token(sent_node) );
-	    #if len(newroot_mainNode) == 0:
-		# starting;
-		# ignore;
-		#pass;
-	    #else:
-		#newdoc_mainNode = etree.Element("root");
-		#docNode = etree.SubElement(newdoc_mainNode, "document");
-		#newdoc_mainNode.append(newroot_mainNode);
-
-
-	elif second_token == 'MySpecialNone' or wiki_header( second_token(sent_node) ):
-	    print second_token(sent_node);
-	    print wiki_identifier( second_token(sent_node) );
-
-	    '''
-	    outputFileName = os.path.join(outputDirectory, '%s.xml' %(sent_node.attrib['id']));
-	    mod_doc = etree.ElementTree(root_mainNode);
-	    mod_doc.write(outputFileName, encoding='utf-8', method='xml');
-	    elem_attr = {};'''
-	'''
-	sent_node.attrib['id'] = repr( int(sent_node.attrib['id'])+int(elem_attr['id']) );
-	sent_node.attrib['line'] = repr( int(sent_node.attrib['line'])+int(elem_attr['line']) );
-	newroot_mainNode.append(sent_node);'''
-    return;
-
-def writeSegmentedWikiOutputIntoDocuments(xmlfiles, outputDirectory):
-    elem_attr = {'id': '0', 'line': '0'};
-    if os.path.isdir(outputDirectory) == False:
-	os.system('mkdir -p %s' %(outputDirectory));
-
-    for xmlfile in sortFileNamesByNumber(xmlfiles):
-	print >>sys.stderr, xmlfile;
-	doc = etree.parse(xmlfile);
-	splitCoreNLPOutputForWiki(doc, outputDirectory, elem_attr);
-    return;
-
 def writeSegmentedCoreNLPOutputIntoDirectory(xmlfiles, outputDirectory):
     idx = 0;
     elem_attr = {'id': '0', 'line': '0'};
@@ -195,7 +141,9 @@ def writeXMLFile(xsltFile, domObj):
     newdom = transform(domObj);
     return etree.tostring(newdom, pretty_print=True);
 
-def constparse_chunks(const_repr, terminalTokens):
+def constparse_chunks(const_repr, terminalTokens=None):
+    if terminalTokens is None:
+	terminalTokens = [termRepr.split(None, 1)[1][:-1] for termRepr in re.findall('\([^()]+?\)', const_repr)];
     for term in terminalTokens:
 	key = '%s)' %term;
 	needle_idx = const_repr.find(key);
