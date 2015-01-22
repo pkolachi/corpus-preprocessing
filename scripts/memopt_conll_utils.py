@@ -1,5 +1,11 @@
+"""
+ An alternate implementation of conll_utils, with additional memory optimizations. 
+ The module does not use lazyness, instead it relies on namedtuple to reduce memory
+ usage, when the entire CoNLL dataset needs to be loaded
+"""
 
 import codecs, os.path, re, sys;
+from collections import namedtuple;
 try:
     import random_utils;
 except ImportError:
@@ -15,10 +21,13 @@ BERKELEY_COLUMNS = ('form', 'cpostag');
 
 fields = CONLL07_COLUMNS;
 #fields = BERKELEY_COLUMNS;
+CoNLLFields = namedtuple('CoNLLFields', fields);
 
 def words_from_conll(lines, fields):
     '''Read words for a single sentence from a CoNLL text file.'''
-    return [dict(zip(fields, line.split('\t'))) for line in lines];
+    global CoNLLFields
+    columnsList = [map(lambda X: X if X != '_' else None, line.split('\t')) for line in lines];
+    return tuple(CoNLLFields(*columns) for columns in columnsList);
 
 def lines_from_conll(lines):
     '''Read lines for a single sentence from a CoNLL text file.'''
@@ -29,7 +38,8 @@ def lines_from_conll(lines):
 
 def sentences_from_conll(handle):
     '''Read sentences from lines in an open CoNLL file handle.'''
-    global fields;
+    global fields, CoNLLFields;
+    CoNLLFields = namedtuple('CoNLLFields', fields);
     sent_count = 0;
     while True:
         lines = tuple(lines_from_conll(handle));
@@ -41,14 +51,17 @@ def sentences_from_conll(handle):
     print >>sys.stderr, "(%s)" %(random_utils.llnum2name(sent_count));
 
 def words_to_conll07(sent, fields):
+    global CoNLLFields
     str_repr = [];
+    '''
     if type(sent) == type(()) and len(sent) == 2:
 	str_repr.append( '#'+str(sent[0]) );
-	sent = sent[1];
+	sent = sent[1];'''
     for token in sent:
-	feat_repr = '|'.join(['%s=%s' %(key, token['feats'][key]) for key in sorted(token['feats'].keys())]) if token.has_key('feats') and type(token['feats']) == type({}) else token.get('feats', '_');
-	token['feats'] = feat_repr;
-	str_repr.append( '\t'.join([token.get(feat, '_') for feat in fields]) );
+	#feat_struct = token.feats;
+	#feat_repr = '|'.join(['%s=%s' %(key, feat_struct[key]) for key in sorted(feat_struct.keys())]) if type(feat_struct) == type({}) else '_';
+	#token.feats = feat_repr;
+	str_repr.append( '\t'.join( map(lambda X: str(X) if X else '_', [getattr(token, feat) for feat in fields]) ) );
     return '\n'.join(str_repr);
 
 def sentences_to_conll07(handle, sentences):
@@ -64,12 +77,12 @@ def sentences_to_conll07(handle, sentences):
 
 def sentences_to_tok(handle, sentences):
     for sent in sentences:
-	print >>handle, " ".join([token['form'] for token in sent]);
+	print >>handle, " ".join([token.form for token in sent]);
     return;
 
 def sentences_to_propercased(handle, sentences):
     for sent in sentences:
-	print >>handle, " ".join([token['form'].lower() if token['feats'].find('nertype') == -1 and token['form'] != 'I' else token['form'] for token in sent]);
+	print >>handle, " ".join([token.form.lower() if token.feats.find('nertype') == -1 and token.form != 'I' else token.form for token in sent]);
     return;
 
 def sentences_to_tagged(handle, sentences):
@@ -126,6 +139,7 @@ def constparse_chunks(const_repr):
 	cur_idx = end_idx;
 
 if __name__ == '__main__':
+    #sentences_to_conll07(sys.stdout, sentences_from_conll(sys.stdin));
     sentences_to_tok(sys.stdout,  sentences_from_conll(sys.stdin));
     #sentences_to_tagged(sys.stdout,  sentences_from_conll(sys.stdin));
     #sentences_to_propercased(sys.stdout, sentences_from_conll(sys.stdin));
