@@ -16,6 +16,7 @@ line_count = 0;
 for srcline, tgtline in itertools.izip(\
 	random_utils.lines_from_file(srcfilename), \
 	random_utils.lines_from_file(tgtfilename) ):
+    line_count += 1;
     if srcline.strip() == '' or tgtline.strip() == '':
 	continue;
     srcSegments[line_count] = srcline.strip();

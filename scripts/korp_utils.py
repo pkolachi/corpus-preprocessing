@@ -42,7 +42,7 @@ def convertSentenceToConLL(sent_xml_repr):
 		complex_feat_val = '%'.join([re.sub('\s+', '_', l) for l in val.strip(' |').split('|')]);
 		if complex_feat_val.strip() != '':
 		    conll_line.setdefault('feats', {})[attr] = complex_feat_val;
-	conll_line['form'] = token_node.text.strip();
+	conll_line['form'] = token_node.text.strip() if token_node.text else token_node.attrib['lemma'];
 	conll_sentence.append(conll_line);
     return conll_sentence;
 

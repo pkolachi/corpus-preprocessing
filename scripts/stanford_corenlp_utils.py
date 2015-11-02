@@ -182,6 +182,8 @@ def convertSentenceToConLL(sent_xml_repr):
     const_parse = '';
     for parse_node in sent_node.findall("parse"):
 	const_parse = parse_node.text.strip();
+    if not const_parse.strip():
+	return conll_sentence;
     if const_parse not in ['(())', '(ROOT ())', '(ROOT())']:
 	for conll_line, chunk in zip(conll_sentence, constparse_chunks(const_parse, terminalNodes)):
 	    conll_line['postag'] = chunk;
@@ -331,7 +333,7 @@ def addParsestoXMLFromOtherSources(xmlfile, parsesfile, depfile):
     # EXACT INFORMATION CAN BE FOUND AT
     # http://lxml.de/FAQ.html#why-doesn-t-the-pretty-print-option-reformat-my-xml-output
     indentXMLNodes(mod_root);
-    print etree.tostring(mod_root, encoding='utf-8', method='xml');
+    print etree.tostring(mod_root, method='xml');
 
 def addParsestoSegmentedXMLFromOtherSources(xmlinputdirectory, parsesfile, depfile, xmloutputdirectory):
     import conll_utils;
@@ -430,8 +432,8 @@ if __name__ == '__main__':
     #runCoreNLPLarge(sys.argv[1], sys.argv[2]);
     #writeSegmentedCoreNLPOutputIntoDirectory(sys.argv[2:], sys.argv[1]);
     #writeSegmentedWikiOutputIntoDocuments(sys.argv[2:], sys.argv[1]);
-    convertSegmentedOutputtoCoNLL(sys.argv[1], sys.argv[2]) if os.path.isdir(sys.argv[1]) else True;
-    #convertOutputtoCoNLL(sys.argv[1], sys.argv[2]) if os.path.isfile(sys.argv[1]) else True;
+    #convertSegmentedOutputtoCoNLL(sys.argv[1], sys.argv[2]) if os.path.isdir(sys.argv[1]) else True;
+    convertOutputtoCoNLL(sys.argv[1], sys.argv[2]) if os.path.isfile(sys.argv[1]) else True;
     #addParsestoXMLFromOtherSources(sys.argv[1], sys.argv[2], sys.argv[3]);
     #addParsestoSegmentedXMLFromOtherSources(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]);
     #convertCoNLLToMosesTokenized(sys.argv[1], sys.argv[2])#, sys.argv[3]);

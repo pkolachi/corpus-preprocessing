@@ -2,7 +2,7 @@
 import codecs, itertools, math, os, random, re, string, sys, time;
 
 def smart_open(filename='', mode='rb'):
-    if filename:
+    if filename.strip():
 	_, ext = os.path.splitext(filename);
 	if ext == '.bz2':
 	    from bz2 import BZ2File;
@@ -45,7 +45,8 @@ def lines_from_file(filename):
 	for line in infile:
 	    line_count += 1;
 	    yield line.strip();
-	    if not (line_count%bufsize): print >>sys.stderr, '(%s)'%(llnum2name(line_count)),
+	    if not (line_count%bufsize):
+		print >>sys.stderr, '(%s)'%(llnum2name(line_count)),
 	print >>sys.stderr, '(%s)'%(llnum2name(line_count));
     return;
 
@@ -62,7 +63,7 @@ def lines_to_file(filename, lines):
 
 def encode_sentence(sentence, vocabulary, id_gen=itertools.count(1)):
     enc_repr = [];
-    for token in sentence.strip().split():
+    for token in re.split('\s+', sentence.strip()):
 	if vocabulary.has_key(token):
 	    enc_repr.append(vocabulary[token]);
 	else:
