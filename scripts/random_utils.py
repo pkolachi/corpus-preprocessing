@@ -1,12 +1,13 @@
 
-import codecs, itertools, math, os, random, re, string, sys, time;
+import codecs, io, itertools, math, os, random, re, string, sys, time;
 
-def smart_open(filename='', mode='rb'):
+def smart_open(filename='', mode='rb', large=False):
+    bufferSize = ((2<<16)+8) if large == True else io.DEFAULT_BUFFER_SIZE; 
     if filename.strip():
 	_, ext = os.path.splitext(filename);
 	if ext == '.bz2':
 	    from bz2 import BZ2File;
-	    return codecs.getreader('utf-8')(BZ2File(filename, mode))\
+	    return codecs.getreader('utf-8')(BZ2File(filename, mode, buffering=bufferSize))\
 		    if mode == 'rb' \
 		    else codecs.getwriter('utf-8')(BZ2File(filename, mode));
 	elif ext == '.gz':
@@ -15,7 +16,7 @@ def smart_open(filename='', mode='rb'):
 		    if mode == 'rb' \
 		    else codecs.getwriter('utf-8')(GzipFile(filename, mode));
 	else:
-	    return codecs.getreader('utf-8')(open(filename, mode)) \
+	    return codecs.getreader('utf-8')(open(filename, mode, buffering=bufferSize)) \
 		    if mode == 'rb' \
 		    else codecs.getwriter('utf-8')(open(filename, mode));
     elif filename == '' and mode == 'rb':
@@ -38,27 +39,24 @@ def llnum2name(number):
   else:
     return '%d%c' %(number/10**good_base, num_map[good_base]);
       
-def lines_from_file(filename):
+def lines_from_file(filename, large=False):
     bufsize = 1000000;
-    with smart_open(filename) as infile:
-	line_count = 0;
-	for line in infile:
-	    line_count += 1;
+    with smart_open(filename, large=large) as infile:
+	for line_count, line in enumerate(infile):
 	    yield line.strip();
-	    if not (line_count%bufsize):
-		print >>sys.stderr, '(%s)'%(llnum2name(line_count)),
-	print >>sys.stderr, '(%s)'%(llnum2name(line_count));
+	    if not ((line_count+1)%bufsize):
+		print >>sys.stderr, '(%s)'%(llnum2name(line_count+1)),
+	print >>sys.stderr, '(%s)'%(llnum2name(line_count+1));
     return;
 
 def lines_to_file(filename, lines):
     bufsize = 1000000;
     with smart_open(filename, mode='wb') as outfile:
-	line_count = 0;
-	for sent in lines:
-	    line_count += 1;
+	for line_count, sent in enumerate(lines):
 	    print >>outfile, sent.strip();
-	    if not (line_count%bufsize): print >>sys.stderr, '(%s)'%(llnum2name(line_count)),
-	print >>sys.stderr, '(%s)'%(llnum2name(line_count));
+	    if not ((line_count+1)%bufsize): 
+		print >>sys.stderr, '(%s)'%(llnum2name(line_count+1)),
+	print >>sys.stderr, '(%s)'%(llnum2name(line_count+1));
     return True;
 
 def encode_sentence(sentence, vocabulary, id_gen=itertools.count(1)):
