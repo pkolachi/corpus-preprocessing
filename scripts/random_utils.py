@@ -101,7 +101,8 @@ def splitTextFileIntoChunks(filename, outfileprefix=None):
     if outfileprefix:
 	pid = os.getpid();
 	for foldidx in xrange(foldcount):
-	    if not lines_to_file('%s.%s.%d'%(outfileprefix, pid, foldidx+1), folded_sentences[foldidx]):
+	    if not lines_to_file('%s.%s.%d'%(outfileprefix, pid, foldidx+1), \
+		    folded_sentences[foldidx]):
 		return False;
 	return True;
     else:
