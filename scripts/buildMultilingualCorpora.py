@@ -14,7 +14,8 @@ outputPrefix = 'europarl-v7.sv-bg-en.raw';
 PARA_DB = dict();
 
 for langpair, corpdets in PARA_CORP.iteritems():
-    srcfilename, tgtfilename = '%s.%s' %(corpdets[0], corpdets[1]), '%s.%s' %(corpdets[0], corpdets[2]);
+    srcfilename = '%s.%s' %(corpdets[0], corpdets[1]); 
+    tgtfilename = '%s.%s' %(corpdets[0], corpdets[2]);
     if not (os.path.isfile(srcfilename) or os.path.isfile(tgtfilename)):
 	srcfilename, tgtfilename = '%s.bz2' %(srcfilename), '%s.bz2' %(tgtfilename);
 
@@ -52,3 +53,4 @@ for sentence in unionSentences:
 for lang in possibleLanguages+[pivotLang]:
     newfilename = '%s.%s' %(outputPrefix, lang);
     random_utils.lines_to_file(newfilename, MULTI_DB[lang]);
+

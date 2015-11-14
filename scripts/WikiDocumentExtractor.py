@@ -19,7 +19,9 @@ for dirpath, dirsList, filesList in os.walk(wikiextractdir):
 	    xmltree = etree.parse(filepath); # BeautifulSoup(infile, features="xml");
 	    xmlroot = xmltree.getroot();
 	    for docnode in xmlroot.findall('.//doc'):
-		pageid, pageurl, pagetitle = docnode.attrib['id'], docnode.attrib['url'], docnode.attrib['title'];
+		pageid = docnode.attrib['id'];
+		pageurl = docnode.attrib['url'];
+		pagetitle = docnode.attrib['title'];
 		dirnum = int(pageid)/10000;
 		dirname = str(dirnum).zfill(2);
 		localdocumentdir = os.path.join(documentdir, dirname);
@@ -29,3 +31,4 @@ for dirpath, dirsList, filesList in os.walk(wikiextractdir):
 		with codecs.open(outputfilepath, 'w', 'utf-8') as outfile:
 		    print >>outfile, p.unescape(etree.tostring(docnode, encoding='utf-8'));
 		print "%s\t%s\t%s" %(pageid.zfill(6), pagetitle, pageurl);
+
