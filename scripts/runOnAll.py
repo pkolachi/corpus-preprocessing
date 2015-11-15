@@ -2,20 +2,21 @@
 import os, sys;
 
 source_directory, target_directory = sys.argv[1], sys.argv[2];
-source_directory, target_directory = os.path.abspath(source_directory), os.path.abspath(target_directory);
+source_directory = os.path.abspath(source_directory);
+target_directory = os.path.abspath(target_directory);
 #source_directory, target_directory, target_directory2 = sys.argv[1], sys.argv[2], sys.argv[3];
 #source_directory, target_directory, target_directory2 = os.path.abspath(source_directory), os.path.abspath(target_directory), os.path.abspath(target_directory2);
 
 for dirpath, dirsList, filesList in os.walk(source_directory):
     for filename in filesList:
-	filepath = os.path.join(dirpath, filename);
-	
+	filepath = os.path.join(dirpath, filename);	
 	#outfilename = filename;
 	outfilename = os.path.splitext(filename)[0]+'.conll';
 	#outfilename = os.path.splitext(filename)[0]+'.tok';
-	
-	outfilepath = os.path.join(dirpath.replace(source_directory, target_directory), outfilename);
-	#outfilepath2 = os.path.join(dirpath.replace(source_directory, target_directory2), outfilename);
+	outfilepath = os.path.join(dirpath.replace(source_directory, \
+		target_directory), outfilename);
+	#outfilepath2 = os.path.join(dirpath.replace(source_directory, \
+	#       target_directory2), outfilename);
 	
 	print filepath, outfilepath;
 	

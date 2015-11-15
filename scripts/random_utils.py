@@ -7,14 +7,16 @@ def smart_open(filename='', mode='rb', large=False):
 	_, ext = os.path.splitext(filename);
 	if ext == '.bz2':
 	    from bz2 import BZ2File;
-	    return codecs.getreader('utf-8')(BZ2File(filename, mode, buffering=bufferSize))\
+	    cstream = BZ2File(filename, mode, buffering=bufferSize, compresslevel=1);
+	    return codecs.getreader('utf-8')(cstream) \
 		    if mode == 'rb' \
-		    else codecs.getwriter('utf-8')(BZ2File(filename, mode));
+		    else codecs.getwriter('utf-8')(cstream);
 	elif ext == '.gz':
 	    from gzip import GzipFile;
-	    return codecs.getreader('utf-8')(GzipFile(filename, mode))\
+	    cstream = GzipFile(filename, mode, compresslevel=1);
+	    return codecs.getreader('utf-8')(cstream) \
 		    if mode == 'rb' \
-		    else codecs.getwriter('utf-8')(GzipFile(filename, mode));
+		    else codecs.getwriter('utf-8')(cstream);
 	else:
 	    return codecs.getreader('utf-8')(open(filename, mode, buffering=bufferSize)) \
 		    if mode == 'rb' \
