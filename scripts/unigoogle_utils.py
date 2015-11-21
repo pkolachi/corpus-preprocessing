@@ -1,5 +1,6 @@
 
-import itertools, multiprocessing, os, os.path, re, string, sys, time;
+import multiprocessing, re, sys, time;
+from itertools import ifilter, imap, izip;
 from operator import itemgetter;
 import random_utils;
 
@@ -14,7 +15,8 @@ def read_mapping(mapfile):
 
 def convert(tag_sequence, mapping=None):
     global map_tag;
-    mapping = map_tag;
+    if not mapping:
+	mapping = map_tag;
     coarse_sequence = [];
     for idx, tag in enumerate(tag_sequence):
 	possible_matches = filter(lambda X: X[0] == tag, mapping.keys());
@@ -28,7 +30,7 @@ def convert(tag_sequence, mapping=None):
 	    coarse_sequence.append( mapping[possible_matches[0]] );
     return coarse_sequence;
 
-map_tag = {};
+map_tag = defaultdict(lambda:'X');
 def convert_tagged_text(*args):
     if len(args) < 1:
 	print >>sys.stderr, "./%s <map-file>" %(sys.argv[0]);
@@ -38,40 +40,58 @@ def convert_tagged_text(*args):
     map_tag = read_mapping(args[0]);
     inputFileName  = args[1] if len(args) >= 2 else '';
     outputFileName = args[2] if len(args) >= 3 else '';
-    outputFile = smart_open(outputFileName, mode='w');
+    outputFile = random_utils.smart_open(outputFileName, mode='wb');
     delimold = delimnew = '_';
     formsBuffer, tagsBuffer, bufferSize = [], [], 0;
+    frst, scnd = itemgetter(0), itemgetter(1);
 
-    pool = multiprocessing.Pool(4, maxtasksperchild=1000);
+    keepTags = True;
+    threads = 3;
+
+    if threads > 1:
+	pool = multiprocessing.Pool(threads, maxtasksperchild=1000);
 
     oldtime, newtime = time.time(), time.time();
-    for line in random_utils.lines_from_file(inputFileName):
-	tokens = [tuple(tok.rsplit(delimold, 1)) if tok.find(delimold) != -1 else (tok, '_UNK_') for tok in re.split('\s+', line.strip())];
-	current_forms = map(itemgetter(0), tokens);
-	formsBuffer.append( current_forms );
-	current_tags  = [  ( '_UNK_' if tok.find(delimold) == -1 else tok.rsplit(delimold, 1)[1] ) for tok in tokens  ];
-	current_tags = map(itemgetter(1), tokens);
-	tagsBuffer.append( current_tags );
-	bufferSize += 1; 
-	if bufferSize == 100000:
-	    for current_forms, mapped_tags in itertools.izip(formsBuffer, pool.imap(convert, tagsBuffer, chunksize=10000)):
-	    	print >>outputFile, ' '.join(['%s%c%s'%(tok, delimnew, tag) for tok, tag in zip(current_forms, mapped_tags)]);
-	    #for current_forms in formsBuffer:
-	    #	print >>outputFile, ' '.join(current_forms);
+    with random_utils.smart_open(outputFileName, mode='wb') as outputFile:
+	for line in random_utils.lines_from_file(inputFileName):
+	    tokens = [tuple(tok.rsplit(delimold, 1)) if tok.find(delimold) != -1 else (tok, '_UNK_') for tok in re.split('\s+', line.strip())];
+	    current_forms = map(frst, tokens);
+	    formsBuffer.append( current_forms );
+	    if keepTags:
+		current_tags = map(scnd, tokens);
+		tagsBuffer.append( current_tags );
+	    bufferSize += 1;
+	    if bufferSize == 100000:
+		if keepTags and threads > 1:
+		    for current_forms, mapped_tags in izip(formsBuffer, pool.imap(convert, tagsBuffer, chunksize=10000)):
+			print >>outputFile, ' '.join(['%s%c%s'%(tok, delimnew, tag) for tok, tag in zip(current_forms, mapped_tags)]);
+		elif keepTags and threads <= 1:
+		    for current_forms, mapped_tags in izip(formsBuffer, imap(convert, tagsBuffer)):
+			print >>outputFile, ' '.join(['%s%c%s'%(tok, delimnew, tag) for tok, tag in zip(current_forms, mapped_tags)]);
+		else:
+		    for current_forms in formsBuffer:
+			print >>outputFile, ' '.join(current_forms);
+		formsBuffer, tagsBuffer, bufferSize = [], [], 0;
+		newtime = time.time();
+		print >>sys.stderr, "Dumping tags in %.5f"%(newtime-oldtime);
+		oldtime = newtime;
+	if bufferSize:
+	    if keepTags and threads > 1:
+		for current_forms, mapped_tags in izip(formsBuffer, pool.imap(convert, tagsBuffer, chunksize=10000)):
+		    print >>outputFile, ' '.join(['%s%c%s'%(tok, delimnew, tag) for tok, tag in zip(current_forms, mapped_tags)]);
+	    elif keepTags and threads <= 1:
+		for current_forms, mapped_tags in izip(formsBuffer, imap(convert, tagsBuffer)):
+		    print >>outputFile, ' '.join(['%s%c%s'%(tok, delimnew, tag) for tok, tag in zip(current_forms, mapped_tags)]);
+	    else:
+		for current_forms in formsBuffer:
+		    print >>outputFile, ' '.join(current_forms);
 	    formsBuffer, tagsBuffer, bufferSize = [], [], 0;
 	    newtime = time.time();
 	    print >>sys.stderr, "Dumping tags in %.5f"%(newtime-oldtime);
-	    oldtime = newtime;
-    if bufferSize:
-	for current_forms, mapped_tags in itertools.izip(formsBuffer, pool.imap(convert, tagsBuffer, chunksize=10000)):
-	    print >>outputFile, ' '.join(['%s%c%s'%(tok, delimnew, tag) for tok, tag in zip(current_forms, mapped_tags)]);
-	for current_forms in formsBuffer:
-	    print >>outputFile, ' '.join(current_forms);
-	formsBuffer, tagsBuffer, bufferSize = [], [], 0;
-	newtime = time.time();
-	print >>sys.stderr, "Dumping tags in %.5f"%(newtime-oldtime);
 
-    pool.close();
+    if threads > 1:
+	pool.close();
+
     return;
 
 if __name__ == '__main__':
