@@ -1,0 +1,12 @@
+Generic scripts: 
+    re-use functions in random_utils to ensure uniformity across processing scripts;
+    re-use functions in parallelize_utils to ensure uniformity across multiprocessing scripts;
+	check if putting and taking things in queues is an acceptable overhead (compared to using pools)
+    apparently, using generators across threads raises Valueerror: generator already in execution. So, the current parallelize_utils does not work. Fix this. 
+
+stanford_corenlp_utils.py
+
+
+add syntactic category information to prune entries in phrase-table; compute normalized prob scores from weights in tuned model; 
+term indexing; - building trie structure for n-best trees
+Add argparse utility to allow for command-line arguments. Current available facilities are 
