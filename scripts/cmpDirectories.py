@@ -15,5 +15,5 @@ for dirpath, dirList, fileList in os.walk(srcDirectory):
     tgtfileList = itertools.imap(os.path.join, itertools.repeat(tgtdirpath, len(fileList)), (filename.replace(srcDirectory, tgtDirectory) for filename in fileList));
     srcfileList = itertools.imap(os.path.join, itertools.repeat(dirpath, len(fileList)), fileList);
     for srcfile, tgtfile in itertools.izip(srcfileList, tgtfileList):
-	if os.path.isfile(tgtfile) == False or os.system('cmp %s %s > /dev/null 2> /dev/null' %(srcfile, tgtfile)) != 0:
+	if os.path.isfile(tgtfile) == False or os.system('cmp "%s" "%s" > /dev/null 2> /dev/null' %(srcfile, tgtfile)) != 0:
 	    print "%s: Target file does not match" %(tgtfile);

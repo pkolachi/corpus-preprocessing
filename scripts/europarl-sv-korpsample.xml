@@ -1,0 +1,320 @@
+<corpus id="europarl-sv">
+<text date="2000-01-17" datefrom="20000117" dateto="20000117">
+<paragraph>
+<linkpt id="ep-00-01-17.1">
+<linknl id="ep-00-01-17.1">
+<linkit id="ep-00-01-17.1">
+<linkfr id="ep-00-01-17.1">
+<linkfi id="ep-00-01-17.1">
+<linkes id="ep-00-01-17.1">
+<linken id="ep-00-01-17.1">
+<linkel id="ep-00-01-17.1">
+<linkde id="ep-00-01-17.1">
+<linkda id="ep-00-01-17.1">
+<sentence id="27bd854cc0-27bdae8766">
+<w pos="PC" msd="PC.PRS.UTR+NEU.SIN+PLU.IND+DEF.NOM" lemma="|återuppta|" lex="|återuppta..vb.1|" saldo="|återuppta..1|" prefix="|åter..ab.1|" suffix="|uppta..vb.1|" ref="1" dephead="" deprel="ROOT">Återupptagande</w>
+<w pos="PP" msd="PP" lemma="|av|" lex="|av..pp.1|" saldo="|av..1|" prefix="|" suffix="|" ref="2" dephead="1" deprel="AG">av</w>
+<w pos="NN" msd="NN.UTR.SIN.DEF.NOM" lemma="|session|" lex="|session..nn.1|" saldo="|session..1|" prefix="|" suffix="|" ref="3" dephead="2" deprel="PA">sessionen</w>
+</sentence>
+</linkda>
+</linkde>
+</linkel>
+</linken>
+</linkes>
+</linkfi>
+</linkfr>
+</linkit>
+</linknl>
+</linkpt>
+</paragraph>
+</text>
+<text speaker="Talmannen" date="2000-01-17" datefrom="20000117" dateto="20000117">
+<paragraph>
+<linkpt id="ep-00-01-17.2">
+<linknl id="ep-00-01-17.2">
+<linkit id="ep-00-01-17.2">
+<linkfr id="ep-00-01-17.2">
+<linkfi id="ep-00-01-17.2">
+<linkes id="ep-00-01-17.2">
+<linken id="ep-00-01-17.2">
+<linkel id="ep-00-01-17.2">
+<linkde id="ep-00-01-17.2">
+<linkda id="ep-00-01-17.2">
+<sentence id="27bd3d27b5-27bd7df83f">
+<w pos="PN" msd="PN.UTR.SIN.DEF.SUB" lemma="|jag|" lex="|jag..pn.1|" saldo="|jag..1|" prefix="|" suffix="|" ref="01" dephead="02" deprel="SS">Jag</w>
+<w pos="VB" msd="VB.PRS.AKT" lemma="|förklara|" lex="|förklara..vb.1|" saldo="|förklara..1|förklara..2|" prefix="|föra..vb.1|för..nn.1|" suffix="|klara..vb.1|klara..vb.2|" ref="02" dephead="" deprel="ROOT">förklarar</w>
+<w pos="NN" msd="NN.NEU.SIN.DEF.GEN" lemma="|Europaparlament|" lex="|Europaparlament..nn.1|" saldo="|Europaparlamentet..1|" prefix="|" suffix="|" ref="03" dephead="04" deprel="DT">Europaparlamentets</w>
+<w pos="NN" msd="NN.UTR.SIN.IND.NOM" lemma="|session|" lex="|session..nn.1|" saldo="|session..1|" prefix="|" suffix="|" ref="04" dephead="02" deprel="OO">session</w>
+<w pos="PC" msd="PC.PRF.UTR.SIN.IND.NOM" lemma="|återuppta|" lex="|återuppta..vb.1|" saldo="|återuppta..1|" prefix="|åter..ab.1|" suffix="|upptagen..av.1|uppta..vb.1|" ref="05" dephead="04" deprel="PT">återupptagen</w>
+<w pos="PP" msd="PP" lemma="|efter|" lex="|efter..pp.1|" saldo="|efter..1|efter..2|" prefix="|" suffix="|" ref="06" dephead="05" deprel="OA">efter</w>
+<w pos="NN" msd="NN.NEU.SIN.DEF.NOM" lemma="|avbrott|" lex="|avbrott..nn.1|" saldo="|avbrott..1|" prefix="|av..ab.1|av..av.1|" suffix="|brott..nn.2|brott..nn.1|" ref="07" dephead="10" deprel="DT">avbrottet</w>
+<w pos="DT" msd="DT.UTR.SIN.DEF" lemma="|en|den|" lex="|en..al.1|den..pn.1|" saldo="|den..1|en..2|den..2|" prefix="|" suffix="|" ref="08" dephead="10" deprel="DT">den</w>
+<w pos="RG" msd="RG.NOM" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="09" dephead="10" deprel="DT">17</w>
+<w pos="NN" msd="NN.UTR.SIN.IND.NOM" lemma="|december|" lex="|december..nn.1|" saldo="|december..1|" prefix="|" suffix="|" ref="10" dephead="06" deprel="PA">december</w>
+<w pos="MAD" msd="MAD" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="11" dephead="02" deprel="IP">.</w>
+</sentence>
+</linkda>
+</linknl>
+<linknl id="ep-00-01-17.3">
+<linkda id="ep-00-01-17.3">
+<sentence id="27bd05b8ea-27bd25f599">
+<w pos="PN" msd="PN.UTR.SIN.DEF.SUB" lemma="|jag|" lex="|jag..pn.1|" saldo="|jag..1|" prefix="|" suffix="|" ref="01" dephead="02" deprel="SS">Jag</w>
+<w pos="VB" msd="VB.PRS.AKT" lemma="|vilja|vilja sig|" lex="|vilja..vb.1|vilja_sig..vbm.1|" saldo="|vilja..1|vilja_sig..1|" prefix="|" suffix="|" ref="02" dephead="11" deprel="MS">vill</w>
+<w pos="PP" msd="PP" lemma="|på|på nytt|" lex="|på..pp.1|på_nytt..abm.1|" saldo="|på..1|på_nytt..1|" prefix="|" suffix="|" ref="03" dephead="02" deprel="TA">på</w>
+<w pos="AB" msd="AB.POS" lemma="|ny|på nytt:03|" lex="|ny..av.1|på_nytt..abm.1:03|" saldo="|ny..1|på_nytt..1:03|" prefix="|" suffix="|" ref="04" dephead="03" deprel="HD">nytt</w>
+<w pos="VB" msd="VB.INF.AKT" lemma="|önska|" lex="|önska..vb.1|" saldo="|önska..1|" prefix="|" suffix="|" ref="05" dephead="02" deprel="VG">önska</w>
+<w pos="PN" msd="PN.UTR.PLU.DEF.OBJ" lemma="|ni|vilja sig:02|" lex="|ni..pn.1|vilja_sig..vbm.1:02|" saldo="|ni..1|vilja_sig..1:02|" prefix="|" suffix="|" ref="06" dephead="05" deprel="SS">er</w>
+<w pos="DT" msd="DT.NEU.SIN.IND" lemma="|en|" lex="|en..al.1|" saldo="|den..1|en..2|" prefix="|" suffix="|" ref="07" dephead="10" deprel="DT">ett</w>
+<w pos="JJ" msd="JJ.POS.NEU.SIN.IND.NOM" lemma="|gott|god|gott nytt år|" lex="|gott..av.1|god..av.1|gott_nytt_år..inm.1|" saldo="|gott..1|god..1|god..2|god..3|gott_nytt_år..1|" prefix="|" suffix="|" ref="08" dephead="10" deprel="AT">gott</w>
+<w pos="JJ" msd="JJ.POS.NEU.SIN.IND.NOM" lemma="|ny|gott nytt år:08|" lex="|ny..av.1|gott_nytt_år..inm.1:08|" saldo="|ny..1|gott_nytt_år..1:08|" prefix="|" suffix="|" ref="09" dephead="10" deprel="AT">nytt</w>
+<w pos="NN" msd="NN.NEU.SIN.IND.NOM" lemma="|år|gott nytt år:08|" lex="|år..nn.1|gott_nytt_år..inm.1:08|" saldo="|år..1|gott_nytt_år..1:08|" prefix="|" suffix="|" ref="10" dephead="05" deprel="TA">år</w>
+<w pos="KN" msd="KN" lemma="|och|" lex="|och..kn.1|" saldo="|och..1|" prefix="|" suffix="|" ref="11" dephead="" deprel="ROOT">och</w>
+<w pos="PN" msd="PN.UTR.SIN.DEF.SUB" lemma="|jag|" lex="|jag..pn.1|" saldo="|jag..1|" prefix="|" suffix="|" ref="12" dephead="13" deprel="SS">jag</w>
+<w pos="VB" msd="VB.PRS.SFO" lemma="|hoppas|hoppa|" lex="|hoppas..vb.1|hoppa..vb.1|" saldo="|hoppas..1|hoppa..1|hoppa..2|" prefix="|" suffix="|" ref="13" dephead="11" deprel="MS">hoppas</w>
+<w pos="SN" msd="SN" lemma="|att|" lex="|att..sn.1|" saldo="|att..2|" prefix="|" suffix="|" ref="14" dephead="13" deprel="OO">att</w>
+<w pos="PN" msd="PN.UTR.SIN.DEF.SUB" lemma="|ni|" lex="|ni..pn.1|" saldo="|ni..1|" prefix="|" suffix="|" ref="15" dephead="16" deprel="SS">ni</w>
+<w pos="VB" msd="VB.SUP.AKT" lemma="|ha|" lex="|ha..vb.1|" saldo="|ha..1|ha..3|" prefix="|" suffix="|" ref="16" dephead="14" deprel="UA">haft</w>
+<w pos="DT" msd="DT.UTR.SIN.IND" lemma="|en|" lex="|en..al.1|" saldo="|den..1|en..2|" prefix="|" suffix="|" ref="17" dephead="19" deprel="DT">en</w>
+<w pos="JJ" msd="JJ.POS.UTR.SIN.IND.NOM" lemma="|trevlig|" lex="|trevlig..av.1|" saldo="|trevlig..1|" prefix="|" suffix="|" ref="18" dephead="19" deprel="AT">trevlig</w>
+<w pos="NN" msd="NN.UTR.SIN.IND.NOM" lemma="|semester|" lex="|semester..nn.1|" saldo="|semester..1|" prefix="|" suffix="|" ref="19" dephead="16" deprel="OO">semester</w>
+<w pos="MAD" msd="MAD" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="20" dephead="11" deprel="IP">.</w>
+</sentence>
+</linkda>
+</linkde>
+</linkel>
+</linken>
+</linkes>
+</linkfi>
+</linkfr>
+</linkit>
+</linknl>
+</linkpt>
+</paragraph>
+<paragraph>
+<linkpt id="ep-00-01-17.3">
+<linknl id="ep-00-01-17.4">
+<linkit id="ep-00-01-17.3">
+<linkfr id="ep-00-01-17.3">
+<linkfi id="ep-00-01-17.3">
+<linkes id="ep-00-01-17.3">
+<linken id="ep-00-01-17.3">
+<linkel id="ep-00-01-17.3">
+<linkde id="ep-00-01-17.3">
+<linkda id="ep-00-01-17.4">
+<sentence id="27bd1eb6a1-27bd60de94">
+<w pos="HA" msd="HA" lemma="|som|" lex="|som..ab.1|" saldo="|som..3|" prefix="|" suffix="|" ref="01" dephead="04" deprel="AA">Som</w>
+<w pos="PN" msd="PN.UTR.PLU.DEF.SUB" lemma="|ni|" lex="|ni..pn.1|" saldo="|ni..1|" prefix="|" suffix="|" ref="02" dephead="03" deprel="SS">ni</w>
+<w pos="VB" msd="VB.SUP.AKT" lemma="|kunna|" lex="|kunna..vb.1|" saldo="|kunna..1|kunna..2|kunna..3|kunna..4|" prefix="|" suffix="|" ref="03" dephead="01" deprel="UA">kunnat</w>
+<w pos="VB" msd="VB.INF.AKT" lemma="|konstatera|" lex="|konstatera..vb.1|" saldo="|konstatera..1|" prefix="|kona..nn.1|kon..nn.1|" suffix="|statera..vb.1|" ref="04" dephead="05" deprel="SS">konstatera</w>
+<w pos="VB" msd="VB.PRT.AKT" lemma="|äga|äga rum|" lex="|äga..vb.2|äga..vb.1|äga_rum..vbm.1|" saldo="|äga..3|äga..1|äga_rum..1|" prefix="|" suffix="|" ref="05" dephead="" deprel="ROOT">ägde</w>
+<w pos="PAD" msd="PAD" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="06" dephead="05" deprel="JR">"</w>
+<w pos="DT" msd="DT.UTR.SIN.DEF" lemma="|en|den|" lex="|en..al.1|den..pn.1|" saldo="|den..1|en..2|den..2|" prefix="|" suffix="|" ref="07" dephead="09" deprel="DT">den</w>
+<w pos="JJ" msd="JJ.POS.UTR+NEU.SIN.DEF.NOM" lemma="|stor|" lex="|stor..av.1|" saldo="|stor..1|" prefix="|" suffix="|" ref="08" dephead="09" deprel="AT">stora</w>
+<w pos="NN" msd="NN.NEU.SIN.IND.NOM" lemma="|år|" lex="|år..nn.1|" saldo="|år..1|" prefix="|" suffix="|" ref="09" dephead="10" deprel="DT">år</w>
+<w pos="NN" msd="NN.UTR.SIN.DEF.NOM" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="10" dephead="05" deprel="OO">2000-buggen</w>
+<w pos="PAD" msd="PAD" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="11" dephead="10" deprel="IR">"</w>
+<w pos="AB" msd="AB" lemma="|aldrig|" lex="|aldrig..ab.1|" saldo="|aldrig..1|aldrig..2|aldrig..3|" prefix="|" suffix="|" ref="12" dephead="13" deprel="AT">aldrig</w>
+<w pos="NN" msd="NN.NEU.SIN.IND.NOM" lemma="|rum|äga rum:05|" lex="|rum..nn.1|äga_rum..vbm.1:05|" saldo="|rum..1|rum..3|rum..4|äga_rum..1:05|" prefix="|" suffix="|" ref="13" dephead="10" deprel="AN">rum</w>
+<w pos="MAD" msd="MAD" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="14" dephead="05" deprel="IP">.</w>
+</sentence>
+</linkda>
+</linkde>
+</linkel>
+</linkes>
+</linkfi>
+</linkfr>
+</linkit>
+</linknl>
+</linkpt>
+<linkpt id="ep-00-01-17.4">
+<linknl id="ep-00-01-17.5">
+<linkit id="ep-00-01-17.4">
+<linkfr id="ep-00-01-17.4">
+<linkfi id="ep-00-01-17.4">
+<linkes id="ep-00-01-17.4">
+<linkel id="ep-00-01-17.4">
+<linkde id="ep-00-01-17.4">
+<linkda id="ep-00-01-17.5">
+<sentence id="27bd3376cc-27bd2b176b">
+<w pos="AB" msd="AB" lemma="|däremot|" lex="|däremot..ab.1|" saldo="|däremot..1|" prefix="|" suffix="|" ref="01" dephead="02" deprel="+A">Däremot</w>
+<w pos="VB" msd="VB.PRS.AKT" lemma="|ha|" lex="|ha..vb.1|" saldo="|ha..1|ha..3|" prefix="|" suffix="|" ref="02" dephead="" deprel="ROOT">har</w>
+<w pos="NN" msd="NN.UTR.PLU.DEF.NOM" lemma="|invånare|" lex="|invånare..nn.1|" saldo="|invånare..1|" prefix="|" suffix="|" ref="03" dephead="02" deprel="SS">invånarna</w>
+<w pos="PP" msd="PP" lemma="|i|" lex="|i..pp.1|" saldo="|i..2|" prefix="|" suffix="|" ref="04" dephead="02" deprel="TA">i</w>
+<w pos="DT" msd="DT.NEU.SIN.IND" lemma="|en|" lex="|en..al.1|" saldo="|den..1|en..2|" prefix="|" suffix="|" ref="05" dephead="06" deprel="DT">ett</w>
+<w pos="NN" msd="NN.NEU.SIN.IND.NOM" lemma="|antal|" lex="|antal..nn.1|" saldo="|antal..1|" prefix="|an..ab.1|" suffix="|tal..nn.1|tal..nn.2|" ref="06" dephead="04" deprel="PA">antal</w>
+<w pos="PP" msd="PP" lemma="|av|" lex="|av..pp.1|" saldo="|av..1|" prefix="|" suffix="|" ref="07" dephead="06" deprel="ET">av</w>
+<w pos="PS" msd="PS.UTR+NEU.PLU.DEF" lemma="|vi|" lex="|vi..pn.1|" saldo="|vi..1|" prefix="|" suffix="|" ref="08" dephead="09" deprel="DT">våra</w>
+<w pos="NN" msd="NN.NEU.PLU.IND.NOM" lemma="|medlemsland|" lex="|medlemsland..nn.1|" saldo="|medlemsland..1|" prefix="|" suffix="|" ref="09" dephead="07" deprel="PA">medlemsländer</w>
+<w pos="VB" msd="VB.SUP.SFO" lemma="|drabba|" lex="|drabba..vb.1|" saldo="|drabba..1|" prefix="|" suffix="|" ref="10" dephead="02" deprel="VG">drabbats</w>
+<w pos="PP" msd="PP" lemma="|av|" lex="|av..pp.1|" saldo="|av..1|" prefix="|" suffix="|" ref="11" dephead="10" deprel="OA">av</w>
+<w pos="NN" msd="NN.UTR.PLU.IND.NOM" lemma="|naturkatastrof|" lex="|naturkatastrof..nn.1|" saldo="|naturkatastrof..1|" prefix="|natur..nn.1|natur..nn.2|" suffix="|katastrof..nn.1|" ref="12" dephead="11" deprel="PA">naturkatastrofer</w>
+<w pos="HP" msd="HP.-.-.-" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="13" dephead="15" deprel="SS">som</w>
+<w pos="AB" msd="AB" lemma="|verkligen|" lex="|verkligen..ab.1|" saldo="|verkligen..1|" prefix="|" suffix="|" ref="14" dephead="15" deprel="MA">verkligen</w>
+<w pos="VB" msd="VB.SUP.AKT" lemma="|vara|" lex="|vara..vb.1|" saldo="|vara..1|" prefix="|" suffix="|" ref="15" dephead="12" deprel="ET">varit</w>
+<w pos="JJ" msd="JJ.POS.UTR+NEU.PLU.IND+DEF.NOM" lemma="|förskräcklig|" lex="|förskräcklig..av.1|" saldo="|förskräcklig..1|" prefix="|" suffix="|" ref="16" dephead="15" deprel="SP">förskräckliga</w>
+<w pos="MAD" msd="MAD" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="17" dephead="02" deprel="IP">.</w>
+</sentence>
+</linkda>
+</linkde>
+</linkel>
+</linken>
+</linkes>
+</linkfi>
+</linkfr>
+</linkit>
+</linknl>
+</linkpt>
+<linkpt id="ep-00-01-17.5">
+<linknl id="ep-00-01-17.6">
+<linkit id="ep-00-01-17.5">
+<linkfr id="ep-00-01-17.5">
+<linkfi id="ep-00-01-17.5">
+<linkes id="ep-00-01-17.5">
+<linken id="ep-00-01-17.4">
+<linkel id="ep-00-01-17.5">
+<linkde id="ep-00-01-17.5">
+<linkda id="ep-00-01-17.6">
+<sentence id="27bdfa306d-27bd0665c7">
+<w pos="PN" msd="PN.UTR.PLU.DEF.SUB" lemma="|ni|Ni|" lex="|ni..pn.1|Ni..pn.1|" saldo="|ni..1|" prefix="|" suffix="|" ref="01" dephead="02" deprel="SS">Ni</w>
+<w pos="VB" msd="VB.PRS.AKT" lemma="|ha|" lex="|ha..vb.1|" saldo="|ha..1|ha..3|" prefix="|" suffix="|" ref="02" dephead="" deprel="ROOT">har</w>
+<w pos="VB" msd="VB.SUP.AKT" lemma="|begära|" lex="|begära..vb.1|" saldo="|begära..1|" prefix="|" suffix="|" ref="03" dephead="02" deprel="VG">begärt</w>
+<w pos="DT" msd="DT.UTR.SIN.IND" lemma="|en|" lex="|en..al.1|" saldo="|den..1|en..2|" prefix="|" suffix="|" ref="04" dephead="05" deprel="DT">en</w>
+<w pos="NN" msd="NN.UTR.SIN.IND.NOM" lemma="|debatt|" lex="|debatt..nn.1|" saldo="|debatt..1|" prefix="|" suffix="|" ref="05" dephead="11" deprel="DT">debatt</w>
+<w pos="PP" msd="PP" lemma="|i|" lex="|i..pp.1|" saldo="|i..2|" prefix="|" suffix="|" ref="06" dephead="05" deprel="ET">i</w>
+<w pos="NN" msd="NN.NEU.SIN.DEF.NOM" lemma="|ämne|" lex="|ämne..nn.1|" saldo="|ämne..1|ämne..2|ämne..3|ämne..4|" prefix="|" suffix="|" ref="07" dephead="06" deprel="HD">ämnet</w>
+<w pos="PP" msd="PP" lemma="|under|" lex="|under..pp.1|" saldo="|under..1|under..2|" prefix="|" suffix="|" ref="08" dephead="05" deprel="ET">under</w>
+<w pos="NN" msd="NN.UTR.SIN.DEF.GEN" lemma="|" lex="|" saldo="|" prefix="|sammanträde..nn.1|" suffix="|period..nn.1|" ref="09" dephead="08" deprel="PA">sammanträdesperiodens</w>
+<w pos="PC" msd="PC.PRS.UTR+NEU.SIN+PLU.IND+DEF.NOM" lemma="|kommande|komma|" lex="|kommande..av.1|komma..vb.1|" saldo="|kommande..1|komma..1|komma..3|" prefix="|" suffix="|" ref="10" dephead="11" deprel="AT">kommande</w>
+<w pos="NN" msd="NN.UTR.PLU.IND.NOM" lemma="|dag|" lex="|dag..nn.1|" saldo="|dag..1|dag..2|" prefix="|" suffix="|" ref="11" dephead="03" deprel="OO">dagar</w>
+<w pos="MAD" msd="MAD" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="12" dephead="02" deprel="IP">.</w>
+</sentence>
+</linkda>
+</linkde>
+</linkel>
+</linken>
+</linkes>
+</linkfi>
+</linkfr>
+</linkit>
+</linknl>
+</linkpt>
+<linkpt id="ep-00-01-17.6">
+<linknl id="ep-00-01-17.7">
+<linkit id="ep-00-01-17.6">
+<linkfr id="ep-00-01-17.6">
+<linkfi id="ep-00-01-17.6">
+<linkes id="ep-00-01-17.6">
+<linken id="ep-00-01-17.5">
+<linkel id="ep-00-01-17.6">
+<linkde id="ep-00-01-17.6">
+<linkda id="ep-00-01-17.7">
+<sentence id="27bdf0076c-27bd1a21c0">
+<w pos="PP" msd="PP" lemma="|till|till dess|" lex="|till..pp.1|till_dess..abm.1|" saldo="|till..1|till_dess..1|" prefix="|" suffix="|" ref="01" dephead="03" deprel="AA">Till</w>
+<w pos="AB" msd="AB" lemma="|till dess:01|" lex="|till_dess..abm.1:01|" saldo="|till_dess..1:01|" prefix="|" suffix="|" ref="02" dephead="01" deprel="HD">dess</w>
+<w pos="VB" msd="VB.PRS.AKT" lemma="|vilja|" lex="|vilja..vb.1|" saldo="|vilja..1|" prefix="|" suffix="|" ref="03" dephead="" deprel="ROOT">vill</w>
+<w pos="PN" msd="PN.UTR.SIN.DEF.SUB" lemma="|jag|" lex="|jag..pn.1|" saldo="|jag..1|" prefix="|" suffix="|" ref="04" dephead="03" deprel="SS">jag</w>
+<w pos="SN" msd="SN" lemma="|att|" lex="|att..sn.1|" saldo="|att..2|" prefix="|" suffix="|" ref="05" dephead="03" deprel="OO">att</w>
+<w pos="PN" msd="PN.UTR.PLU.DEF.SUB" lemma="|vi|" lex="|vi..pn.1|" saldo="|vi..1|" prefix="|" suffix="|" ref="06" dephead="12" deprel="SS">vi</w>
+<w pos="MID" msd="MID" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="07" dephead="06" deprel="IK">,</w>
+<w pos="KN" msd="KN" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="08" dephead="06" deprel="ET">som</w>
+<w pos="DT" msd="DT.NEU.SIN.IND" lemma="|en|" lex="|en..al.1|" saldo="|den..1|en..2|" prefix="|" suffix="|" ref="09" dephead="10" deprel="DT">ett</w>
+<w pos="NN" msd="NN.NEU.SIN.IND.NOM" lemma="|antal|" lex="|antal..nn.1|" saldo="|antal..1|" prefix="|an..ab.1|" suffix="|tal..nn.1|tal..nn.2|" ref="10" dephead="11" deprel="DT">antal</w>
+<w pos="NN" msd="NN.UTR.PLU.IND.NOM" lemma="|kollega|" lex="|kollega..nn.1|" saldo="|kollega..1|" prefix="|" suffix="|" ref="11" dephead="08" deprel="UA">kolleger</w>
+<w pos="VB" msd="VB.SUP.AKT" lemma="|begära|" lex="|begära..vb.1|" saldo="|begära..1|" prefix="|" suffix="|" ref="12" dephead="05" deprel="UA">begärt</w>
+<w pos="MID" msd="MID" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="13" dephead="03" deprel="IK">,</w>
+<w pos="VB" msd="VB.PRS.AKT" lemma="|hålla|hålla tyst|" lex="|hålla..vb.1|hålla_tyst..vbm.1|" saldo="|hålla..1|hålla..2|hålla..3|hålla..4|hålla..5|hålla..6|hålla..7|hålla..8|hålla_tyst..1|" prefix="|håll..nn.1|håla..nn.1|hålla..vb.1|hål..nn.1|håla..vb.1|" suffix="|le..vb.1|" ref="14" dephead="03" deprel="VG">håller</w>
+<w pos="DT" msd="DT.UTR.SIN.IND" lemma="|en|" lex="|en..al.1|" saldo="|den..1|en..2|" prefix="|" suffix="|" ref="15" dephead="17" deprel="DT">en</w>
+<w pos="JJ" msd="JJ.POS.UTR.SIN.IND.NOM" lemma="|tyst|hålla tyst:14|" lex="|tyst..av.1|hålla_tyst..vbm.1:14|" saldo="|tyst..1|tyst..2|hålla_tyst..1:14|" prefix="|" suffix="|" ref="16" dephead="17" deprel="AT">tyst</w>
+<w pos="NN" msd="NN.UTR.SIN.IND.NOM" lemma="|minut|" lex="|minut..nn.2|minut..nn.1|" saldo="|minut..2|minut..1|" prefix="|" suffix="|" ref="17" dephead="14" deprel="OO">minut</w>
+<w pos="PP" msd="PP" lemma="|för|" lex="|för..pp.1|" saldo="|för..1|för..5|för..6|för..7|för..9|" prefix="|" suffix="|" ref="18" dephead="14" deprel="OA">för</w>
+<w pos="NN" msd="NN.NEU.PLU.DEF.NOM" lemma="|offer|" lex="|offer..nn.1|" saldo="|offer..1|offer..2|offer..3|" prefix="|" suffix="|" ref="19" dephead="18" deprel="PA">offren</w>
+<w pos="PP" msd="PP" lemma="|för|" lex="|för..pp.1|" saldo="|för..1|för..5|för..6|för..7|för..9|" prefix="|" suffix="|" ref="20" dephead="14" deprel="OA">för</w>
+<w pos="AB" msd="AB.AN" lemma="|bl.a.|" lex="|bl.a...aba.1|" saldo="|bland_annat..1|" prefix="|" suffix="|" ref="21" dephead="22" deprel="CA">bl.a.</w>
+<w pos="NN" msd="NN.UTR.PLU.DEF.NOM" lemma="|storm|" lex="|storm..nn.1|" saldo="|storm..1|storm..2|storm..3|stormen..1|" prefix="|" suffix="|" ref="22" dephead="20" deprel="PA">stormarna</w>
+<w pos="PP" msd="PP" lemma="|i|" lex="|i..pp.1|" saldo="|i..2|" prefix="|" suffix="|" ref="23" dephead="22" deprel="ET">i</w>
+<w pos="DT" msd="DT.UTR+NEU.PLU.DEF" lemma="|en|" lex="|en..al.1|" saldo="|den..1|en..2|" prefix="|" suffix="|" ref="24" dephead="25" deprel="DT">de</w>
+<w pos="NN" msd="NN.NEU.PLU.IND.NOM" lemma="|land|" lex="|land..nn.1|" saldo="|land..1|" prefix="|" suffix="|" ref="25" dephead="23" deprel="PA">länder</w>
+<w pos="PP" msd="PP" lemma="|i|" lex="|i..pp.1|" saldo="|i..2|" prefix="|" suffix="|" ref="26" dephead="25" deprel="ET">i</w>
+<w pos="JJ" msd="JJ.POS.UTR+NEU.SIN.DEF.NOM" lemma="|europeisk|Europeiska unionen|" lex="|europeisk..av.1|Europeiska_unionen..pmm.1|" saldo="|europeisk..1|EU..1|" prefix="|" suffix="|" ref="27" dephead="28" deprel="AT">Europeiska</w>
+<w pos="NN" msd="NN.UTR.SIN.DEF.NOM" lemma="|union|Europeiska unionen:27|" lex="|union..nn.1|Europeiska_unionen..pmm.1:27|" saldo="|union..1|EU..1:27|" prefix="|" suffix="|" ref="28" dephead="26" deprel="PA">unionen</w>
+<w pos="HP" msd="HP.-.-.-" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="29" dephead="30" deprel="SS">som</w>
+<w pos="VB" msd="VB.SUP.SFO" lemma="|drabba|" lex="|drabba..vb.1|" saldo="|drabba..1|" prefix="|" suffix="|" ref="30" dephead="28" deprel="ET">drabbats</w>
+<w pos="MAD" msd="MAD" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="31" dephead="03" deprel="IP">.</w>
+</sentence>
+</linkda>
+</linkde>
+</linkel>
+</linken>
+</linkes>
+</linkfi>
+</linkfr>
+</linkit>
+</linknl>
+</linkpt>
+<linkpt id="ep-00-01-17.7">
+<linknl id="ep-00-01-17.8">
+<linkit id="ep-00-01-17.7">
+<linkfr id="ep-00-01-17.7">
+<linkfi id="ep-00-01-17.7">
+<linkes id="ep-00-01-17.7">
+<linken id="ep-00-01-17.6">
+<linkel id="ep-00-01-17.7">
+<linkde id="ep-00-01-17.7">
+<linkda id="ep-00-01-17.8">
+<sentence id="27bd18a34f-27bd895ebb">
+<w pos="PN" msd="PN.UTR.SIN.DEF.SUB" lemma="|jag|" lex="|jag..pn.1|" saldo="|jag..1|" prefix="|" suffix="|" ref="01" dephead="02" deprel="SS">Jag</w>
+<w pos="VB" msd="VB.PRS.AKT" lemma="|be|" lex="|be..vb.1|" saldo="|be..1|be..2|" prefix="|" suffix="|" ref="02" dephead="" deprel="ROOT">ber</w>
+<w pos="PN" msd="PN.UTR.SIN.DEF.OBJ" lemma="|ni|" lex="|ni..pn.1|" saldo="|ni..1|" prefix="|" suffix="|" ref="03" dephead="02" deprel="OO">er</w>
+<w pos="VB" msd="VB.INF.AKT" lemma="|resa|resa sig|" lex="|resa..vb.2|resa..vb.1|resa_sig..vbm.1|" saldo="|resa..3|resa..1|resa_sig..1|resa_sig..2|" prefix="|" suffix="|" ref="04" dephead="02" deprel="VO">resa</w>
+<w pos="PN" msd="PN.UTR.PLU.DEF.OBJ" lemma="|ni|resa sig:04|" lex="|ni..pn.1|resa_sig..vbm.1:04|" saldo="|ni..1|resa_sig..1:04|resa_sig..2:04|" prefix="|" suffix="|" ref="05" dephead="04" deprel="OO">er</w>
+<w pos="PP" msd="PP" lemma="|för|" lex="|för..pp.1|" saldo="|för..1|för..5|för..6|för..7|för..9|" prefix="|" suffix="|" ref="06" dephead="04" deprel="OA">för</w>
+<w pos="DT" msd="DT.UTR.SIN.IND" lemma="|en|" lex="|en..al.1|" saldo="|den..1|en..2|" prefix="|" suffix="|" ref="07" dephead="09" deprel="DT">en</w>
+<w pos="JJ" msd="JJ.POS.UTR.SIN.IND.NOM" lemma="|tyst|" lex="|tyst..av.1|" saldo="|tyst..1|tyst..2|" prefix="|" suffix="|" ref="08" dephead="09" deprel="AT">tyst</w>
+<w pos="NN" msd="NN.UTR.SIN.IND.NOM" lemma="|minut|" lex="|minut..nn.2|minut..nn.1|" saldo="|minut..2|minut..1|" prefix="|" suffix="|" ref="09" dephead="06" deprel="PA">minut</w>
+<w pos="MAD" msd="MAD" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="10" dephead="02" deprel="IP">.</w>
+</sentence>
+</linkda>
+</linkde>
+</linkel>
+</linken>
+</linkes>
+</linkfi>
+</linkfr>
+</linkit>
+</linknl>
+</linkpt>
+</paragraph>
+<paragraph>
+<linkpt id="ep-00-01-17.8">
+<linknl id="ep-00-01-17.9">
+<linkit id="ep-00-01-17.8">
+<linkfr id="ep-00-01-17.8">
+<linkfi id="ep-00-01-17.8">
+<linkes id="ep-00-01-17.8">
+<linken id="ep-00-01-17.7">
+<linkel id="ep-00-01-17.8">
+<linkde id="ep-00-01-17.8">
+<linkda id="ep-00-01-17.9">
+<sentence id="27bd12e1d9-27bdac706c">
+<w pos="PAD" msd="PAD" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="1" dephead="3" deprel="IR">(</w>
+<w pos="NN" msd="NN.NEU.SIN.DEF.NOM" lemma="|parlament|" lex="|parlament..nn.1|" saldo="|parlament..1|" prefix="|" suffix="|" ref="2" dephead="3" deprel="SS">Parlamentet</w>
+<w pos="VB" msd="VB.PRT.AKT" lemma="|hålla|hålla tyst|" lex="|hålla..vb.1|hålla_tyst..vbm.1|" saldo="|hålla..1|hålla..2|hålla..3|hålla..4|hålla..5|hålla..6|hålla..7|hålla..8|hålla_tyst..1|" prefix="|" suffix="|" ref="3" dephead="" deprel="ROOT">höll</w>
+<w pos="DT" msd="DT.UTR.SIN.IND" lemma="|en|" lex="|en..al.1|" saldo="|den..1|en..2|" prefix="|" suffix="|" ref="4" dephead="6" deprel="DT">en</w>
+<w pos="JJ" msd="JJ.POS.UTR.SIN.IND.NOM" lemma="|tyst|hålla tyst:3|" lex="|tyst..av.1|hålla_tyst..vbm.1:3|" saldo="|tyst..1|tyst..2|hålla_tyst..1:3|" prefix="|" suffix="|" ref="5" dephead="6" deprel="AT">tyst</w>
+<w pos="NN" msd="NN.UTR.SIN.IND.NOM" lemma="|minut|" lex="|minut..nn.2|minut..nn.1|" saldo="|minut..2|minut..1|" prefix="|" suffix="|" ref="6" dephead="3" deprel="OO">minut</w>
+<w pos="MAD" msd="MAD" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="7" dephead="3" deprel="IP">.</w>
+<w pos="PAD" msd="PAD" lemma="|" lex="|" saldo="|" prefix="|" suffix="|" ref="8" dephead="3" deprel="JR">)</w>
+</sentence>
+</linkda>
+</linkde>
+</linkel>
+</linken>
+</linkes>
+</linkfi>
+</linkfr>
+</linkit>
+</linknl>
+</linkpt>
+</paragraph>
+</text>
+</corpus>

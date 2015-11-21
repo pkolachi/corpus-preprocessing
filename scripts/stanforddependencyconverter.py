@@ -6,8 +6,8 @@ except ImportError:
     print >>sys.stderr, "Missing necessary module 'random_utils'";
     sys.exit(1);
 
-stanford_parser_dir = '/Users/prakol/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2014-10-31';
-#stanford_parser_dir = '/Users/prakol/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2013-11-12';
+#stanford_parser_dir = '/Users/prakol/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2014-10-31';
+stanford_parser_dir = '/Users/prakol/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2013-11-12';
 
 dep_conversion_cmd = 'java -mx3000m -cp "%s/*:" edu.stanford.nlp.trees.EnglishGrammaticalStructure -basic -keepPunct -conllx -nthreads %d -treeFile' %(stanford_parser_dir, multiprocessing.cpu_count());
 
