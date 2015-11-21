@@ -1,5 +1,6 @@
 
-import codecs, multiprocessing, shlex, subprocess, os, sys;
+import shlex, subprocess, os, sys;
+from multiprocessing import cpu_count;
 try:
     import random_utils;
 except ImportError:
@@ -9,7 +10,7 @@ except ImportError:
 #stanford_parser_dir = '/Users/prakol/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2014-10-31';
 stanford_parser_dir = '/Users/prakol/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2013-11-12';
 
-dep_conversion_cmd = 'java -mx3000m -cp "%s/*:" edu.stanford.nlp.trees.EnglishGrammaticalStructure -basic -keepPunct -conllx -nthreads %d -treeFile' %(stanford_parser_dir, multiprocessing.cpu_count());
+dep_conversion_cmd = 'java -mx3000m -cp "%s/*:" edu.stanford.nlp.trees.EnglishGrammaticalStructure -basic -keepPunct -conllx -nthreads %d -treeFile' %(stanford_parser_dir, cpu_count());
 
 const_parse_file = sys.argv[1];
 tmpfile = '/tmp/%s.pid' %(os.getpid());

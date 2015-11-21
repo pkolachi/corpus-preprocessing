@@ -1,6 +1,7 @@
 
-import multiprocessing, signal, sys;
-from itertools import imap, izip, ifilter, islice;
+import signal, sys;
+from itertools import imap, izip, ifilter, islice, count;
+from multiprocessing import Process, Queue, TimeoutError
 
 def timeout(signum, frame):
     raise MemoryError("Function execution timed out");
@@ -17,7 +18,7 @@ def pExecFunction(function, queueIn, queueOut, default_value=None):
 	    #signal.alarm(0);
 	except MemoryError, err: # deprecated without the signal handler
 	    queueOut.put((idx, default_value));
-	except multiprocessing.TimeoutError:
+	except TimeoutError:
 	    queueOut.put((idx, default_value));
 	except Exception, err:
 	    queueOut.put((idx, default_value));
@@ -34,17 +35,17 @@ def pExecStarFunction(function, queueIn, queueOut, default_value=None):
 	    #signal.alarm(0);
 	except MemoryError: # deprecated without the signal handler
 	    queueOut.put((idx, default_value));
-	except multiprocessing.TimeoutError:
+	except TimeoutError:
 	    queueOut.put((idx, default_value));
 	except Exception:
 	    queueOUt.put((idx, default_value));
 
 def parmap(function, argsList, default_return=None, threads=1, chunksize=500):
-    argsList, idxList, jobCount = iter(argsList), itertools.count(0), 0;
+    argsList, idxList, jobCount = iter(argsList), count(0), 0;
     terminateAfterExec, resultsBuffer = False, {};
-    inQueue  = multiprocessing.Queue(1);
-    outQueue = multiprocessing.Queue();
-    subprocesses = [multiprocessing.Process(target=pExecFunction, \
+    inQueue  = Queue(1);
+    outQueue = Queue();
+    subprocesses = [Process(target=pExecFunction, \
 	    args=(function, inQueue, outQueue, default_return)) \
 	    for _ in xrange(threads)];
     for proc in subprocesses:
@@ -59,8 +60,8 @@ def parmap(function, argsList, default_return=None, threads=1, chunksize=500):
 	if len(newArgs) < chunksize:
 	    [inQueue.put((None, None)) for _ in xrange(threads)];
 	    terminateAfterExec = True; 
-	print >>sys.stderr, "Feeding %d jobs to the queue, \
-		now %d jobs in the queue" %(len(newArgs), curJobCount);
+	#print >>sys.stderr, "Feeding %d jobs to the queue, \
+	#	now %d jobs in the queue" %(len(newArgs), curJobCount);
 	resultsList = [];
 	if terminateAfterExec:
 	    while len(resultsList) < curJobCount:
@@ -70,19 +71,19 @@ def parmap(function, argsList, default_return=None, threads=1, chunksize=500):
 	    while len(resultsList) < 0.85*curJobCount:
 		resultsList.append( outQueue.get() );
 	curJobCount -= len(resultsList);
-	print >>sys.stderr, "Finished %d jobs in the queue, \
-		now %d jobs in the queue" %(len(resultsList), curJobCount);
+	#print >>sys.stderr, "Finished %d jobs in the queue, \
+	#	now %d jobs in the queue" %(len(resultsList), curJobCount);
 	resultsBuffer.update( dict((idx, value) for (idx, value) in resultsList) );    
 	if terminateAfterExec:
 	    break;
     return [resultsBuffer.get(idx, default_return) for idx in xrange(jobCount)];
 
 def parstarmap(function, argsList, default_return=None, threads=1, chunksize=500):
-    argsList, idxList, jobCount = iter(argsList), itertools.count(0), 0;
+    argsList, idxList, jobCount = iter(argsList), count(0), 0;
     terminateAfterExec, resultsBuffer = False, {};
-    inQueue  = multiprocessing.Queue(1);
-    outQueue = multiprocessing.Queue();
-    subprocesses = [multiprocessing.Process(target=pExecStarFunction, \
+    inQueue  = Queue(1);
+    outQueue = Queue();
+    subprocesses = [Process(target=pExecStarFunction, \
 	    args=(function, inQueue, outQueue, default_return)) \
 	    for _ in xrange(threads)];
     for proc in subprocesses:
@@ -97,8 +98,8 @@ def parstarmap(function, argsList, default_return=None, threads=1, chunksize=500
 	if len(newArgs) < chunksize:
 	    [inQueue.put((None, None)) for _ in xrange(threads)];
 	    terminateAfterExec = True;
-	print >>sys.stderr, "Feeding %d jobs to the queue, \
-		now %d jobs in the queue" %(len(newArgs), curJobCount);
+	#print >>sys.stderr, "Feeding %d jobs to the queue, \
+	#	now %d jobs in the queue" %(len(newArgs), curJobCount);
 	resultsList = [];
 	if terminateAfterExec:
 	    while len(resultsList) < curJobCount:
@@ -108,19 +109,19 @@ def parstarmap(function, argsList, default_return=None, threads=1, chunksize=500
 	    while len(resultsList) < 0.85*curJobCount:
 		resultsList.append( outQueue.get() );
 	curJobCount -= len(resultsList);
-	print >>sys.stderr, "Finished %d jobs in the queue, \
-		now %d jobs in the queue" %(len(resultsList), curJobCount);
+	#print >>sys.stderr, "Finished %d jobs in the queue, \
+	#	now %d jobs in the queue" %(len(resultsList), curJobCount);
 	resultsBuffer.update( dict((idx, value) for (idx, value) in resultsList) );
 	if terminateAfterExec:
 	    break;
     return [resultsBuffer.get(idx, default_return) for idx in xrange(jobCount)];
 
 def parimap(function, argsList, default_return=None, threads=1, chunksize=500):
-    argsList, idxList, jobCount = iter(argsList), itertools.count(0), 0;
+    argsList, idxList, jobCount = iter(argsList), count(0), 0;
     terminateAfterExec, iterIdx, resultsBuffer = False, 0, {};
-    inQueue  = multiprocessing.Queue(1);
-    outQueue = multiprocessing.Queue();
-    subprocesses = [multiprocessing.Process(target=pExecFunction, \
+    inQueue  = Queue(1);
+    outQueue = Queue();
+    subprocesses = [Process(target=pExecFunction, \
 	    args=(function, inQueue, outQueue, default_return)) \
 	    for _ in xrange(threads)];
     for proc in subprocesses:
@@ -135,8 +136,8 @@ def parimap(function, argsList, default_return=None, threads=1, chunksize=500):
 	if len(newArgs) < chunksize:
 	    [inQueue.put((None, None)) for _ in xrange(threads)];
 	    terminateAfterExec = True; 
-	print >>sys.stderr, "Feeding %d jobs to the queue, \
-		now %d jobs in the queue" %(len(newArgs), curJobCount);
+	#print >>sys.stderr, "Feeding %d jobs to the queue, \
+	#	now %d jobs in the queue" %(len(newArgs), curJobCount);
 	resultsList = [];
 	if terminateAfterExec:
 	    while len(resultsList) < curJobCount:
@@ -146,8 +147,8 @@ def parimap(function, argsList, default_return=None, threads=1, chunksize=500):
 	    while len(resultsList) < 0.85*curJobCount:
 		resultsList.append( outQueue.get() );
 	curJobCount -= len(resultsList);
-	print >>sys.stderr, "Finished %d jobs in the queue, \
-		now %d jobs in the queue" %(len(resultsList), curJobCount);
+	#print >>sys.stderr, "Finished %d jobs in the queue, \
+	#	now %d jobs in the queue" %(len(resultsList), curJobCount);
 	resultsBuffer.update( dict((idx, value) for (idx, value) in resultsList) );
 	for idx in xrange(iterIdx, jobCount):
 	    if not resultsBuffer.has_key(idx):
@@ -165,11 +166,11 @@ def parimap(function, argsList, default_return=None, threads=1, chunksize=500):
 	    yield default_return;
 
 def paristarmap(function, argsList, default_return=None, threads=1, chunksize=500):
-    argsList, idxList, jobCount = iter(argsList), itertools.count(0), 0;
+    argsList, idxList, jobCount = iter(argsList), count(0), 0;
     terminateAfterExec, iterIdx, resultsBuffer = False, 0, {};
-    inQueue  = multiprocessing.Queue(1);
-    outQueue = multiprocessing.Queue();
-    subprocesses = [multiprocessing.Process(target=pExecStarFunction, \
+    inQueue  = Queue(1);
+    outQueue = Queue();
+    subprocesses = [Process(target=pExecStarFunction, \
 	    args=(function, inQueue, outQueue)) \
 	    for _ in xrange(threads)];
     for proc in subprocesses:
@@ -184,8 +185,8 @@ def paristarmap(function, argsList, default_return=None, threads=1, chunksize=50
 	if len(newArgs) < chunksize:
 	    [inQueue.put((None, None)) for _ in xrange(threads)];
 	    terminateAfterExec = True; 
-	print >>sys.stderr, "Feeding %d jobs to the queue, \
-		now %d jobs in the queue" %(len(newArgs), curJobCount);
+	#print >>sys.stderr, "Feeding %d jobs to the queue, \
+	#	now %d jobs in the queue" %(len(newArgs), curJobCount);
 	resultsList = [];
 	if terminateAfterExec:
 	    while len(resultsList) < curJobCount:
@@ -195,8 +196,8 @@ def paristarmap(function, argsList, default_return=None, threads=1, chunksize=50
 	    while len(resultsList) < 0.85*curJobCount:
 		resultsList.append( outQueue.get() );
 	curJobCount -= len(resultsList);
-	print >>sys.stderr, "Finished %d jobs in the queue, \
-		now %d jobs in the queue" %(len(resultsList), curJobCount);
+	#print >>sys.stderr, "Finished %d jobs in the queue, \
+	#	now %d jobs in the queue" %(len(resultsList), curJobCount);
 	resultsBuffer.update( dict((idx, value) for (idx, value) in resultsList) );
 	for idx in xrange(iterIdx, jobCount):
 	    if not resultsBuffer.has_key(idx):
