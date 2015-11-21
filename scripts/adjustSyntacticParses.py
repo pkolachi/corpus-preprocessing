@@ -5,7 +5,8 @@ import random_utils;
 sys.stdout = codecs.getwriter('utf-8')(sys.stdout);
 
 def addEmptyParses(const_parses_file, empty_sent_ids):
-    empty_sent_ids = dict([ (int(line.strip()), True) for line in random_utils.lines_from_file(empty_sent_ids) ]);
+    empty_sent_ids = dict([ (int(line.strip()), True) \
+	    for line in random_utils.lines_from_file(empty_sent_ids) ]);
     sent_count = 0;
     for line in random_utils.lines_from_file(const_parses_file):
 	sent_count += 1;
@@ -16,7 +17,8 @@ def addEmptyParses(const_parses_file, empty_sent_ids):
     return;
 
 def removeEmptyParses(const_parses_file, empty_sent_ids):
-    empty_sent_ids = dict([ (int(line.strip()), True) for line in random_utils.lines_from_file(empty_sent_ids) ]);
+    empty_sent_ids = dict([ (int(line.strip()), True) \
+	    for line in random_utils.lines_from_file(empty_sent_ids) ]);
     print >>sys.stderr, len(empty_sent_ids);
     sent_count = 0;
     tmp_count = 0;

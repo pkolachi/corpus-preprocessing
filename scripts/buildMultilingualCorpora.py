@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-import itertools, os, re;
+import os;
+from itertools import imap, izip, izip_longest;
+from collections import defaultdict;
 import random_utils;
 
 PARA_CORP = {\
@@ -11,7 +13,7 @@ PARA_CORP = {\
 #	'bg-en':('/Users/prakol/Documents/chalmers-work/gf-translation/stat-mt/moses-models/baselines/europarl.en-bg/phrase-based/corpus/europarl.tok.1', 'bg', 'en')};
 outputPrefix = 'europarl-v7.sv-bg-en.raw';
 
-PARA_DB = dict();
+PARA_DB = defaultdict(lambda: defaultdict(lambda: defaultdict()));
 
 for langpair, corpdets in PARA_CORP.iteritems():
     srcfilename = '%s.%s' %(corpdets[0], corpdets[1]); 
@@ -22,9 +24,9 @@ for langpair, corpdets in PARA_CORP.iteritems():
     srcfile = random_utils.lines_from_file(srcfilename);
     tgtfile = random_utils.lines_from_file(tgtfilename);
 
-    for srcsent, tgtsent in itertools.izip_longest(srcfile, tgtfile):
-	PARA_DB.setdefault(corpdets[1], {}).setdefault(corpdets[2], {})[srcsent.strip()] = tgtsent.strip();
-	PARA_DB.setdefault(corpdets[2], {}).setdefault(corpdets[1], {})[tgtsent.strip()] = srcsent.strip();
+    for srcsent, tgtsent in izip_longest(srcfile, tgtfile):
+	PARA_DB[corpdets[2]][corpdets[1]][tgtsent.strip()] = srcsent.strip();
+	PARA_DB[corpdets[1]][corpdets[2]][srcsent.strip()] = tgtsent.strip();
 
 langList = PARA_DB.keys();
 for lang in PARA_DB.keys():
@@ -34,7 +36,7 @@ possibleLanguages = PARA_DB[pivotLang].keys();
 
 unionSentences = set();
 for lang in possibleLanguages:
-    unionSentences = unionSentences | set(PARA_DB.get(pivotLang, {}).get(lang, {}).keys());
+    unionSentences = unionSentences | set(PARA_DB[pivotLang][lang].iterkeys());
 unionSentences = sorted( unionSentences );
 
 MULTI_DB = dict();
