@@ -116,7 +116,9 @@ def sentences_to_tagged(handle, sentences):
             # input is a tuple, with meta-information and actual sentence;
             metaInfo = True;
             sentidx, sent = sent[0], sent[1];
-        print >>handle, '%s%s' %(repr(sentidx)+'\t' if metaInfo else '', " ".join(['%s%c%s'%(token['form'], delim, token['cpostag']) for token in sent]));
+        print >>handle, '%s%s' %(repr(sentidx)+'\t' if metaInfo else '', \
+                " ".join(['%s%c%s'%(token['form'], delim, token['cpostag']) \
+                for token in sent]) );
     return;
 
 def tagged_to_sentences(sentences):
@@ -132,12 +134,9 @@ def tagged_to_sentences(sentences):
 	    except ValueError:
 		form, pos = tok, 'X';
 	    conll_edge = {'form': form, 'id': str(idx+1)};
-	    if fields == CONLL09_COLUMNS:
-		conll_edge['ppostag'] = pos;
-	    elif fields == CONLL07_COLUMNS:
-		conll_edge['cpostag'] = pos;
-	    elif fields == BERKELEY_COLUMNS:
-		conll_edge['cpostag'] = pos;
+	    pos_key = 'ppostag' if fields == CONLL09_COLUMNS else \
+                    'cpostag' #if fields == CONLL07_COLUMNS else \
+            conll_edge[pos_key] = pos;
 	    conll_sent.append(conll_edge);
 	yield conll_sent;
 
