@@ -2,7 +2,7 @@
 import multiprocessing, re, sys, time;
 #from itertools import ifilter as filter, imap as map, izip as zip;
 try:
-    from itertools import ifilter as filter, imap as imap, izip_longest as zip, tee;
+    from itertools import ifilter as filter, imap as imap, izip_longest as zip, islice, tee;
 except ImportError:
     # implies this is Python 3.
     pass;
@@ -49,7 +49,7 @@ def convert_tagged_text(*args):
     inputFileName  = args[1] if len(args) >= 2 else '';
     outputFileName = args[2] if len(args) >= 3 else '';
     delimold = delimnew = '_';
-    formsBuffer, tagsBuffer, bufferSize = [], [], 0;
+    bufsize = 500000;
     frst, scnd = itemgetter(0), itemgetter(1);
 
     keepTags = True;
@@ -57,34 +57,31 @@ def convert_tagged_text(*args):
 
     oldtime, newtime = time.time(), time.time();
     with random_utils.smart_open(outputFileName, mode='wb') as outputFile:
-        #'''
         sentences = imap(lambda line: [tuple(tok.rsplit(delimold, 1)) \
                 if tok.find(delimold) != -1 \
                 else (tok, '_UNK_') \
                 for tok in re.split('\s+', line.strip())], 
                 random_utils.lines_from_file(inputFileName) );
-        #'''
-        sentences = parallelize_utils.LockedIterator(sentences);
-        sentences, sentences_dup = tee(sentences, 2);
-        #sentences = parallelize_utils.LockedIterator(sentences);
-        #sentences_dup = parallelize_utils.LockedIterator(sentences_dup);
-        tokenized_sentences = imap(lambda x: map(frst, x), sentences);
-        tagged_sentences    = imap(lambda x: map(scnd, x), sentences_dup);
-        if not keepTags:
-            for current_forms in tokenized_sentences:
-                print >>outputFile, ' '.join(current_forms);
-        elif keepTags and threads <= 1:
-            mapper = imap(convert, tagged_sentences);
-            for current_forms, mapped_tags in zip(tokenized_sentences, mapper):
-                print >>outputFile, ' '.join(['%s%c%s'%(tok, delimnew, tag) \
+        while True:
+            sentences_buf = list(islice(sentences, bufsize));
+            tokenized_sentences = imap(lambda x: map(frst, x), sentences_buf);
+            tagged_sentences    = imap(lambda x: map(scnd, x), sentences_buf);
+            if not keepTags:
+                for current_forms in tokenized_sentences:
+                    print >>outputFile, ' '.join(current_forms);
+            elif keepTags and threads <= 1:
+                mapper = imap(convert, tagged_sentences);
+                for current_forms, mapped_tags in zip(tokenized_sentences, mapper):
+                    print >>outputFile, ' '.join(['%s%c%s'%(tok, delimnew, tag) \
 			for tok, tag in zip(current_forms, mapped_tags)]);
-        elif keepTags and threads > 1:
-            mapper = parallelize_utils.parimap(convert, tagged_sentences, \
-		    workers=threads, chunksize=1000); 
-            for current_forms, mapped_tags in zip(tokenized_sentences, mapper):
-                print >>outputFile, ' '.join(['%s%c%s'%(tok, delimnew, tag) \
+            elif keepTags and threads > 1:
+                mapper = parallelize_utils.parimap(convert, tagged_sentences, \
+		    workers=threads, chunksize=10000); 
+                for current_forms, mapped_tags in zip(tokenized_sentences, mapper):
+                    print >>outputFile, ' '.join(['%s%c%s'%(tok, delimnew, tag) \
 			for tok, tag in zip(current_forms, mapped_tags)]);
-
+            if len(sentences_buf) < bufsize:
+                break;
     return;
 
 if __name__ == '__main__':

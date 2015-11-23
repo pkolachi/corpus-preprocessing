@@ -3,6 +3,10 @@ import multiprocessing;
 
 FUNC_OBJ = None;
 
+''' This was included in case arguments to
+the function are shared using generators;
+in which case Python does not allow you
+to do this since generators are not thread-safe'''
 class LockedIterator(object):
     def __init__(self, it):
         self._lock = multiprocessing.Lock(); 
@@ -30,7 +34,6 @@ def parmap(function, argsList, workers=1, chunksize=500):
     global FUNC_OBJ;
     FUNC_OBJ = function;
     pool = multiprocessing.Pool(workers);
-    #argsList = LockedIterator(argsList);
     results = pool.map(pExecFunction, argsList, chunksize=chunksize);
     pool.close();
     pool.join();
@@ -40,7 +43,6 @@ def parstarmap(function, argsList, workers=1, chunksize=500):
     global FUNC_OBJ;
     FUNC_OBJ = function;
     pool = multiprocessing.Pool(workers);
-    #argsList = LockedIterator(argsList);
     results = pool.map(pExecStarFunction, argsList, chunksize=chunksize);
     pool.close();
     pool.join();
@@ -50,19 +52,17 @@ def parimap(function, argsList, workers=1, chunksize=500):
     global FUNC_OBJ;
     FUNC_OBJ = function;
     pool = multiprocessing.Pool(workers);
-    #argsList = LockedIterator(argsList);
-    results = pool.imap(pExecFunction, argsList, chunksize=chunksize);
-    #pool.close();
-    #pool.join();
-    return results;
+    for res in pool.imap(pExecFunction, argsList, chunksize=chunksize):
+        yield res;
+    pool.close();
+    pool.join();
 
 def paristarmap(function, argsList, workers=1, chunksize=500):
     global FUNC_OBJ;
     FUNC_OBJ = function;
     pool = multiprocessing.Pool(workers);
-    #argsList = LockedIterator(argsList);
-    results = pool.imap(pExecStarFunction, argsList, chunksize=chunksize);
-    #pool.close();
-    #pool.join();
-    return results;
+    for res in pool.imap(pExecStarFunction, argsList, chunksize=chunksize):
+        yield res;
+    pool.close();
+    pool.join();
 
