@@ -1,33 +1,45 @@
+#!/usr/bin/env python3
+
+from __future__ import print_function;
 
 import shlex, subprocess, os, sys;
 from multiprocessing import cpu_count;
 try:
-    import random_utils;
+  import random_utils;
 except ImportError:
-    print >>sys.stderr, "Missing necessary module 'random_utils'";
-    sys.exit(1);
+  print("Missing necessary module 'random_utils'", file=sys.stderr);
+  sys.exit(1);
 
 #stanford_parser_dir = '/Users/prakol/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2014-10-31';
-stanford_parser_dir = '/Users/prakol/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2013-11-12';
+#stanford_parser_dir = '/Users/prakol/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2013-11-12';
+#stanford_parser_dir = '/Users/prakol/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2015-04-20';
+stanford_parser_dir = '/Users/prakol/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2015-12-09';
 
-dep_conversion_cmd = 'java -mx3000m -cp "%s/*:" edu.stanford.nlp.trees.EnglishGrammaticalStructure -basic -keepPunct -conllx -nthreads %d -treeFile' %(stanford_parser_dir, cpu_count());
+#java -mx3000m -cp "%s/*:" edu.stanford.nlp.trees.EnglishGrammaticalStructure \
+dep_conversion_cmd = '''
+java -mx3000m -cp "%s/*:" edu.stanford.nlp.trees.international.pennchinese.ChineseGrammaticalStructure \
+    -basic \
+    -keepPunct \
+    -conllx \
+    -nthreads %d \
+    -treeFile ''' %(stanford_parser_dir, cpu_count());
 
 const_parse_file = sys.argv[1];
 tmpfile = '/tmp/%s.pid' %(os.getpid());
-tmpParsesCache, parseIdx = [], 0;
+parsesBuf = [];
 fnull = open(os.devnull, 'w');
 for parse in random_utils.lines_from_file(const_parse_file):
-    parseIdx += 1;
-    tmpParsesCache.append(parse.strip());
-    if not parseIdx%100000:
-	random_utils.lines_to_file(tmpfile, tmpParsesCache);
-	cmd = '%s %s' %(dep_conversion_cmd, tmpfile);
-	if subprocess.call(shlex.split(cmd), stdout=sys.stdout, stderr=fnull) != 0:
-	    sys.exit(1);
-	tmpParsesCache = [];
-if len(tmpParsesCache):
-    random_utils.lines_to_file(tmpfile, tmpParsesCache);
+  parsesBuf.append(parse.strip());
+  if len(parsesBuf) > 100000:
+    random_utils.lines_to_file(tmpfile, parsesBuf);
     cmd = '%s %s' %(dep_conversion_cmd, tmpfile);
     if subprocess.call(shlex.split(cmd), stdout=sys.stdout, stderr=fnull) != 0:
-	sys.exit(1);
-    tmpParsesCache = [];
+      sys.exit(1);
+    parsesBuf = [];
+if len(parsesBuf):
+  random_utils.lines_to_file(tmpfile, parsesBuf);
+  cmd = '%s %s' %(dep_conversion_cmd, tmpfile);
+  if subprocess.call(shlex.split(cmd), stdout=sys.stdout, stderr=fnull) != 0:
+    sys.exit(1);
+  parsesBuf = [];
+

@@ -35,7 +35,7 @@
 Extracts and cleans text from Wikipedia database dump and stores output in a
 number of files of similar size in a given directory.
 Each file contains several documents in Tanl document format:
-	<doc id="" url="" title="">
+        <doc id="" url="" title="">
         ...
         </doc>
 
@@ -50,7 +50,7 @@ Options:
   -n NS, --ns NS        : accepted namespaces (separated by commas)
   -o, --output= dir     : place output files in specified directory (default
                           current)
-  -s, --sections	: preserve sections
+  -s, --sections        : preserve sections
   -h, --help            : display this help and exit
 """
 
@@ -173,7 +173,7 @@ def normalizeTitle(title):
           title = ns + ":" + rest.capitalize()
       else:
           # No namespace, just capitalize first letter.
-	  # If the part before the colon is not a known namespace, then we must
+          # If the part before the colon is not a known namespace, then we must
           # not remove the space after the colon (if any), e.g.,
           # "3001: The_Final_Odyssey" != "3001:The_Final_Odyssey".
           # However, to get the canonical page name we must contract multiple

@@ -34,7 +34,7 @@ def convert(tag_sequence, mapping=None):
       coarse_sequence.append( mapping[possible_matches[0]] );
   return coarse_sequence;
 
-map_tag = defaultdict(lambda:'X');
+map_tag = defaultdict(lambda: 'X');
 def convert_tagged_text(*args):
   if len(args) < 1:
     print("./%s <map-file>" %(sys.argv[0]), file=sys.stderr);
