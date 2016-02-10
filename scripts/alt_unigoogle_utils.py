@@ -54,7 +54,7 @@ def convert_tagged_text(*args):
   bufsize = 500000;
   #frst, scnd = itemgetter(0), itemgetter(1);
   frst, scnd = lambda x, y: x, lambda x, y: y
-  keepTags = True;
+  keepTags = False;
   threads = 1;
   
   oldtime, newtime = time.time(), time.time();

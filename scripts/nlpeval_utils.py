@@ -127,7 +127,7 @@ Sign and Wilcoxon tests
 Randomization test (Cohen 1995)
   - for precision and F-score
 '''
-def randomized_comparator(eval_results1, eval_results2, props=['las-p', 'las-unk-p', 'uas-p', 'uas-unk-p'], trials=10000):
+def randomized_comparator(eval_results1, eval_results2, props=['las-p', 'las-unk-p', 'uas-p', 'uas-unk-p'], trials=50000):
   import os, time, random;
   log_text = [];
   pid = os.getpid();
@@ -182,11 +182,13 @@ if __name__ == '__main__':
   else:
     evaloptions = {'format': 'conll'};     
     conll_utils.FIELDS = conll_utils.CONLL07_COLUMNS;
-  if len(sysargv) > 3:
+  if len(sysargv) > 3 and sysargv[-1].endswith('.vcb'):
     evaloptions['unknown'] = True;
     evaloptions['train-vcb'] = sysargv[len(sysargv)-1];
+  else:
+    evaloptions['unknown'] = False;
   full_results = [];
-  for systemfile in sysargv[2:-1]:
+  for systemfile in (sysargv[2:-1] if evaloptions['unknown'] else sysargv[2:]):
     with random_utils.smart_open(sysargv[1]) as infile1, random_utils.smart_open(systemfile) as infile2:
       #print("Gold file:%s\tSystem file:%s" %(sysargv[1], sysargv[2]));
       gold_conllsent = conll_utils.sentences_from_conll(infile1);
