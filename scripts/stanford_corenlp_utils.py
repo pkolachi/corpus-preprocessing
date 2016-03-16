@@ -34,14 +34,14 @@ def addTwoXMLDocuments(doc1, doc2, elem_attr):
   if elem_attr['id'] == '0':
     for sent_node in root1.findall(".//sentence"):
       sent_attr_in_doc1 = sent_node.attrib;
-	elem_attr.update(sent_attr_in_doc1);
+    elem_attr.update(sent_attr_in_doc1);
   else:
-	sent_attr_in_doc1 = elem_attr;
+    sent_attr_in_doc1 = elem_attr;
     
   for sent_node in root2.findall(".//sentence"):
     sent_node.attrib['id'] = repr( int(sent_node.attrib['id'])+int(sent_attr_in_doc1['id']) );
-	sent_node.attrib['line'] = repr( int(sent_node.attrib['line'])+int(sent_attr_in_doc1['line']) );
-	root1_mainNode.append(sent_node);
+    sent_node.attrib['line'] = repr( int(sent_node.attrib['line'])+int(sent_attr_in_doc1['line']) );
+    root1_mainNode.append(sent_node);
     elem_attr.update(sent_node.attrib);
   
   # end of manipulating doc, return element
@@ -58,7 +58,7 @@ def mergeSegementedCoreNLPOutput(xmlfiles):
       new_doc = etree.parse(xmlfile);
       doc = addTwoXMLDocuments(doc, new_doc, elem_attr);
       del new_doc;
-	idx += 1;
+    idx += 1;
   print etree.tostring(doc.getroot(), encoding='utf-8', method='xml');
   #print writeXMLFile(sys.argv[1], mergedDoc);
   return;
@@ -78,7 +78,7 @@ def splitCoreNLPOutputForSentences(doc, outputDirectory, elem_attr):
     outputFileName = os.path.join(outputDirectory, '%s.xml' %(sent_node.attrib['id']));
     mod_doc = etree.ElementTree(root_mainNode);
     mod_doc.write(outputFileName, encoding='utf-8', method='xml');
-	root_mainNode.remove(sent_node);
+    root_mainNode.remove(sent_node);
     if sent_node != None:
       elem_attr.update(sent_node.attrib);
   return;
@@ -152,7 +152,7 @@ def constparse_chunks(const_repr, terminalTokens=None):
           end_idx += 1;
         else:
           break
-	  yield const_repr[:end_idx].strip().replace(key, '*)').replace(' ', '_');
+      yield const_repr[:end_idx].strip().replace(key, '*)').replace(' ', '_');
       const_repr = const_repr[end_idx:].strip();
     else: 
       print "could not find %s in %s" %(key, const_repr);
@@ -436,7 +436,7 @@ if __name__ == '__main__':
   #writeSegmentedCoreNLPOutputIntoDirectory(sys.argv[2:], sys.argv[1]);
   #writeSegmentedWikiOutputIntoDocuments(sys.argv[2:], sys.argv[1]);
   #convertSegmentedOutputtoCoNLL(sys.argv[1], sys.argv[2]) if os.path.isdir(sys.argv[1]) else True;
-  #convertOutputtoCoNLL(sys.argv[1], sys.argv[2]) if os.path.isfile(sys.argv[1]) else True;
+  convertOutputtoCoNLL(sys.argv[1], sys.argv[2]) if os.path.isfile(sys.argv[1]) else True;
   #addParsestoXMLFromOtherSources(sys.argv[1], sys.argv[2], sys.argv[3]);
   #addParsestoSegmentedXMLFromOtherSources(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]);
   #convertCoNLLToMosesTokenized(sys.argv[1], sys.argv[2])#, sys.argv[3]);

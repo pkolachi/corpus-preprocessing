@@ -127,6 +127,8 @@ def tokenized_to_sentences(sentences):
   global FIELDS;
   FIELDS = CONLL09_COLUMNS;
   for sent_idx, sent in enumerate(sentences, start=1):
+    if not sent.strip():
+      continue;
     tokens = re.split('\s+', sent.strip());
     conll_sent = [];
     if not len(tokens):
@@ -222,7 +224,7 @@ def augment_constparse(depparsesList, constparsesList):
 
 def makeConstituencyTree(conll_sentences):
   for conll_sent in conll_sentences:
-    yield '_'.join(edge['feats'].replace('*', '(%s_%s)'%(edge['postag'], edge['form'])) for edge in conll_sent).replace('_', ' ');
+    yield ' '.join(edge['feats'].replace('_', ' ').replace('*', '(%s %s)'%(edge['postag'], edge['form'])) for edge in conll_sent);
   return;
 
 def addWNCategories(mapping, conll_sentences):
@@ -248,13 +250,14 @@ if __name__ == '__main__':
   inputFilePath  = '' if len(sysargv) < 2 else sysargv[1];
   outputFilePath = '' if len(sysargv) < 3 else sysargv[2];
   FIELDS = CONLL09_COLUMNS;
+  #FIELDS = CONLL07_COLUMNS;
 
   try:
     from mtutils import moses_deescapeseq;
   except ImportError:
     moses_deescapeseq = lambda x: x;
 
-  #augment_constparse(sys.argv[1], sys.argv[2]);
+  #augment_constparse(sentences_from_conll(sysargv[1]), random_utils.lines_from_file(sysargv[2]));
 
   #'''
   with random_utils.smart_open(inputFilePath, 'rb') as inputfile, random_utils.smart_open(outputFilePath, 'wb') as outputfile:

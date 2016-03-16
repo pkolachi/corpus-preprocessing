@@ -15,4 +15,12 @@ def work():
         if offset in sel_ids:
           yield conll_sent;
 
-conll_utils.sentences_to_conll(stdout, work());
+def work2():
+  sel_ids = dict((int(idx), True) \
+      for idx in random_utils.lines_from_file(sysargv[1]));
+  random_utils.lines_to_filehandle(stdout, (line for idx, line in enumerate(random_utils.lines_from_file(sysargv[2]), start=1) if idx in sel_ids));
+  return;
+
+
+#conll_utils.sentences_to_conll(stdout, work());
+work2();
