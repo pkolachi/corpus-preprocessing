@@ -218,8 +218,9 @@ def augment_constparse(depparsesList, constparsesList):
   #FIELDS = AUG_CONLL07_COLUMNS;
   new_buf = [];
   def worker(deptree, consttree):
-    for depedge, constchunk in zip(deptree, constparse_chunks(constree)):
+    for depedge, constchunk in zip(deptree, constparse_chunks(consttree)):
       depedge['feats'] = constchunk;
+    return deptree;
   sentences_to_conll(stdout, starmap(worker, izip(depparsesList, constparsesList)));
 
 def makeConstituencyTree(conll_sentences):
@@ -269,5 +270,6 @@ if __name__ == '__main__':
     #random_utils.lines_to_file(outputFilePath, makeConstituencyTree(sentences_from_conll(inputfile)));
     #mapping = dict((x.strip(), y.strip()) for x, y in map(lambda x: x.split('\t', 1), (line for line in stdin)));
     #sentences_to_conll07(outputfile, addWNCategories(mapping, sentences_from_conll(inputfile)));
+    #random_utils.lines_to_filehandle(outputfile, makeConstituencyTree(sentences_from_conll(inputfile)));
   sys.exit(0);
   #'''
