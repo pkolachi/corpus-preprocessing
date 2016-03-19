@@ -198,7 +198,8 @@ def mcnemar(eval_results1, eval_results2, props=['las-p', 'las-unk-p', 'uas-p', 
   for propname in props:
     bothtrue, bothfalse, truefalse, falsetrue = 0, 0, 0, 0;
     for idx in xrange(samples_count):
-      if len(eval_results1.scores[propname][idx][2]) != len(eval_results2.scores[propname][idx][2]): continue;
+      if len(eval_results1.scores[propname][idx][2]) != len(eval_results2.scores[propname][idx][2]): 
+        continue;
       bothtrue  += sum(1 if ch1 == '1' and ch1 == ch2 else 0 for ch1, ch2 in izip(eval_results1.scores[propname][idx][2], eval_results2.scores[propname][idx][2]));
       bothfalse += sum(1 if ch1 == '0' and ch1 == ch2 else 0 for ch1, ch2 in izip(eval_results1.scores[propname][idx][2], eval_results2.scores[propname][idx][2]));
       truefalse += sum(1 if ch1 == '1' and ch1 != ch2 else 0 for ch1, ch2 in izip(eval_results1.scores[propname][idx][2], eval_results2.scores[propname][idx][2]));
