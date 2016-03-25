@@ -47,6 +47,21 @@ def llnum2name(number):
 def lines_from_filehandle(filehandle):
   global BUF_SIZE;
   line_count = 0;
+  from itertools import islice;
+  step_size = 0;
+  while True:
+    buf_file = islice(filehandle, BUF_SIZE);
+    for line_count, line in enumerate(buf_file, start=1):
+      yield line.strip();
+    print('(%s)'%(llnum2name(line_count+step_size*BUF_SIZE)), file=sys.stderr, end=' ');
+    if line_count < BUF_SIZE:
+      break;
+    step_size += 1;
+  return;
+
+def lines_from_filehandle__(filehandle):
+  global BUF_SIZE;
+  line_count = 0;
   for line_count, line in enumerate(filehandle, start=1):
     yield line.strip();
     if not (line_count%BUF_SIZE):
@@ -55,6 +70,22 @@ def lines_from_filehandle(filehandle):
   return;
 
 def lines_from_file(filename, large=False):
+  global BUF_SIZE;
+  line_count = 0;
+  from itertools import islice;
+  step_size = 0;
+  with smart_open(filename, large=large) as infile:
+    while True:
+      buf_file = islice(infile, BUF_SIZE);
+      for line_count, line in enumerate(buf_file, start=1):
+        yield line.strip();
+      print('(%s)'%(llnum2name(line_count+step_size*BUF_SIZE)), file=sys.stderr, end=' ');
+      if line_count < BUF_SIZE:
+        break;
+      step_size += 1;
+  return;
+
+def lines_from_file__(filename, large=False):
   global BUF_SIZE;
   line_count = 0;
   with smart_open(filename, large=large) as infile:
@@ -68,6 +99,21 @@ def lines_from_file(filename, large=False):
 def lines_to_filehandle(filehandle, lines):
   global BUF_SIZE;
   line_count = 0;
+  from itertools import islice;
+  step_size = 0;
+  while True:
+    buf_lines = islice(lines, BUF_SIZE);
+    for line_count, sent in enumerate(buf_lines, start=1):
+      print(sent.strip(), file=filehandle);
+    print('(%s)'%(llnum2name(line_count+step_size*BUF_SIZE)), file=sys.stderr, end=' ');
+    if line_count < BUF_SIZE:
+      break;
+    step_size += 1;
+  return True;
+
+def lines_to_filehandle__(filehandle, lines):
+  global BUF_SIZE;
+  line_count = 0;
   for line_count, sent in enumerate(lines, start=1):
     print(sent.strip(), file=filehandle);
     if not (line_count%BUF_SIZE): 
@@ -76,6 +122,22 @@ def lines_to_filehandle(filehandle, lines):
   return True;
 
 def lines_to_file(filename, lines):
+  global BUF_SIZE;
+  line_count = 0;
+  from itertools import islice;
+  step_size = 0;
+  with smart_open(filename, mode='wb') as outfile:
+    while True:
+      buf_lines = islice(lines, BUF_SIZE);
+      for line_count, sent in enumerate(buf_lines, start=1):
+        print(sent.strip(), file=outfile);
+      print('(%s)'%(llnum2name(line_count+step_size*BUF_SIZE)), file=sys.stderr, end=' ');
+      if line_count < BUF_SIZE:
+        break;
+      step_size += 1;
+  return True;
+
+def lines_to_file__(filename, lines):
   global BUF_SIZE;
   line_count = 0;
   with smart_open(filename, mode='wb') as outfile:

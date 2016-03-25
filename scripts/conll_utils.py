@@ -8,6 +8,7 @@ try:
 except ImportError:
   sys.exit(1);
   llnum2name = lambda x: str(x);
+from itertools import takewhile;
 
 # These are the labels on the columns in the CoNLL 2007 dataset.
 CONLL07_COLUMNS = ('id', 'form', 'lemma', 'cpostag', 'postag', 'feats', 'head', 'deprel', 'phead', 'pdeprel', )
@@ -29,6 +30,11 @@ def words_from_conll(lines, fields):
 
 def lines_from_conll(lines, comments=False):
   '''Read lines for a single sentence from a CoNLL text file.'''
+  sel_lines = list(takewhile(lambda X: X.strip(), lines));
+  return sel_lines[1:] if comments and sel_lines[0].startswith('#') else sel_lines;
+
+def lines_from_conll__(lines, comments=False):
+  '''Read lines for a single sentence from a CoNLL text file.'''
   for line in lines:
     if not line.strip():
       return;
@@ -42,7 +48,8 @@ def sentences_from_conll(handle, comments=False):
   global FIELDS;
   sent_count = 0;
   while True:
-    lines = tuple(lines_from_conll(handle, comments));
+    #lines = tuple(lines_from_conll(handle, comments));
+    lines = lines_from_conll(handle, comments);
     if not len(lines):
       break;
     sent_count += 1;
