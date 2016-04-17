@@ -257,8 +257,8 @@ if __name__ == '__main__':
   #global FIELDS, CONLL07_COLUMNS, CONLL09_COLUMNS;
   inputFilePath  = '' if len(sysargv) < 2 else sysargv[1];
   outputFilePath = '' if len(sysargv) < 3 else sysargv[2];
-  FIELDS = CONLL09_COLUMNS;
-  #FIELDS = CONLL07_COLUMNS;
+  #FIELDS = CONLL09_COLUMNS;
+  FIELDS = CONLL07_COLUMNS;
 
   try:
     from mtutils import moses_deescapeseq;
@@ -269,10 +269,10 @@ if __name__ == '__main__':
 
   #'''
   with random_utils.smart_open(inputFilePath, 'rb') as inputfile, random_utils.smart_open(outputFilePath, 'wb') as outputfile:
-    #sentences_to_tok(outputfile,  sentences_from_conll(inputfile));
+    sentences_to_tok(outputfile,  sentences_from_conll(inputfile));
     #sentences_to_propercased(outputfile, sentences_from_conll(inputfile));
     #sentences_to_tagged(outputfile, sentences_from_conll(inputfile));
-    sentences_to_conll09(outputfile, tokenized_to_sentences(imap(moses_deescapeseq, inputfile)));
+    #sentences_to_conll09(outputfile, tokenized_to_sentences(imap(moses_deescapeseq, inputfile)));
     #sentences_to_conll09(outputfile, tagged_to_sentences(inputfile));
     #random_utils.lines_to_file(outputFilePath, makeConstituencyTree(sentences_from_conll(inputfile)));
     #mapping = dict((x.strip(), y.strip()) for x, y in map(lambda x: x.split('\t', 1), (line for line in stdin)));
