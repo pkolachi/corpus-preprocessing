@@ -28,12 +28,12 @@ def words_from_conll(lines, fields):
   '''Read words for a single sentence from a CoNLL text file.'''
   return [dict(zip(fields, line.split('\t'))) for line in lines];
 
-def lines_from_conll(lines, comments=False):
+def lines_from_conll__(lines, comments=False):
   '''Read lines for a single sentence from a CoNLL text file.'''
   sel_lines = list(takewhile(lambda X: X.strip(), lines));
   return sel_lines[1:] if comments and sel_lines[0].startswith('#') else sel_lines;
 
-def lines_from_conll__(lines, comments=False):
+def lines_from_conll(lines, comments=False):
   '''Read lines for a single sentence from a CoNLL text file.'''
   for line in lines:
     if not line.strip():
@@ -43,13 +43,12 @@ def lines_from_conll__(lines, comments=False):
     else:
       yield line.strip();
 
-def sentences_from_conll(handle, comments=False):
+def sentences_from_conll(handle, comments=True):
   '''Read sentences from lines in an open CoNLL file handle.'''
   global FIELDS;
   sent_count = 0;
   while True:
-    #lines = tuple(lines_from_conll(handle, comments));
-    lines = lines_from_conll(handle, comments);
+    lines = tuple(lines_from_conll(handle, comments));
     if not len(lines):
       break;
     sent_count += 1;
@@ -228,7 +227,7 @@ def augment_constparse(depparsesList, constparsesList):
     for depedge, constchunk in zip(deptree, constparse_chunks(consttree)):
       depedge['feats'] = constchunk;
     return deptree;
-  sentences_to_conll(stdout, starmap(worker, izip(depparsesList, constparsesList)));
+  sentences_to_conll(stdout, starmap(worker, zip(depparsesList, constparsesList)));
 
 def makeConstituencyTree(conll_sentences):
   for conll_sent in conll_sentences:
@@ -272,7 +271,7 @@ if __name__ == '__main__':
     sentences_to_tok(outputfile,  sentences_from_conll(inputfile));
     #sentences_to_propercased(outputfile, sentences_from_conll(inputfile));
     #sentences_to_tagged(outputfile, sentences_from_conll(inputfile));
-    #sentences_to_conll09(outputfile, tokenized_to_sentences(imap(moses_deescapeseq, inputfile)));
+    #sentences_to_conll09(outputfile, tokenized_to_sentences(map(moses_deescapeseq, inputfile)));
     #sentences_to_conll09(outputfile, tagged_to_sentences(inputfile));
     #random_utils.lines_to_file(outputFilePath, makeConstituencyTree(sentences_from_conll(inputfile)));
     #mapping = dict((x.strip(), y.strip()) for x, y in map(lambda x: x.split('\t', 1), (line for line in stdin)));

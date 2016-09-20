@@ -19,4 +19,9 @@ $curpath/convert2sgm $tst tst $langs $langt > /tmp/tst.$$.sgm
 $curpath/convert2sgm $ref ref $langs $langt > /tmp/ref.$$.sgm
 $curpath/convert2sgm $tst src $langs $langt > /tmp/src.$$.sgm
 
-$moses_generic/mteval-v12.pl -r /tmp/ref.$$.sgm -s /tmp/src.$$.sgm -t /tmp/tst.$$.sgm ${capitalization}
+$moses_generic/mteval-v12.pl \
+    -r /tmp/ref.$$.sgm \
+    -s /tmp/src.$$.sgm \
+    -t /tmp/tst.$$.sgm ${capitalization}
+
+rm /tmp/ref.$$.sgm /tmp/src.$$.sgm /tmp/tst.$$.sgm

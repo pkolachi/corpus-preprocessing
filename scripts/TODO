@@ -1,3 +1,23 @@
+PORTING from Python 2 to Python 3
+== checked scripts:
+    cmpDirectories.py
+    stanforddependencyconverter.py
+    alt_unigoogle_utils.py
+
+== exceptions:
+    alt_unigoogle_utils.py (does not work in Python3, writing to file has to be fixed and lambda functions are not picklable- so threads mode fails)
+
+
+NOW added globalimports.py - this should be kept uniform to let all 
+scripts use these basic imports; 
+ONLY basic imports should be put in this file- basic imports to mainly ensure that
+codes are compatible with both 2 and 3 and
+to avoid any resistance to use more flexible but obscure facilities in Python
+(for example, defaultdict is a good example).
+
+
+=======================
+
 Generic scripts: 
     re-use functions in random_utils to ensure uniformity across processing scripts;
     re-use functions in parallelize_utils to ensure uniformity across multiprocessing scripts;
