@@ -69,7 +69,10 @@ def convert_tagged_text(*args):
     while True:
       inputBuffer = islice(inputStream, bufferSize);
       for line_count, line in inputBuffer:
-        tokens = [tuple(tok.rsplit(delimold, 1)) if tok.find(delimold) != -1 else (tok, '_UNK_') for tok in re.split('\s+', line.strip())];
+        tokens = [tuple(tok.rsplit(delimold, 1)) \
+            if tok.find(delimold) != -1 \
+            else (tok, '_UNK_') f\
+            or tok in re.split('\s+', line.strip())];
         current_forms = [tok[0] for tok in tokens];
         formsBuffer.append(current_forms);
         if keepTags:
