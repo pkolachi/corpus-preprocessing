@@ -8,19 +8,28 @@ try:
 except ImportError:
   sys.exit(1);
   llnum2name = lambda x: str(x);
-from itertools import takewhile;
+
+from itertools import dropwhile, takewhile;
 
 # These are the labels on the columns in the CoNLL 2007 dataset.
-CONLL07_COLUMNS = ('id', 'form', 'lemma', 'cpostag', 'postag', 'feats', 'head', 'deprel', 'phead', 'pdeprel', )
-AUG_CONLL07_COLUMNS = ('id', 'form', 'lemma', 'cpostag', 'postag', 'const_parse', 'feats', 'head', 'deprel', 'phead', 'pdeprel', )
+CONLL07_COLUMNS = ('id', 'form', 'lemma', \
+    'cpostag', 'postag', 'feats', \
+    'head', 'deprel', \
+    'phead', 'pdeprel', )
+AUG_CONLL07_COLUMNS = ('id', 'form', 'lemma', \
+    'cpostag', 'postag', 'const_parse', 'feats', \
+    'head', 'deprel', \
+    'phead', 'pdeprel', )
 # These are the labels on the columns in the CoNLL 2009 dataset.
-CONLL09_COLUMNS = ('id', 'form', 'lemma', 'plemma', 'postag', 'ppostag', 'feats', 'pfeats', 'head', 'phead', 'deprel', 'pdeprel', 'fillpred', 'sense', )
+CONLL09_COLUMNS = ('id', 'form', 'lemma', 'plemma', \
+    'postag', 'ppostag', 'feats', 'pfeats', \
+    'head', 'phead', 'deprel', 'pdeprel', 'fillpred', 'sense', )
 # These are the labels on the columns in the CoNLL 2009 dataset.
 BERKELEY_COLUMNS = ('form', 'cpostag');
 # These are the labels on the morfette tagger
 MORFETTE_COLUMNS = ('form', 'lemma', 'postag');
+
 FIELDS = CONLL07_COLUMNS;
-#FIELDS = MORFETTE_COLUMNS;
 
 BUF_SIZE = 100000;
 
@@ -31,39 +40,46 @@ def words_from_conll(lines, fields):
 def lines_from_conll__(lines, comments=False):
   '''Read lines for a single sentence from a CoNLL text file.'''
   sel_lines = list(takewhile(lambda X: X.strip(), lines));
-  return sel_lines[1:] if comments and sel_lines[0].startswith('#') else sel_lines;
+  return sel_lines[1:] if comments and sel_lines[0].startswith('#') \
+      else sel_lines;
 
-def lines_from_conll(lines, comments=False):
+def lines_from_conll(lines):
   '''Read lines for a single sentence from a CoNLL text file.'''
   for line in lines:
     if not line.strip():
       return;
-    if comments and line.startswith('#'):
-      continue;
-    else:
-      yield line.strip();
+    yield line.strip();
 
-def sentences_from_conll(handle, comments=True):
+def sentences_from_conll(stream, comments=True):
   '''Read sentences from lines in an open CoNLL file handle.'''
   global FIELDS;
   sent_count = 0;
   while True:
-    lines = tuple(lines_from_conll(handle, comments));
+    lines = tuple(lines_from_conll(stream));
     if not len(lines):
       break;
     sent_count += 1;
+    if comments:
+      comm_lines = takewhile(lambda X: X.startswith('#'), lines);
+      comm_lines = '\n'.join(comm_lines); 
+    conll_lines = dropwhile(lambda X: X.startswith('#'), lines);
+    yield words_from_conll(conll_lines, fields=FIELDS));
+    # we are deliberately dropping all comment lines;
+    #if len(comm_lines) and comments \
     if not sent_count%BUF_SIZE:
       print("(CoNLL:%s)" %(llnum2name(sent_count)), file=stderr, end=' ');
-    yield words_from_conll(lines, fields=FIELDS);
   print("(CoNLL:%s)" %(llnum2name(sent_count)), file=stderr);
 
 def words_to_conll(sent, fields=CONLL07_COLUMNS):
   str_repr = [];
   if type(sent) == type(()) and len(sent) == 2:
-    str_repr.append( '#'+str(sent[0]) );
+    str_repr.append(str(sent[0]));
     sent = sent[1];
   for token in sent:
-    feat_repr = '|'.join(['%s=%s' %(key, token['feats'][key]) for key in sorted(token['feats'].keys())]) if token.has_key('feats') and type(token['feats']) == type({}) else token.get('feats', '_');
+    feat_repr = '|'.join(['%s=%s' %(key, token['feats'][key]) \
+        for key in sorted(token['feats'].keys())]) \
+        if 'feats' in token and type(token['feats']) == type({}) \
+        else token.get('feats', '_');
     token['feats'] = feat_repr if feat_repr.strip() else '_';
     str_repr.append( '\t'.join([token.get(feat, '_') for feat in fields]) );
   return '\n'.join(str_repr);
@@ -73,12 +89,18 @@ def sentences_to_conll07(handle, sentences):
   if not sentences:
     print("(CoNLL07:%s)" %(llnum2name(0)), file=stderr);
     return;
-  for sent_idx, sent in enumerate(sentences, start=1):
-    print(words_to_conll(sent, fields=CONLL07_COLUMNS), file=handle);
-    print("", file=handle);
-    if not sent_idx%BUF_SIZE: 
-      print("(CoNLL07:%s)" %(llnum2name(sent_idx)), file=stderr, end=' ');
-  print("(CoNLL07:%s)" %(llnum2name(sent_idx)), file=stderr);
+  step_size = 0;
+  while True:
+    sent_count = 0;
+    buf_sents = islice(sentences, BUF_SIZE);
+    for sent in buf_sents:
+      print(words_to_conll(sent, fields=CONLL07_COLUMNS), file=handle);
+      print("", file=handle);
+      sent_count += 1;
+    print("(CoNLL07:%s)" %(llnum2name(sent_count+step_size*BUF_SIZE)), \
+        file=stderr, end=' ');
+    if sent_count < BUF_SIZE:
+      break;
   return;
 
 def sentences_to_conll09(handle, sentences):
@@ -86,25 +108,37 @@ def sentences_to_conll09(handle, sentences):
   if not sentences:
     print("(CoNLL09:%s)" %(llnum2name(0)), file=stderr);
     return;
-  for sent_idx, sent in enumerate(sentences, start=1):
-    print(words_to_conll(sent, fields=CONLL09_COLUMNS), file=handle);
-    print("", file=handle);
-    if not sent_idx%BUF_SIZE: 
-      print("(CoNLL09:%s)" %(llnum2name(sent_idx)), file=stderr, end=' ');
-  print("(CoNLL09:%s)" %(llnum2name(sent_idx)), file=stderr);
+  step_size = 0;
+  while True:
+    sent_count = 0;
+    buf_sents = islice(sentences, BUF_SIZE);
+    for sent in buf_sents:
+      print(words_to_conll(sent, fields=CONLL09_COLUMNS), file=handle);
+      print("", file=handle);
+      sent_count += 1;
+    print("(CoNLL07:%s)" %(llnum2name(sent_count+step_size*BUF_SIZE)), \
+        file=stderr, end=' ');
+    if sent_count < BUF_SIZE:
+      break;
   return;
 
 def sentences_to_conll(handle, sentences):
-  if not sentences:
-    print("(CoNLL:%s)" %(llnum2name(0)), file=stderr);
-    return;
   global FIELDS;
-  for sent_idx, sent in enumerate(sentences, start=1):
-    print(words_to_conll(sent, fields=FIELDS), file=handle);
-    print("", file=handle);
-    if not sent_idx%BUF_SIZE: 
-      print("(CoNLL:%s)" %(llnum2name(sent_idx)), file=stderr, end=' ');
-  print("(CoNLL:%s)" %(llnum2name(sent_idx)), file=stderr);
+  if not sentences:
+    print("(CoNLL09:%s)" %(llnum2name(0)), file=stderr);
+    return;
+  step_size = 0;
+  while True:
+    sent_count = 0;
+    buf_sents = islice(sentences, BUF_SIZE);
+    for sent in buf_sents:
+      print(words_to_conll(sent, fields=FIELDS), file=handle);
+      print("", file=handle);
+      sent_count += 1;
+    print("(CoNLL07:%s)" %(llnum2name(sent_count+step_size*BUF_SIZE)), \
+        file=stderr, end=' ');
+    if sent_count < BUF_SIZE:
+      break;
   return;
 
 def sentences_to_tok(handle, sentences):

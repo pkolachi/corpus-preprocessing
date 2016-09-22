@@ -11,7 +11,7 @@ class EvaluationResult:
     # a dictionary object;
     # each key represents a property that is being evaluated
     # for e.g, key can be 'precision', 'recall', 'precision of unknown' so on 
-    self.scores = defaultdict(lambda: []);
+    self.scores = defaultdict(list);
     self._names = [('poseval-p', 'POS Precision'), \
         ('poseval-unk-p', 'POS Precision (u)'), \
         ('las-p', 'LAS Precision'), \
@@ -27,9 +27,12 @@ class EvaluationResult:
   def summarize(self):
     summary = [];
     # address how many words have been replaced by the mechanism;
-    correct = sum(replaced for replaced, total, _ in self.scores['eval-unk-repl']);
-    total   = sum(total    for replaced, total, _ in self.scores['eval-unk-repl']);
-    summary.append("Unknown replaced:%d %d(%.3f)" %(correct, total, 100*(correct/total)));
+    correct = sum(replaced for replaced, total, _ \
+        in self.scores['eval-unk-repl']);
+    total   = sum(total    for replaced, total, _ \
+        in self.scores['eval-unk-repl']);
+    summary.append("Unknown replaced:%d %d(%.3f)" \
+        %(correct, total, 100*(correct/total)));
     for prop, propname in self._names:
       if prop not in self.scores:
         continue;
@@ -53,7 +56,8 @@ class EvaluationResult:
     for p in props:
       self.scores[p] = [(0,1)];
 
-def evaluate(gconll_list, pconll_list, metric='depeval', options={'precision': True}):
+def evaluate(gconll_list, pconll_list, metric='depeval', \
+    options={'precision': True}):
   res = EvaluationResult();
   if metric not in ['poseval', 'depeval', 'lemmaeval']:
     print('Unknown evaluation metric as input: %s', file=stderr);
@@ -69,7 +73,8 @@ def evaluate(gconll_list, pconll_list, metric='depeval', options={'precision': T
   def_options.update(options);
   
   if def_options['unknown']:
-    train_vcb = dict((word, True) for word in random_utils.lines_from_file(def_options['train-vcb']));
+    train_vcb = dict((word, True) for word in \
+        random_utils.lines_from_file(def_options['train-vcb']));
   else:
     train_vcb = dict();
 
