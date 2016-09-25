@@ -8,6 +8,7 @@ try:
       count as counter, \
       repeat as replicate;
   from builtins import xrange as range;
+  from builtins import raw_input as input;
 except ImportError:
   from itertools import islice, starmap, \
       count as counter, \

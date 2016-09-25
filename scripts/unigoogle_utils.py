@@ -64,19 +64,20 @@ def convert_tagged_text(*args):
     outputWriter = lambda X: ' '.join(["%s" %x for x in X]);
 
   oldtime, newtime = time.time(), time.time();
-  with random_utils.smart_open(outputFileName, mode='wb') as outputFile:
-    inputStream = random_utils.lines_from_file(inputFileName);
+  with random_utils.smart_open(inputFileName) as inputFile, \
+      random_utils.smart_open(outputFileName, mode='wb') as outputFile:
+    inputStream = map(lambda X: (tuple(tok.rsplit(delimold, 1)) \
+        if tok.find(delimold) != -1 \
+        else (tok, '_UNK_') \
+        for tok in re.split('\s+', X.strip())), inputFile);
+
     while True:
       inputBuffer = islice(inputStream, bufferSize);
-      for line_count, line in inputBuffer:
-        tokens = [tuple(tok.rsplit(delimold, 1)) \
-            if tok.find(delimold) != -1 \
-            else (tok, '_UNK_') f\
-            or tok in re.split('\s+', line.strip())];
-        current_forms = [tok[0] for tok in tokens];
+      for line_count, line in enumerate(inputBuffer):
+        current_forms = [tok[0] for tok in line];
         formsBuffer.append(current_forms);
         if keepTags:
-          current_tags = [tok[1] for tok in tokens];
+          current_tags = [tok[1] for tok in line];
           tagsBuffer.append(current_tags);
       if keepTags and threads > 1:
         outputBuffer = zip(formsBuffer, \
