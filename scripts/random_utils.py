@@ -223,7 +223,7 @@ def splitTextFileIntoSizedChunks(filename, outfileprefix=None, maxsize=5000):
     lines_to_file('%s.%d' %(outfileprefix, foldidx), buf);
   return True;
 
-def filter_iterator(listitems, selected_ids={}):
+def filter_items(listitems, selected_ids={}):
   for idx, item in enumerate(listitems, start=1):
     if idx in selected_ids:
       yield item;
