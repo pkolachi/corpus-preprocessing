@@ -16,6 +16,8 @@ CONLL07_COLUMNS = ('id', 'form', 'lemma', \
     'cpostag', 'postag', 'feats', \
     'head', 'deprel', \
     'phead', 'pdeprel', )
+# These are the labels on the columns when constituency parser out is
+# converted to dependency format
 AUG_CONLL07_COLUMNS = ('id', 'form', 'lemma', \
     'cpostag', 'postag', 'const_parse', 'feats', \
     'head', 'deprel', \
