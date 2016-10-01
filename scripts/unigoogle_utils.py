@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 
 from __future__ import print_function;
+try:
+  from globalimports import *
+  import random_utils, parallelize_utils;
+except ImportError:
+  print("Missing necessary module 'random_utils' and 'parallelize_utils' \
+      for this script");
+  sys.exit(1);
 
 import multiprocessing, re, sys, time;
 
-from globalimports import *;
-import random_utils;
 
 def read_mapping(mapfile):
   map_tags = {};
@@ -38,7 +43,8 @@ def convert(tag_sequence, mapping=None):
       coarse_sequence.append( mapping[possible_matches[0]] );
   return coarse_sequence;
 
-map_tag = defaultdict(lambda: 'X');
+map_tag = defaultdict(lambda:'X');
+
 def convert_tagged_text(*args):
   if len(args) < 1:
     print("./%s <map-file>" %(sys.argv[0]), file=sys.stderr);
