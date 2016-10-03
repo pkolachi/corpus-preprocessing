@@ -37,7 +37,7 @@ def convertSentenceToConLL(sent_xml_repr):
         continue;
       elif attr == 'pos' and val.strip() != '':
         conll_line['postag'] = val.strip();
-        conll_line['cpostag'] = val.strip();
+        #conll_line['cpostag'] = val.strip();
       elif attr == 'lemma' and val.strip(' |') != '':
         conll_line['lemma'] = '|'.join([re.sub('\s+', '_', l) \
             for l in val.strip(' |').split('|')]);
@@ -75,5 +75,5 @@ def extractSentencesFromKorpXML(inputfile, outputfile):
   return;
 
 if __name__ == '__main__':
-  #convertKorpXMLtoCoNLL(sysargv[1], sysargv[2]);
-  extractSentencesFromKorpXML(sysargv[1], sysargv[2]);
+  convertKorpXMLtoCoNLL(sysargv[1], sysargv[2]);
+  #extractSentencesFromKorpXML(sysargv[1], sysargv[2]);

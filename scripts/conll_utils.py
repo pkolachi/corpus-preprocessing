@@ -63,9 +63,11 @@ def sentences_from_conll(stream, comments=True):
       comm_lines = takewhile(lambda X: X.startswith('#'), lines);
       comm_lines = '\n'.join(comm_lines); 
     conll_lines = dropwhile(lambda X: X.startswith('#'), lines);
-    yield words_from_conll(conll_lines, fields=FIELDS);
+    if len(comm_lines) and comments:
+      yield (comm_lines, words_from_conll(conll_lines, fields=FIELDS));
+    else:
+      yield words_from_conll(conll_lines, fields=FIELDS);
     # we are deliberately dropping all comment lines;
-    #if len(comm_lines) and comments \
     if not sent_count%BUF_SIZE:
       print("(CoNLL:%s)" %(llnum2name(sent_count)), file=stderr, end=' ');
   print("(CoNLL:%s)" %(llnum2name(sent_count)), file=stderr);
