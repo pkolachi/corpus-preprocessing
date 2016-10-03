@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
-from __future__ import print_function
+from __future__ import print_function;
 try:
   from globalimports import *
   import random_utils, parallelize_utils;
@@ -27,11 +27,15 @@ def convert(tag_sequence, mapping=None):
     mapping = map_tag;
   coarse_sequence = [];
   for idx, tag in enumerate(tag_sequence):
-    possible_matches = filter(lambda X: X[0] == tag, mapping.keys());
+    possible_matches = [key for key in \
+        filter(lambda X: X[0] == tag, mapping.keys())];
     if len(possible_matches) > 1 and idx > 0:
-      best_match = filter(lambda X: X[1] == tag_sequence[idx-1], filter(lambda X: len(X) == 2, possible_matches));
+      best_match = [key for key in \
+          filter(lambda X: X[1] == tag_sequence[idx-1], \
+          filter(lambda X: len(X) == 2, possible_matches))];
       if len(best_match) < 1: 
-        best_match = filter(lambda X: len(X) == 1, possible_matches);
+        best_match = [key for key in \
+            filter(lambda X: len(X) == 1, possible_matches)];
       coarse_sequence.append( mapping[best_match[0]] );
     elif tag == '_UNK_' or len(possible_matches) == 0:
       coarse_sequence.append( 'X' );
@@ -45,18 +49,26 @@ def convert_tagged_text(*args):
   if len(args) < 1:
     print("./%s <map-file>" %(sys.argv[0]), file=sys.stderr);
     sys.exit(1);
-    
+
   global map_tag;
   map_tag = read_mapping(args[0]);
   inputFileName  = args[1] if len(args) >= 2 else '';
   outputFileName = args[2] if len(args) >= 3 else '';
   delimold = delimnew = '_';
-  bufsize = 500000;
-  #frst, scnd = itemgetter(0), itemgetter(1);
-  frst, scnd = lambda x, y: x, lambda x, y: y
+  formsBuffer, tagsBuffer, bufferSize = [], [], 100000;
+
   keepTags = False;
   threads = 1;
-  
+
+  #frst, scnd = itemgetter(0), itemgetter(1);
+  frst, scnd = lambda x, y: x, lambda x, y: y
+
+  if keepTags:
+    outputWriter = lambda X, Y: \
+        ' '.join(["%sc%s" %(x, delimnew, y) for x, y in zip(X, Y)]);
+  else:
+    outputWriter = lambda X: ' '.join(["%s" %x for x in X]);
+
   oldtime, newtime = time.time(), time.time();
   with random_utils.smart_open(outputFileName, mode='wb') as outputFile:
     sentences = imap(lambda line: [tuple(tok.rsplit(delimold, 1)) \
