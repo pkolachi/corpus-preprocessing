@@ -163,7 +163,9 @@ def sentences_to_tagged(handle, sentences):
       # input is a tuple, with meta-information and actual sentence;
       metaInfo = True;
       sentinfo, sent = sent[0], sent[1];
-    print('%s%s' %(repr(sentinfo)+'\t' if metaInfo else '', " ".join(['%s%c%s'%(token['form'], delim, token['cpostag']) for token in sent])), file=handle);
+    print('%s%s' %(repr(sentinfo)+'\t' if metaInfo else '', \
+        " ".join(['%s%c%s'%(token['form'], delim, token['postag']) \
+        for token in sent])), file=handle);
   return;
 
 def tokenized_to_sentences(sentences):
@@ -306,9 +308,9 @@ if __name__ == '__main__':
 
   #'''
   with random_utils.smart_open(inputFilePath, 'rb') as inputfile, random_utils.smart_open(outputFilePath, 'wb') as outputfile:
-    sentences_to_tok(outputfile,  sentences_from_conll(inputfile));
+    #sentences_to_tok(outputfile,  sentences_from_conll(inputfile));
     #sentences_to_propercased(outputfile, sentences_from_conll(inputfile));
-    #sentences_to_tagged(outputfile, sentences_from_conll(inputfile));
+    sentences_to_tagged(outputfile, sentences_from_conll(inputfile));
     #sentences_to_conll09(outputfile, tokenized_to_sentences(map(moses_deescapeseq, inputfile)));
     #sentences_to_conll09(outputfile, tagged_to_sentences(inputfile));
     #random_utils.lines_to_file(outputFilePath, makeConstituencyTree(sentences_from_conll(inputfile)));
