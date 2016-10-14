@@ -44,9 +44,10 @@ BUF_SIZE = 100000;
 
 def words_from_conll(lines, fields):
   '''Read words for a single sentence from a CoNLL text file.'''
-  isNotEmpty = lambda (f, v): v != '_',
+  isNotEmpty = lambda (f, v): v != '_'
+  isMultiWord = lambda (f, v): f == 'id' and re.match('[0-9]+?-[0-9]+?', v);
   return [defaultdict(lambda: '_', \
-      filter(isNotEmpty, \
+      filter(isNotEmpty and (isMultiWord if fields==CONLLU_COLUMNS else True), \
          zip(fields, line.split('\t'))))\
       for line in lines];
 
