@@ -10,6 +10,7 @@ except ImportError:
   llnum2name = lambda x: str(x);
 
 from itertools import dropwhile, takewhile;
+import re;
 
 # These are the labels on the columns in the CoNLL 2007 dataset.
 CONLL07_COLUMNS = ('id', 'form', 'lemma', \
@@ -38,18 +39,27 @@ BERKELEY_COLUMNS = ('form', 'cpostag');
 # These are the labels on the output of morfette tagger
 MORFETTE_COLUMNS = ('form', 'lemma', 'postag');
 
-FIELDS = CONLL07_COLUMNS;
+FIELDS = CONLLU_COLUMNS;
 
 BUF_SIZE = 100000;
 
 def words_from_conll(lines, fields):
   '''Read words for a single sentence from a CoNLL text file.'''
-  isNotEmpty = lambda (f, v): v != '_'
-  isMultiWord = lambda (f, v): f == 'id' and re.match('[0-9]+?-[0-9]+?', v);
-  return [defaultdict(lambda: '_', \
-      filter(isNotEmpty and (isMultiWord if fields==CONLLU_COLUMNS else True), \
-         zip(fields, line.split('\t'))))\
-      for line in lines];
+  # using this with filter doubles parsing time 
+  isNotEmpty  = lambda (f, v): v != '_'; 
+  isMultiWord = lambda x: (x[0] == 'id' and re.match('^[0-9]+?-[0-9]+?$', x[1]));
+  parseFeats  = lambda fstruc: dict(tuple(x.split('=', 1)) for x in fstruc.split('|'));
+  for line in lines:
+    entries = zip(fields, line.split('\t'));
+    entries = ((x, y) for x, y in entries if y != '_');
+    if isMultiWord(next(entries)) and fields==CONLLU_COLUMNS:
+      continue;
+    entry = defaultdict(lambda: '_', entries);
+    if 'feats' in FIELDS and entry['feats'] != '_':
+      entry['feats'] = parseFeats(entry['feats']);
+    if 'pfeats' in FIELDS and entry['pfeats'] != '_':
+      entry['feats'] = parseFeats(entry['feats']);
+    yield entry;
 
 def lines_from_conll__(lines, comments=False):
   '''Read lines for a single sentence from a CoNLL text file.'''
@@ -77,10 +87,11 @@ def sentences_from_conll(stream, comments=True):
       comm_lines = takewhile(lambda X: X.startswith('#'), lines);
       comm_lines = '\n'.join(comm_lines); 
     conll_lines = dropwhile(lambda X: X.startswith('#'), lines);
+    tree = tuple(words_from_conll(conll_lines, fields=FIELDS));
     if len(comm_lines) and comments:
-      yield (comm_lines, words_from_conll(conll_lines, fields=FIELDS));
+      yield tree;#(comm_lines, tree);
     else:
-      yield words_from_conll(conll_lines, fields=FIELDS);
+      yield tree;
     # we are deliberately dropping all comment lines;
     if not sent_count%BUF_SIZE:
       print("(CoNLL:%s)" %(llnum2name(sent_count)), file=stderr, end=' ');
@@ -159,7 +170,10 @@ def sentences_to_conll(handle, sentences):
 
 def sentences_to_tok(handle, sentences):
   for sent_idx, sent in enumerate(sentences, start=1):
-    print(" ".join([token['form'] for token in sent]), file=handle);
+    try:
+      print(" ".join([token['form'] for token in sent]), file=handle);
+    except TypeError:
+      print(repr(sent), file=stderr);
   return;
 
 def sentences_to_propercased(handle, sentences):
@@ -181,7 +195,6 @@ def sentences_to_tagged(handle, sentences):
   return;
 
 def tokenized_to_sentences(sentences):
-  import re;
   global FIELDS;
   FIELDS = CONLL09_COLUMNS;
   for sent_idx, sent in enumerate(sentences, start=1):
@@ -295,9 +308,9 @@ def addWNCategories(mapping, conll_sentences):
 
 if __name__ == '__main__':
   import cProfile, pstats, sys;   
-  '''
+  #'''
   try:
-    cProfile.run("sentences_to_tok(sys.stdout, sentences_from_conll(sys.stdin))", "profiler")
+    cProfile.run("sentences_to_tok(sys.stderr, sentences_from_conll(sys.stdin))", "profiler")
     programStats = pstats.Stats("profiler")
     programStats.sort_stats('tottime').print_stats(50)
   except KeyboardInterrupt:
@@ -318,7 +331,6 @@ if __name__ == '__main__':
 
   #augment_constparse(sentences_from_conll(sysargv[1]), random_utils.lines_from_file(sysargv[2]));
 
-  #'''
   with random_utils.smart_open(inputFilePath, 'rb') as inputfile, random_utils.smart_open(outputFilePath, 'wb') as outputfile:
     sentences_to_tok(outputfile,  sentences_from_conll(inputfile));
     #sentences_to_propercased(outputfile, sentences_from_conll(inputfile));
@@ -330,4 +342,4 @@ if __name__ == '__main__':
     #sentences_to_conll07(outputfile, addWNCategories(mapping, sentences_from_conll(inputfile)));
     #random_utils.lines_to_filehandle(outputfile, makeConstituencyTree(sentences_from_conll(inputfile)));
   sys.exit(0);
-  #'''
+  '''
