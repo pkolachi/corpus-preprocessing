@@ -52,7 +52,7 @@ def words_from_conll(lines, fields):
   for line in lines:
     entries = zip(fields, line.split('\t'));
     entries = ((x, y) for x, y in entries if y != '_');
-    if isMultiWord(next(entries)) and fields==CONLLU_COLUMNS:
+    if fields == CONLLU_COLUMNS and isMultiWord(next(entries)):
       continue;
     entry = defaultdict(lambda: '_', entries);
     if 'feats' in FIELDS and entry['feats'] != '_':
