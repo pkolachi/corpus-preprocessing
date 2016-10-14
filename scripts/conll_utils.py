@@ -26,9 +26,16 @@ AUG_CONLL07_COLUMNS = ('id', 'form', 'lemma', \
 CONLL09_COLUMNS = ('id', 'form', 'lemma', 'plemma', \
     'postag', 'ppostag', 'feats', 'pfeats', \
     'head', 'phead', 'deprel', 'pdeprel', 'fillpred', 'sense', )
-# These are the labels on the columns in the CoNLL 2009 dataset.
+# These are the labels on the columns in the ConllU format (UD treebanks).
+CONLLU_COLUMNS = ('id', 'form', 'lemma', \
+    'cpostag', 'postag', 'feats', \
+    'head', 'deprel', \
+    'deps', 'misc', )
+
+# These are the labels on the columns when Berkeley parser 
+# is given pre-tagged input
 BERKELEY_COLUMNS = ('form', 'cpostag');
-# These are the labels on the morfette tagger
+# These are the labels on the output of morfette tagger
 MORFETTE_COLUMNS = ('form', 'lemma', 'postag');
 
 FIELDS = CONLL07_COLUMNS;
@@ -37,7 +44,11 @@ BUF_SIZE = 100000;
 
 def words_from_conll(lines, fields):
   '''Read words for a single sentence from a CoNLL text file.'''
-  return [dict(zip(fields, line.split('\t'))) for line in lines];
+  isNotEmpty = lambda (f, v): v != '_',
+  return [defaultdict(lambda: '_', \
+      filter(isNotEmpty, \
+         zip(fields, line.split('\t'))))\
+      for line in lines];
 
 def lines_from_conll__(lines, comments=False):
   '''Read lines for a single sentence from a CoNLL text file.'''
@@ -308,9 +319,9 @@ if __name__ == '__main__':
 
   #'''
   with random_utils.smart_open(inputFilePath, 'rb') as inputfile, random_utils.smart_open(outputFilePath, 'wb') as outputfile:
-    #sentences_to_tok(outputfile,  sentences_from_conll(inputfile));
+    sentences_to_tok(outputfile,  sentences_from_conll(inputfile));
     #sentences_to_propercased(outputfile, sentences_from_conll(inputfile));
-    sentences_to_tagged(outputfile, sentences_from_conll(inputfile));
+    #sentences_to_tagged(outputfile, sentences_from_conll(inputfile));
     #sentences_to_conll09(outputfile, tokenized_to_sentences(map(moses_deescapeseq, inputfile)));
     #sentences_to_conll09(outputfile, tagged_to_sentences(inputfile));
     #random_utils.lines_to_file(outputFilePath, makeConstituencyTree(sentences_from_conll(inputfile)));
