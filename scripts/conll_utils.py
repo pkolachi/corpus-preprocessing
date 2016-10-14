@@ -12,6 +12,8 @@ except ImportError:
 from itertools import dropwhile, takewhile;
 import re;
 
+fast_conll = __import__('conll_utils');
+
 # These are the labels on the columns in the CoNLL 2007 dataset.
 CONLL07_COLUMNS = ('id', 'form', 'lemma', \
     'cpostag', 'postag', 'feats', \
@@ -47,17 +49,19 @@ def words_from_conll(lines, fields):
   '''Read words for a single sentence from a CoNLL text file.'''
   # using this with filter doubles parsing time 
   isNotEmpty  = lambda (f, v): v != '_'; 
-  isMultiWord = lambda x: (x[0] == 'id' and re.match('^[0-9]+?-[0-9]+?$', x[1]));
-  parseFeats  = lambda fstruc: dict(tuple(x.split('=', 1)) for x in fstruc.split('|'));
+  isMultiWord = lambda x: re.match('^[0-9]+?-[0-9]+?$', x);
+  parseFeats  = lambda fstruc: tuple(tuple(x.split('=', 1)) for x in fstruc.split('|'));
   for line in lines:
-    entries = zip(fields, line.split('\t'));
-    entries = ((x, y) for x, y in entries if y != '_');
-    if fields == CONLLU_COLUMNS and isMultiWord(next(entries)):
+    entries = line.split('\t');
+    if fields == CONLLU_COLUMNS and isMultiWord(entries[0]):
       continue;
+    entries = zip(fields, entries);
+    # entries = ((x, y) for x, y in entries if y != '_'); 
+    #-- there doesn't to be any point in have this?
     entry = defaultdict(lambda: '_', entries);
-    if 'feats' in FIELDS and entry['feats'] != '_':
+    if 'feats' in fields and entry['feats'] != '_':
       entry['feats'] = parseFeats(entry['feats']);
-    if 'pfeats' in FIELDS and entry['pfeats'] != '_':
+    if 'pfeats' in fields and entry['pfeats'] != '_':
       entry['feats'] = parseFeats(entry['feats']);
     yield entry;
 
@@ -87,12 +91,12 @@ def sentences_from_conll(stream, comments=True):
       comm_lines = takewhile(lambda X: X.startswith('#'), lines);
       comm_lines = '\n'.join(comm_lines); 
     conll_lines = dropwhile(lambda X: X.startswith('#'), lines);
-    tree = tuple(words_from_conll(conll_lines, fields=FIELDS));
+    tree = list(fast_conll.words_from_conll(conll_lines, fields=FIELDS));
     if len(comm_lines) and comments:
+      # we are deliberately dropping all comment lines;
       yield tree;#(comm_lines, tree);
     else:
       yield tree;
-    # we are deliberately dropping all comment lines;
     if not sent_count%BUF_SIZE:
       print("(CoNLL:%s)" %(llnum2name(sent_count)), file=stderr, end=' ');
   print("(CoNLL:%s)" %(llnum2name(sent_count)), file=stderr);
@@ -103,12 +107,12 @@ def words_to_conll(sent, fields=CONLL07_COLUMNS):
     str_repr.append(str(sent[0]));
     sent = sent[1];
   for token in sent:
-    feat_repr = '|'.join(['%s=%s' %(key, token['feats'][key]) \
-        for key in sorted(token['feats'].keys())]) \
-        if 'feats' in token and type(token['feats']) == type({}) \
-        else token.get('feats', '_');
+    feat_repr = '|'.join('%s=%s' %(feat, value) \
+        for feat, value in token['feats']) \
+        if 'feats' in token and type(token['feats']) == type(()) \
+        else token['feats'];
     token['feats'] = feat_repr if feat_repr.strip() else '_';
-    str_repr.append( '\t'.join([token.get(feat, '_') for feat in fields]) );
+    str_repr.append('\t'.join(token[feat] for feat in fields));
   return '\n'.join(str_repr);
 
 def sentences_to_conll07(handle, sentences):
@@ -118,16 +122,15 @@ def sentences_to_conll07(handle, sentences):
     return;
   step_size = 0;
   while True:
-    sent_count = 0;
     buf_sents = islice(sentences, BUF_SIZE);
-    for sent in buf_sents:
-      print(words_to_conll(sent, fields=CONLL07_COLUMNS), file=handle);
+    for sent_count, sent in enumerate(buf_sents, start=1):
+      print(fast_conll.words_to_conll(sent, fields=CONLL07_COLUMNS), file=handle);
       print("", file=handle);
-      sent_count += 1;
     print("(CoNLL07:%s)" %(llnum2name(sent_count+step_size*BUF_SIZE)), \
-        file=stderr, end=' ');
+        file=stdout, end=' ');
     if sent_count < BUF_SIZE:
       break;
+    step_size += 1;
   return;
 
 def sentences_to_conll09(handle, sentences):
@@ -137,16 +140,15 @@ def sentences_to_conll09(handle, sentences):
     return;
   step_size = 0;
   while True:
-    sent_count = 0;
     buf_sents = islice(sentences, BUF_SIZE);
-    for sent in buf_sents:
-      print(words_to_conll(sent, fields=CONLL09_COLUMNS), file=handle);
+    for sent_count, sent in enumerate(buf_sents, start=1):
+      print(fast_conll.words_to_conll(sent, fields=CONLL09_COLUMNS), file=handle);
       print("", file=handle);
-      sent_count += 1;
     print("(CoNLL07:%s)" %(llnum2name(sent_count+step_size*BUF_SIZE)), \
-        file=stderr, end=' ');
+        file=stdout, end=' ');
     if sent_count < BUF_SIZE:
       break;
+    step_size += 1;
   return;
 
 def sentences_to_conll(handle, sentences):
@@ -156,16 +158,15 @@ def sentences_to_conll(handle, sentences):
     return;
   step_size = 0;
   while True:
-    sent_count = 0;
     buf_sents = islice(sentences, BUF_SIZE);
-    for sent in buf_sents:
-      print(words_to_conll(sent, fields=FIELDS), file=handle);
+    for sent_count, sent in enumerate(buf_sents, start=1):
+      print(fast_conll.words_to_conll(sent, fields=FIELDS), file=handle);
       print("", file=handle);
-      sent_count += 1;
     print("(CoNLL07:%s)" %(llnum2name(sent_count+step_size*BUF_SIZE)), \
         file=stderr, end=' ');
     if sent_count < BUF_SIZE:
       break;
+    step_size += 1;
   return;
 
 def sentences_to_tok(handle, sentences):
@@ -308,15 +309,20 @@ def addWNCategories(mapping, conll_sentences):
 
 if __name__ == '__main__':
   import cProfile, pstats, sys;   
+  #fast_conll = __import__('conll_utils');
+  global fast_conll;
+  #fast_conll = __import__('memopt_conll_utils');
   #'''
   try:
-    cProfile.run("sentences_to_tok(sys.stderr, sentences_from_conll(sys.stdin))", "profiler")
+    #cProfile.run("sentences_to_tok(sys.stderr, sentences_from_conll(sys.stdin))", "profiler")
+    cProfile.run("fast_conll.sentences_to_conll07(sys.stderr, fast_conll.sentences_from_conll(sys.stdin))", "profiler")
     programStats = pstats.Stats("profiler")
-    programStats.sort_stats('tottime').print_stats(50)
+    programStats.sort_stats('tottime').print_stats()
   except KeyboardInterrupt:
     programStats = pstats.Stats("profiler")
-    programStats.sort_stats('tottime').print_stats(50)
+    programStats.sort_stats('tottime').print_stats()
     sys.exit(1)
+  
   '''
   #global FIELDS, CONLL07_COLUMNS, CONLL09_COLUMNS;
   inputFilePath  = '' if len(sysargv) < 2 else sysargv[1];
