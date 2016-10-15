@@ -16,6 +16,8 @@ import re;
 # for e.g. memopt_conll_utils or a faster cython version
 fast_conll = __import__('conll_utils');
 
+global CONLL07_COLUMNS, CONLL09_COLUMNS, FIELDS;
+
 # These are the labels on the columns in the CoNLL 2007 dataset.
 CONLL07_COLUMNS = ('id', 'form', 'lemma', \
     'cpostag', 'postag', 'feats', \
@@ -308,7 +310,9 @@ def addWNCategories(mapping, conll_sentences):
          ('lemma', edge['lemma'] if edge['lemma'] != '<unknown>' else edge['form'])]) \
          for edge in conll_sent];
 
+
 if __name__ == '__main__':
+  #global FIELDS, CONLL07_COLUMNS, CONLL09_COLUMNS;
   #import cProfile, pstats, sys;   
   #global fast_conll;
   #fast_conll = __import__('memopt_conll_utils');
@@ -324,15 +328,13 @@ if __name__ == '__main__':
     sys.exit(1)
   
   '''
-  global FIELDS, CONLL07_COLUMNS, CONLL09_COLUMNS;
   inputFilePath  = '' if len(sysargv) < 2 else sysargv[1];
   outputFilePath = '' if len(sysargv) < 3 else sysargv[2];
   if inputFilePath and outputFilePath:
-    print("Warning: When using bz2 files as input/output, its faster to use bash \
-        and redirect from stdin/stdout over using Python Bz2 library", file=stderr);
+    print("Warning: When using bz2 files as input/output, its faster to use bash and redirect from stdin/stdout over using Python Bz2 library", file=stderr);
   
   #FIELDS = CONLL09_COLUMNS;
-  #FIELDS = CONLL07_COLUMNS;
+  FIELDS = CONLL07_COLUMNS;
 
   try:
     from mtutils import moses_deescapeseq;
@@ -351,5 +353,5 @@ if __name__ == '__main__':
     #mapping = dict((x.strip(), y.strip()) for x, y in map(lambda x: x.split('\t', 1), (line for line in stdin)));
     #sentences_to_conll07(outputfile, addWNCategories(mapping, sentences_from_conll(inputfile)));
     #random_utils.lines_to_filehandle(outputfile, makeConstituencyTree(sentences_from_conll(inputfile)));
-  sys.exit(0);
+  sysexit(0);
   #'''
