@@ -1,6 +1,7 @@
 #!/bin/bash
 TAB=`echo -e "\t"`
 
+mkdir -p "$PWD/tmp";
 bzcat $1 | grep -v "^$" | \
     cut -f2,4 | LC_ALL="C" tr '[:upper:]' '[:lower:]' | \
     LC_ALL="C" sort -k1 --parallel=8 -T "$PWD/tmp" | uniq -c | \
