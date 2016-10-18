@@ -2,6 +2,7 @@
 import sys;
 import nltk.tree;
 from nltk.stem import wordnet;
+from globalimports import *;
 import conll_utils, random_utils;
 
 #sys.stdout = codecs.getwriter('utf-8')(sys.stdout);
@@ -11,7 +12,8 @@ def getTokenizedTreebank(treebankfile):
     if line.strip() == 'NONE':
       yield line.strip();
       continue;
-    tree = nltk.tree.Tree.parse(line.strip());
+    tree = nltk.tree.Tree.fromstring(line.strip());
+    #tree = nltk.tree.Tree.parse(line.strip());
     yield ' '.join(tree.leaves());
     
 def get_wordnet_category(treebank_tag):
@@ -60,5 +62,5 @@ def printSyntacticPhrases(treebankfile):
 
 if __name__ == '__main__':
   #wnLemmatize_CoNLL(sys.argv[1]);
-  for line in getTokenizedTreebank(sys.argv[1]): print line;
+  random_utils.lines_to_filehandle(stdout, getTokenizedTreebank(sys.argv[1]));
   #printSyntacticPhrases(sys.argv[1]);
