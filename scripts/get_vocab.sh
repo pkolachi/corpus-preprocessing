@@ -1,6 +1,6 @@
 #!/bin/bash
 TAB=`echo -e "\t"`
-PARALLEL="--parallel=8"
+PARALLEL=""
 
 mkdir -p "$PWD/tmp";
 bzcat $1 | grep -v "^$" | \
@@ -10,6 +10,7 @@ bzcat $1 | grep -v "^$" | \
     sort -S8G -k1,1nr --stable -t"$TAB" "$PARALLEL" -T "$PWD/tmp" > $2.vcb
 
 cat $2.vcb | \
+    sort -S8G -k2,3 --stable -t"$TAB" "$PARALLEL" -T "$PWD/tmp" | \
     awk -F'\t' '
 { 
     if(key!=$2) {
@@ -19,4 +20,3 @@ cat $2.vcb | \
     } 
 }' | \
     sort -S8G -k1,1nr --stable -t"$TAB" "$PARALLEL" -T "$PWD/tmp" > $2.lexicon
-
