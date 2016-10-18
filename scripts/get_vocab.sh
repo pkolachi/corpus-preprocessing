@@ -1,12 +1,13 @@
 #!/bin/bash
 TAB=`echo -e "\t"`
+PARALLEL="--parallel=8"
 
 mkdir -p "$PWD/tmp";
 bzcat $1 | grep -v "^$" | \
     cut -f2,4 | LC_ALL="C" tr '[:upper:]' '[:lower:]' | \
-    LC_ALL="C" sort -k1 --parallel=8 -T "$PWD/tmp" | uniq -c | \
+    LC_ALL="C" sort -k1 "$PARALLEL" -T "$PWD/tmp" | uniq -c | \
     sed -e 's/^[ \t]*//g' -e $'s/ /\t/g' | \
-    sort -S8G -k1,1nr --stable -t"$TAB" --parallel=8 -T "$PWD/tmp" > $2.vcb
+    sort -S8G -k1,1nr --stable -t"$TAB" "$PARALLEL" -T "$PWD/tmp" > $2.vcb
 
 cat $2.vcb | \
     awk -F'\t' '
@@ -17,5 +18,5 @@ cat $2.vcb | \
 	value=value":::"$3; count+=$1;
     } 
 }' | \
-    sort -S8G -k1,1nr --stable -t"$TAB" --parallel=8 -T "$PWD/tmp" > $2.lexicon
+    sort -S8G -k1,1nr --stable -t"$TAB" "$PARALLEL" -T "$PWD/tmp" > $2.lexicon
 
