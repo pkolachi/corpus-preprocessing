@@ -12,37 +12,40 @@ except ImportError:
 from itertools import dropwhile, takewhile;
 import re;
 
+# this allows to switch the module with any other module
+# for e.g. memopt_conll_utils or a faster cython version
 fast_conll = __import__('conll_utils');
+
+global CONLL07_COLUMNS, CONLL09_COLUMNS, FIELDS;
 
 # These are the labels on the columns in the CoNLL 2007 dataset.
 CONLL07_COLUMNS = ('id', 'form', 'lemma', \
     'cpostag', 'postag', 'feats', \
     'head', 'deprel', \
-    'phead', 'pdeprel', )
+    'phead', 'pdeprel', );
 # These are the labels on the columns when constituency parser out is
 # converted to dependency format
 AUG_CONLL07_COLUMNS = ('id', 'form', 'lemma', \
     'cpostag', 'postag', 'const_parse', 'feats', \
     'head', 'deprel', \
-    'phead', 'pdeprel', )
+    'phead', 'pdeprel', );
 # These are the labels on the columns in the CoNLL 2009 dataset.
 CONLL09_COLUMNS = ('id', 'form', 'lemma', 'plemma', \
     'postag', 'ppostag', 'feats', 'pfeats', \
-    'head', 'phead', 'deprel', 'pdeprel', 'fillpred', 'sense', )
+    'head', 'phead', 'deprel', 'pdeprel', 'fillpred', 'sense', );
 # These are the labels on the columns in the ConllU format (UD treebanks).
 CONLLU_COLUMNS = ('id', 'form', 'lemma', \
     'cpostag', 'postag', 'feats', \
     'head', 'deprel', \
-    'deps', 'misc', )
+    'deps', 'misc', );
 
 # These are the labels on the columns when Berkeley parser 
 # is given pre-tagged input
-BERKELEY_COLUMNS = ('form', 'cpostag');
+BERKELEY_COLUMNS = ('form', 'cpostag', );
 # These are the labels on the output of morfette tagger
-MORFETTE_COLUMNS = ('form', 'lemma', 'postag');
+MORFETTE_COLUMNS = ('form', 'lemma', 'postag', );
 
 FIELDS = CONLLU_COLUMNS;
-
 BUF_SIZE = 100000;
 
 def words_from_conll(lines, fields):
@@ -307,12 +310,13 @@ def addWNCategories(mapping, conll_sentences):
          ('lemma', edge['lemma'] if edge['lemma'] != '<unknown>' else edge['form'])]) \
          for edge in conll_sent];
 
+
 if __name__ == '__main__':
-  import cProfile, pstats, sys;   
-  #fast_conll = __import__('conll_utils');
-  global fast_conll;
+  #global FIELDS, CONLL07_COLUMNS, CONLL09_COLUMNS;
+  #import cProfile, pstats, sys;   
+  #global fast_conll;
   #fast_conll = __import__('memopt_conll_utils');
-  #'''
+  '''
   try:
     #cProfile.run("sentences_to_tok(sys.stderr, sentences_from_conll(sys.stdin))", "profiler")
     cProfile.run("fast_conll.sentences_to_conll07(sys.stderr, fast_conll.sentences_from_conll(sys.stdin))", "profiler")
@@ -324,9 +328,11 @@ if __name__ == '__main__':
     sys.exit(1)
   
   '''
-  #global FIELDS, CONLL07_COLUMNS, CONLL09_COLUMNS;
   inputFilePath  = '' if len(sysargv) < 2 else sysargv[1];
   outputFilePath = '' if len(sysargv) < 3 else sysargv[2];
+  if inputFilePath and outputFilePath:
+    print("Warning: When using bz2 files as input/output, its faster to use bash and redirect from stdin/stdout over using Python Bz2 library", file=stderr);
+  
   #FIELDS = CONLL09_COLUMNS;
   FIELDS = CONLL07_COLUMNS;
 
@@ -347,5 +353,5 @@ if __name__ == '__main__':
     #mapping = dict((x.strip(), y.strip()) for x, y in map(lambda x: x.split('\t', 1), (line for line in stdin)));
     #sentences_to_conll07(outputfile, addWNCategories(mapping, sentences_from_conll(inputfile)));
     #random_utils.lines_to_filehandle(outputfile, makeConstituencyTree(sentences_from_conll(inputfile)));
-  sys.exit(0);
-  '''
+  sysexit(0);
+  #'''
