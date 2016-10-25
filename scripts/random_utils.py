@@ -1,33 +1,35 @@
 
 from __future__ import print_function
 import codecs, io, itertools, math, os, random, re, sys;
+PY3 = False if sys.version_info < (3, 3) else True;
 
 BUF_SIZE = 1000000;
 
 def smart_open(filename='', mode='rb', large=False):
+  from bz2 import BZ2File;
+  from gzip import GzipFile;
+
   bufferSize = ((2<<16)+8) if large == True else io.DEFAULT_BUFFER_SIZE; 
+  
   if filename.strip():
     _, ext = os.path.splitext(filename);
     if ext == '.bz2':
-      from bz2 import BZ2File;
-      cstream = BZ2File(filename, mode, buffering=bufferSize, compresslevel=1);
-      return codecs.getreader('utf-8')(cstream) \
-          if mode == 'rb' \
-          else codecs.getwriter('utf-8')(cstream);
+      cstream = BZ2File(filename,  mode=mode, buffering=bufferSize, compresslevel=1);
     elif ext == '.gz':
-      from gzip import GzipFile;
-      cstream = GzipFile(filename, mode, compresslevel=1);
-      return codecs.getreader('utf-8')(cstream) \
-          if mode == 'rb' \
-          else codecs.getwriter('utf-8')(cstream);
+      cstream = GzipFile(filename, mode=mode, compresslevel=1);
     else:
-      return codecs.getreader('utf-8')(open(filename, mode, buffering=bufferSize)) \
-          if mode in ['rb', 'r'] \
-          else codecs.getwriter('utf-8')(open(filename, mode));
-  elif filename == '' and mode in ['r', 'rb']:
-    return codecs.getreader('utf-8')(sys.stdin);
-  elif filename == '' and mode in ['w', 'wb']:
-    return codecs.getwriter('utf-8')(sys.stdout);
+      cstream = io.open(filename,  mode=mode, buffering=bufferSize);
+  else:
+    cstream = sys.stdin if mode in ['r', 'rb'] else sys.stdout;
+
+  #-- does not work perfectly with python2, only with python3 (3.3 and later)
+  #return io.BufferedReader(cstream) if mode in ['r', 'rb'] \
+  #    else io.BufferedWriter(cstream);
+
+  # HACK- to use Buffered* for everything other than bz2 in python2.
+  return cstream if ext == '.bz2' and not PY3 \
+      else io.BufferedReader(cstream) if mode in ['r', 'rb'] \
+      else io.BufferedWriter(cstream);
 
 def llnum2name(number):
   num_map = {3: 'K', 6: 'M', 9: 'B', 12: 'T', 15: 'Q', 18: 'Qu', 21: 'S'};
@@ -53,23 +55,12 @@ def lines_from_filehandle(filehandle, batchsize=0):
   while True:
     buf_file = islice(filehandle, batchsize);
     for line_count, line in enumerate(buf_file, start=1):
-      yield line.strip();
+      yield line.decode('utf-8').strip();
     print('(%s)'%(llnum2name(line_count+step_size*batchsize)), \
         file=sys.stderr, end=' ');
     if line_count < batchsize:
       break;
     step_size += 1;
-  return;
-
-def lines_from_filehandle__(filehandle, batchsize=0):
-  global BUF_SIZE;
-  batchsize = BUF_SIZE if not batchsize else batchsize;
-  line_count = 0;
-  for line_count, line in enumerate(filehandle, start=1):
-    yield line.strip();
-    if not (line_count%batchsize):
-      print('(%s)'%(llnum2name(line_count)), file=sys.stderr, end=' ');
-  print('(%s)'%(llnum2name(line_count)), file=sys.stderr);
   return;
 
 def lines_from_file(filename, large=False, batchsize=0):
@@ -82,24 +73,12 @@ def lines_from_file(filename, large=False, batchsize=0):
     while True:
       buf_file = islice(infile, batchsize);
       for line_count, line in enumerate(buf_file, start=1):
-        yield line.strip();
+        yield line.decode('utf-8').strip();
       print('(%s)'%(llnum2name(line_count+step_size*batchsize)), \
           file=sys.stderr, end=' ');
       if line_count < batchsize:
         break;
       step_size += 1;
-  return;
-
-def lines_from_file__(filename, large=False, batchsize=0):
-  global BUF_SIZE;
-  batchsize = BUF_SIZE if not batchsize else batchsize;
-  line_count = 0;
-  with smart_open(filename, large=large) as infile:
-    for line_count, line in enumerate(infile, start=1):
-      yield line.strip();
-      if not (line_count%batchsize):
-        print('(%s)'%(llnum2name(line_count)), file=sys.stderr, end=' ');
-    print('(%s)'%(llnum2name(line_count)), file=sys.stderr);
   return;
 
 def lines_to_filehandle(filehandle, lines, batchsize=0):
@@ -111,23 +90,12 @@ def lines_to_filehandle(filehandle, lines, batchsize=0):
   while True:
     buf_lines = islice(lines, batchsize);
     for line_count, sent in enumerate(buf_lines, start=1):
-      print(sent.strip(), file=filehandle);
+      filehandle.write(u"{0}\n".format(sent.strip()).encode('utf-8'));
     print('(%s)'%(llnum2name(line_count+step_size*batchsize)), \
         file=sys.stderr, end=' ');
     if line_count < batchsize:
       break;
     step_size += 1;
-  return True;
-
-def lines_to_filehandle__(filehandle, lines, batchsize=0):
-  global BUF_SIZE;
-  batchsize = BUF_SIZE if not batchsize else batchsize;
-  line_count = 0;
-  for line_count, sent in enumerate(lines, start=1):
-    print(sent.strip(), file=filehandle);
-    if not (line_count%batchsize): 
-      print('(%s)'%(llnum2name(line_count)), file=sys.stderr, end=' ');
-  print('(%s)'%(llnum2name(line_count)), file=sys.stderr);
   return True;
 
 def lines_to_file(filename, lines, batchsize=0):
@@ -140,24 +108,12 @@ def lines_to_file(filename, lines, batchsize=0):
     while True:
       buf_lines = islice(lines, batchsize);
       for line_count, sent in enumerate(buf_lines, start=1):
-        print(sent.strip(), file=outfile);
+        outfile.write(u"{0}\n".format(sent.strip()).encode('utf-8'));
       print('(%s)'%(llnum2name(line_count+step_size*batchsize)), \
           file=sys.stderr, end=' ');
       if line_count < batchsize:
         break;
       step_size += 1;
-  return True;
-
-def lines_to_file__(filename, lines, batchsize=0):
-  global BUF_SIZE;
-  batchsize = BUF_SIZE if not batchsize else batchsize;
-  line_count = 0;
-  with smart_open(filename, mode='wb') as outfile:
-    for line_count, sent in enumerate(lines, start=1):
-      print(sent.strip(), file=outfile);
-      if not (line_count%batchsize): 
-        print('(%s)'%(llnum2name(line_count)), file=sys.stderr, end=' ');
-    print('(%s)'%(llnum2name(line_count)), file=sys.stderr);
   return True;
 
 def encode_sentence(sentence, vocabulary, id_gen=itertools.count(1)):

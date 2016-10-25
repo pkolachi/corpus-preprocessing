@@ -1,0 +1,93 @@
+Reading from txt/gzip/bzip2 files- changed the underlying functions in random_utils.py 
+on 25th October, 2016. The statistics used to makes the changes are shown below. System
+time to run a simple read-in-read-out script for different input formats are 
+logged below for both Python 2 and Python 3 versions,
+
+The main changes are use of BufferedReader and BufferedWriter objects and reading
+only byte-data and leaving the decoding/encoding of utf-8 to other functions instead
+of using codecs. The speed up is clearly significant though Buffered* donot work 
+for Bzip2 files using Python2. 
+
+Python 2: run times for new version 
+
+('ud-treebanks2', 'ud-treebanks2.1.out')
+203.790778875
+('ud-treebanks2', 'ud-treebanks.2.out.gz')
+258.641072989
+('ud-treebanks2', 'ud-treebanks.3.out.bz2')
+427.72929883
+('ud-treebanks.gz', 'ud-treebanks2.4.out')
+213.378669977
+('ud-treebanks.gz', 'ud-treebanks.5.out.gz')
+276.247068882
+('ud-treebanks.gz', 'ud-treebanks.6.out.bz2')
+486.157186985
+('ud-treebanks.bz2', 'ud-treebanks2.7.out')
+403.939526081
+('ud-treebanks.bz2', 'ud-treebanks.8.out.gz')
+477.089696884
+('ud-treebanks.bz2', 'ud-treebanks.9.out.bz2')
+654.406623125
+
+Python 2: run times for previous version 
+
+('ud-treebanks2', 'ud-treebanks2.1.out')
+356.505316019
+('ud-treebanks2', 'ud-treebanks.2.out.gz')
+737.006903887
+('ud-treebanks2', 'ud-treebanks.3.out.bz2')
+538.938108921
+('ud-treebanks.gz', 'ud-treebanks2.4.out')
+400.298665047
+('ud-treebanks.gz', 'ud-treebanks.5.out.gz')
+863.14842391
+('ud-treebanks.gz', 'ud-treebanks.6.out.bz2')
+620.502779961
+('ud-treebanks.bz2', 'ud-treebanks2.7.out')
+468.108803034
+('ud-treebanks.bz2', 'ud-treebanks.8.out.gz')
+926.8322649
+('ud-treebanks.bz2', 'ud-treebanks.9.out.bz2')
+810.359599113
+
+Python 3: run times for new version 
+
+ud-treebanks2 ud-treebanks2.1.out
+71.083342842001
+ud-treebanks2 ud-treebanks.2.out.gz
+120.92550848799874
+ud-treebanks2 ud-treebanks.3.out.bz2
+333.9921435860015
+ud-treebanks.gz ud-treebanks2.4.out
+85.68924974300171
+ud-treebanks.gz ud-treebanks.5.out.gz
+114.20036726899707
+ud-treebanks.gz ud-treebanks.6.out.bz2
+355.3809464759979
+ud-treebanks.bz2 ud-treebanks2.7.out
+272.73624703899986
+ud-treebanks.bz2 ud-treebanks.8.out.gz
+321.6311151170012
+ud-treebanks.bz2 ud-treebanks.9.out.bz2
+536.417376246005
+
+Python 3: run times for old version 
+
+ud-treebanks2 ud-treebanks2.1.out
+372.5531339450026
+ud-treebanks2 ud-treebanks.2.out.gz
+634.703923273999
+ud-treebanks2 ud-treebanks.3.out.bz2
+916.3684839350026
+ud-treebanks.gz ud-treebanks2.4.out
+457.85093581301044
+ud-treebanks.gz ud-treebanks.5.out.gz
+745.1512957290106
+ud-treebanks.gz ud-treebanks.6.out.bz2
+965.2873273300065
+ud-treebanks.bz2 ud-treebanks2.7.out
+690.0233500920003
+ud-treebanks.bz2 ud-treebanks.8.out.gz
+876.6443759820104
+ud-treebanks.bz2 ud-treebanks.9.out.bz2
+1073.61275616099
