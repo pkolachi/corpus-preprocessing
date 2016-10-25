@@ -15,12 +15,13 @@ def smart_open(filename='', mode='rb', large=False, fast=True):
     _, ext = os.path.splitext(filename);
     if ext in ['.bz2', '.gz'] and mode in ['r', 'rb'] and fast:
       cmd = '/usr/bin/bzcat' if ext == '.bz2' else '/usr/bin/gzcat';
-      with subprocess.Popen([cmd, filename], stdout=subprocess.Pipe) as proc:
-        cstream = proc.stdout;
+      proc = subprocess.Popen([cmd, filename], stdout=subprocess.PIPE);
+      cstream = proc.stdout;
+      cstream.read1 = cstream.read; ## hack to get BufferedReader to work
     elif ext == '.bz2':
-      cstream = BZ2File(filename,  mode=mode, buffering=bufferSize, compresslevel=1);
+      cstream = BZ2File(filename,  mode=mode, buffering=bufferSize);
     elif ext == '.gz':
-      cstream = GzipFile(filename, mode=mode, compresslevel=1);
+      cstream = GzipFile(filename, mode=mode);
     else:
       cstream = io.open(filename,  mode=mode, buffering=bufferSize);
   else:
