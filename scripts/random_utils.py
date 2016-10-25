@@ -1,11 +1,11 @@
 
 from __future__ import print_function
-import codecs, io, itertools, math, os, random, re, sys;
+import io, itertools, math, os, random, re, subprocess, sys;
 PY3 = False if sys.version_info < (3, 3) else True;
 
 BUF_SIZE = 1000000;
 
-def smart_open(filename='', mode='rb', large=False):
+def smart_open(filename='', mode='rb', large=False, fast=True):
   from bz2 import BZ2File;
   from gzip import GzipFile;
 
@@ -13,7 +13,11 @@ def smart_open(filename='', mode='rb', large=False):
   
   if filename.strip():
     _, ext = os.path.splitext(filename);
-    if ext == '.bz2':
+    if ext in ['.bz2', '.gz'] and mode in ['r', 'rb'] and fast:
+      cmd = '/usr/bin/bzcat' if ext == '.bz2' else '/usr/bin/gzcat';
+      with subprocess.Popen([cmd, filename], stdout=subprocess.Pipe) as proc:
+        cstream = proc.stdout;
+    elif ext == '.bz2':
       cstream = BZ2File(filename,  mode=mode, buffering=bufferSize, compresslevel=1);
     elif ext == '.gz':
       cstream = GzipFile(filename, mode=mode, compresslevel=1);
