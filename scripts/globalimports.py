@@ -1,5 +1,6 @@
+#!/usr/bin/env python
 
-from __future__ import print_function
+from __future__ import print_function, division;
 try:
   from itertools import imap as map, \
       ifilter as filter, \
