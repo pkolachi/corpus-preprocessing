@@ -27,12 +27,13 @@ def smart_open(filename='', mode='rb', large=False, fast=True):
   else:
     cstream = sys.stdin if mode in ['r', 'rb'] else sys.stdout;
 
-  #-- does not work perfectly with python2, only with python3 (3.3 and later)
-  #return io.BufferedReader(cstream) if mode in ['r', 'rb'] \
-  #    else io.BufferedWriter(cstream);
+  #-- does not work with python2, only with python3 (3.3 and later)
+  #return io.BufferedReader(cstream) if filename.strip() and mode in ['r', 'rb'] \
+  #    else io.BufferedWriter(cstream) if filename.strip() and mode in ['w', 'wb'] \
+  #    else cstream;  # stdin and stdout can not be used with BufferedReader/Writer
 
-  # HACK- to use Buffered* for everything other than bz2 in python2.
-  return cstream if ext == '.bz2' and not PY3 \
+  # HACK- to use Buffered* for everything other than bz2 in python2 & stdin/stdout;
+  return cstream if (filename.strip() and ext == '.bz2' and not PY3) or (not filename.strip()) \
       else io.BufferedReader(cstream) if mode in ['r', 'rb'] \
       else io.BufferedWriter(cstream);
 
