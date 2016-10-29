@@ -2,6 +2,8 @@
 
 TAB=`echo -e "\t"`
 PARALLEL="--parallel=2"
+#PARALLEL=""
+
 
 mkdir -p "$PWD/tmp";
 bzcat $1 | grep -v "^#" | grep -v "^$" | \
