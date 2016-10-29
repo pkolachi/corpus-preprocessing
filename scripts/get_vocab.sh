@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TAB=`echo -e "\t"`
-PARALLEL=""
+PARALLEL="--parallel=2"
 
 mkdir -p "$PWD/tmp";
 bzcat $1 | grep -v "^#" | grep -v "^$" | \
