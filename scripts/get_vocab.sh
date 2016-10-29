@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TAB=`echo -e "\t"`
-PARALLEL="--parallel=2"
+PARALLEL=""
 
 mkdir -p "$PWD/tmp";
 bzcat $1 | grep -v "^#" | grep -v "^$" | \
@@ -12,9 +12,9 @@ bzcat $1 | grep -v "^#" | grep -v "^$" | \
 
 bzcat $1 | grep -v "^#" | grep -v "^$" | \
     cut -f2,3,4,6 | \
-    LC_ALL="C" sort -S 50% "$PARALLEL" -T "$PWD/tmp" | uniq -c | \
+    LC_ALL="C" sort -S 50%"$PARALLEL" -T "$PWD/tmp" | uniq -c #| \
     sed -e 's/^[ \t]*//g' -e $'s/ /\t/g' | \
-    LC_ALL="C" sort -S 50% "$PARALLEL" -k4,4 -k3,3 -k2,2 | \
+    LC_ALL="C" sort -S 50%"$PARALLEL" -k4,4 -k3,3 -k2,2 | \
     awk '{print $1"\t"$4"\t"$3"\t"$2"\t"$5;}' > "$2.morph_lexicon"
 
 cat "$2.vcb" | \
