@@ -11,13 +11,20 @@ PORTING from Python 2 to Python 3
 
 - added globalimports.py 
   - this should be kept uniform to let all scripts use these basic imports;
-  - ONLY basic imports are put in this file, mainly to ensure that codes are 
+  - ONLY basic imports are put in this file, mainly to ensure that scripts are 
   compatible with both 2 and 3 and to avoid any resistance to use more 
   flexible but obscure facilities in Python (for example, defaultdict is a
   good example).
   - the imports try to maximally expose the Python 3 interface; so map 
   behaves like imap in Python 2 but takes default behavior in Python 3. 
 
+- profile parallelize_utils vs multiprocessing.Pool
+  - parallelize_utils use Queues allowing parallel class methods which are
+  not allowed in Pool.map and other functions. It remains to be seen if the
+  overhead in parallelize_utils is comparable to creating a pool and using 
+  the map function. 
+  - this in turn results in only one version of unigoogle_utils, either
+  the default pool version or one using parallelize_utils;
 
 =======================
 
