@@ -20,25 +20,33 @@ fast_conll = __import__('conll_utils');
 global CONLL07_COLUMNS, CONLL09_COLUMNS, FIELDS;
 
 # These are the labels on the columns in the CoNLL 2007 dataset.
-CONLL07_COLUMNS = ('id', 'form', 'lemma', \
-    'cpostag', 'postag', 'feats', \
-    'head', 'deprel', \
-    'phead', 'pdeprel', );
+CONLL07_COLUMNS = (
+    'id', 'form', 'lemma',
+    'cpostag', 'postag', 'feats',
+    'head', 'deprel',
+    'phead', 'pdeprel',
+    );
 # These are the labels on the columns when constituency parser out is
 # converted to dependency format
-AUG_CONLL07_COLUMNS = ('id', 'form', 'lemma', \
-    'cpostag', 'postag', 'const_parse', 'feats', \
-    'head', 'deprel', \
-    'phead', 'pdeprel', );
+AUG_CONLL07_COLUMNS = (
+    'id', 'form', 'lemma',
+    'cpostag', 'postag', 'const_parse', 'feats',
+    'head', 'deprel',
+    'phead', 'pdeprel',
+    );
 # These are the labels on the columns in the CoNLL 2009 dataset.
-CONLL09_COLUMNS = ('id', 'form', 'lemma', 'plemma', \
-    'postag', 'ppostag', 'feats', 'pfeats', \
-    'head', 'phead', 'deprel', 'pdeprel', 'fillpred', 'sense', );
+CONLL09_COLUMNS = (
+    'id', 'form', 'lemma', 'plemma',
+    'postag', 'ppostag', 'feats', 'pfeats',
+    'head', 'phead', 'deprel', 'pdeprel', 'fillpred', 'sense', 
+    );
 # These are the labels on the columns in the ConllU format (UD treebanks).
-CONLLU_COLUMNS = ('id', 'form', 'lemma', \
-    'cpostag', 'postag', 'feats', \
-    'head', 'deprel', \
-    'deps', 'misc', );
+CONLLU_COLUMNS = (
+    'id', 'form', 'lemma',
+    'cpostag', 'postag', 'feats',
+    'head', 'deprel',
+    'deps', 'misc', 
+    );
 
 # These are the labels on the columns when Berkeley parser 
 # is given pre-tagged input
@@ -53,8 +61,12 @@ def words_from_conll(lines, fields):
   '''Read words for a single sentence from a CoNLL text file.'''
   # using this with filter doubles parsing time 
   isNotEmpty  = lambda f, v: v != '_'; 
-  isMultiWord = lambda x: re.match('^[0-9]+?-[0-9]+?$', x);
-  parseFeats  = lambda fstruc: tuple(tuple(x.split('=', 1)) for x in fstruc.split('|'));
+  def isMultiWord(x): return re.match('^[0-9]+?-[0-9]+?$', x);
+  def parseFeats(fstruc): 
+    return tuple(
+      tuple(x.split('=', 1)) for x in fstruc.split('|')
+    );
+
   for line in lines:
     entries = line.split('\t');
     if fields == CONLLU_COLUMNS and isMultiWord(entries[0]):
@@ -105,8 +117,8 @@ def words_to_conll(sent, fields=CONLL07_COLUMNS):
     str_repr.append(str(sent[0]));
     sent = sent[1];
   for token in sent:
-    feat_repr = '|'.join('%s=%s' %(feat, value) \
-        for feat, value in token['feats']) \
+    feat_repr = \
+        '|'.join('%s=%s' %(feat, value) for feat, value in token['feats']) \
         if 'feats' in token and type(token['feats']) == type(()) \
         else token['feats'];
     token['feats'] = feat_repr if feat_repr.strip() else '_';
@@ -124,7 +136,7 @@ def sentences_to_conll07(sentences):
     for sent_count, sent in enumerate(buf_sents, start=1):
       yield fast_conll.words_to_conll(sent, fields=CONLL07_COLUMNS);
       yield "";
-    print("(CoNLL07:%s)" %(llnum2name(sent_count+step_size*BUF_SIZE)), \
+    print("(CoNLL07:%s)" %(llnum2name(sent_count+step_size*BUF_SIZE)),
         file=stdout, end=' ');
     if sent_count < BUF_SIZE:
       break;
@@ -142,7 +154,7 @@ def sentences_to_conll09(sentences):
     for sent_count, sent in enumerate(buf_sents, start=1):
       yield fast_conll.words_to_conll(sent, fields=CONLL09_COLUMNS);
       yield "";
-    print("(CoNLL07:%s)" %(llnum2name(sent_count+step_size*BUF_SIZE)), \
+    print("(CoNLL07:%s)" %(llnum2name(sent_count+step_size*BUF_SIZE)),
         file=stdout, end=' ');
     if sent_count < BUF_SIZE:
       break;
@@ -160,7 +172,7 @@ def sentences_to_conll(sentences):
     for sent_count, sent in enumerate(buf_sents, start=1):
       yield fast_conll.words_to_conll(sent, fields=FIELDS);
       yield "";
-    print("(CoNLL07:%s)" %(llnum2name(sent_count+step_size*BUF_SIZE)), \
+    print("(CoNLL07:%s)" %(llnum2name(sent_count+step_size*BUF_SIZE)),
         file=stderr, end=' ');
     if sent_count < BUF_SIZE:
       break;
@@ -174,15 +186,16 @@ def sentences_to_tok(sentences):
 def sentences_to_tagged(sentences, delim='|'):
   metaInfo = False;
   pos_key = 'ppostag' if FIELDS == CONLL09_COLUMNS \
-      else 'postag' if FIELDS == CONLLU_COLUMNS \
-      else 'cpostag'; 
+       else 'postag' if FIELDS == CONLLU_COLUMNS \
+       else 'cpostag'; 
   for sent_idx, sent in enumerate(sentences, start=1):
     if type(sent) == type(()) and len(sent) == 2:
       # input is a tuple, with meta-information and actual sentence;
       metaInfo = True;
       sentinfo, sent = sent[0], sent[1];
-    tagged_repr = " ".join("{0}{1}{2}".format(token['form'], delim, token[pos_key]) \
-        for token in sent);
+    tagged_repr = \
+        " ".join("{0}{1}{2}".format(token['form'], delim, token[pos_key]) \
+          for token in sent);
     yield tagged_repr if not metaInfo \
         else "{0}{1}".format(repr(sentinfo)+'\t', tagged_repr);
 
@@ -192,10 +205,11 @@ def sentences_to_propercased(sentences):
       else 'postag' if FIELDS == CONLLU_COLUMNS \
       else 'cpostag'; 
   for sent_idx, sent in enumerate(sentences, start=1):
-    cased_repr = " ".join(token['form'] \
-        if (token['feats'] != '_' and 'nertype' in (f for f, v in token['feats'])) or token[pos_key] == 'PROPN' \
-        or token['form'] == 'I' \
-        else token['form'].lower() \
+    cased_repr = \
+        " ".join(token['form'] if (token['feats'] != '_' and 'nertype' in (f for f, v in token['feats'])) \
+              or token[pos_key] == 'PROPN' \
+              or token['form'] == 'I' \
+          else token['form'].lower() \
         for token in sent);
     yield cased_repr;
 
@@ -208,7 +222,7 @@ def tokenized_to_sentences(sentences):
     if not len(tokens):
       print('warning: empty sentence at %d' %(sent_idx), file=stderr);
       continue;
-    conll_sent = [defaultdict(lambda: '_', {'form': tok, 'id': str(tok_idx)}) \
+    conll_sent = [defaultdict(lambda: '_', {'form': tok, 'id': str(tok_idx)})
         for tok_idx, tok in enumerate(tokens, start=1)];
     yield conll_sent;
 
@@ -224,10 +238,12 @@ def tagged_to_sentences(sentences, delim='|'):
     if not len(tokens):
       print('warning: empty sentence at %d' %(sent_idx), file=stderr);
       continue;
-    tagged_seq = ((tok.rsplit(delim, 1)[0], tok.rsplit(delim, 1)[1]) \
-        if tok.find(delim) != -1 else (tok, 'X') \
-        for tok in tokens);
-    conll_sent = [defaultdict(lambda: '_', {'form': tok, 'id': str(tok_idx), pos_key: tag}) \
+    tagged_seq = (
+      (tok.rsplit(delim, 1)[0], tok.rsplit(delim, 1)[1]) if tok.find(delim) != -1 
+      else (tok, 'X')
+     for tok in tokens
+        );
+    conll_sent = [defaultdict(lambda: '_', {'form': tok, 'id': str(tok_idx), pos_key: tag})
         for tok_idx, (tok, tag) in enumerate(tagged_seq, start=1)];
     yield conll_sent;
 
@@ -303,11 +319,10 @@ def makeConstituencyTree(conll_sentences):
 
 def addWNCategories(mapping, conll_sentences):
   for conll_sent in conll_sentences:
-    yield [dict(edge.items()+\
-        [('cpostag', mapping.get(edge['postag'], 'f')), \
-         ('lemma', edge['lemma'] if edge['lemma'] != '<unknown>' else edge['form'])]) \
-         for edge in conll_sent];
-
+    yield [dict(edge.items()
+           + [('cpostag', mapping.get(edge['postag'], 'f')), \
+              ('lemma', edge['lemma'] if edge['lemma'] != '<unknown>' else edge['form'])]) \
+       for edge in conll_sent];
 
 if __name__ == '__main__':
   #global FIELDS, CONLL07_COLUMNS, CONLL09_COLUMNS;
@@ -343,6 +358,7 @@ if __name__ == '__main__':
 
   with random_utils.smart_open(inputFilePath, 'rb') as inputfile, random_utils.smart_open(outputFilePath, 'wb') as outputfile:
     inputstream = random_utils.lines_from_filehandle(inputfile);
+    outputcontent = '';
 
     #outputcontent = sentences_to_tok(sentences_from_conll(inputstream));
     #outputcontent = sentences_to_tagged(sentences_from_conll(inputstream));

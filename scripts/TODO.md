@@ -1,3 +1,7 @@
+Adhere to PEP style hints provided in the following urls:
+  https://www.python.org/dev/peps/pep-0008/
+  https://www.python.org/dev/peps/pep-0484/
+
 PORTING from Python 2 to Python 3
 
 == checked scripts:
