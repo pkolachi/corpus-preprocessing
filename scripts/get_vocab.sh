@@ -1,26 +1,27 @@
 #!/bin/bash
 
 TAB=`echo -e "\t"`
-PARALLEL="--parallel=2"
-#PARALLEL=""
-
+#SORT_OPTS="-S 50% --parallel=8 -T $PWD/tmp";
+SORT_OPTS="-S 50% -T $PWD/tmp"
 
 mkdir -p "$PWD/tmp";
 bzcat $1 | grep -v "^#" | grep -v "^$" | \
+    head -n 100000 | \
     cut -f2,4 | LC_ALL="C" tr '[:upper:]' '[:lower:]' | \
-    LC_ALL="C" sort -k1"$PARALLEL" -T "$PWD/tmp" | uniq -c | \
+    LC_ALL="C" sort $SORT_OPTS -k1 | uniq -c | \
     sed -e 's/^[ \t]*//g' -e $'s/ /\t/g' | \
-    sort -S 50% -k1,1nr"$PARALLEL" --stable -t"$TAB" -T "$PWD/tmp" > "$2.vcb"
+    sort $SORT_OPTS -k1,1nr --stable -t"$TAB" > "$2.vcb"
 
 bzcat $1 | grep -v "^#" | grep -v "^$" | \
+    head -n 100000 | \
     cut -f2,3,4,6 | \
-    LC_ALL="C" sort -S 50%"$PARALLEL" -T "$PWD/tmp" | uniq -c #| \
+    LC_ALL="C" sort $SORT_OPTS | uniq -c | \
     sed -e 's/^[ \t]*//g' -e $'s/ /\t/g' | \
-    LC_ALL="C" sort -S 50%"$PARALLEL" -k4,4 -k3,3 -k2,2 | \
+    LC_ALL="C" sort $SORT_OPTS -k4,4 -k3,3 -k2,2 | \
     awk '{print $1"\t"$4"\t"$3"\t"$2"\t"$5;}' > "$2.morph_lexicon"
 
 cat "$2.vcb" | \
-    LC_ALL="C" sort -S8G -k2,3"$PARALLEL" --stable -t"$TAB" -T"$PWD/tmp" | \
+    LC_ALL="C" sort $SORT_OPTS -k2,3 --stable -t"$TAB" | \
     awk -F'\t' '
 { 
     if(key!=""$2) {
@@ -29,6 +30,6 @@ cat "$2.vcb" | \
 	value=value":::"$3; count+=$1;
     } 
 }' | \
-    sort -S 50% -k1,1nr"$PARALLEL" --stable -t"$TAB" -T "$PWD/tmp" > "$2.lexicon"
+    sort $SORT_OPTS -k1,1nr --stable -t"$TAB" > "$2.lexicon"
 
 
