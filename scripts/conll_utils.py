@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from __future__ import print_function, division;
 try:
@@ -60,7 +60,6 @@ BUF_SIZE = 100000;
 def words_from_conll(lines, fields):
   '''Read words for a single sentence from a CoNLL text file.'''
   # using this with filter doubles parsing time 
-  isNotEmpty  = lambda f, v: v != '_'; 
   def isMultiWord(x): return re.match('^[0-9]+?-[0-9]+?$', x);
   def parseFeats(fstruc): 
     return tuple(
@@ -72,8 +71,8 @@ def words_from_conll(lines, fields):
     if fields == CONLLU_COLUMNS and isMultiWord(entries[0]):
       continue;
     entries = zip(fields, entries);
-    # entries = ((x, y) for x, y in entries if y != '_'); 
     #-- there doesn't to be any point in have this?
+    #entries = ((x, y) for x, y in entries if y != '_'); 
     entry = defaultdict(lambda: '_', entries);
     if 'feats' in fields and entry['feats'] != '_':
       entry['feats'] = parseFeats(entry['feats']);
@@ -360,7 +359,7 @@ if __name__ == '__main__':
     inputstream = random_utils.lines_from_filehandle(inputfile);
     outputcontent = '';
 
-    #outputcontent = sentences_to_tok(sentences_from_conll(inputstream));
+    outputcontent = sentences_to_tok(sentences_from_conll(inputstream));
     #outputcontent = sentences_to_tagged(sentences_from_conll(inputstream));
     #outputcontent = sentences_to_propercased(sentences_from_conll(inputstream));
 
