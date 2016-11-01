@@ -155,6 +155,7 @@ def main():
   return 0;
 
 if __name__ == '__main__':
+  """
   import cProfile, pstats, sys;   
   try:
     cProfile.run("main()", "profiler");
@@ -165,4 +166,6 @@ if __name__ == '__main__':
     programStats = pstats.Stats("profiler");
     programStats.sort_stats('tottime').print_stats()
     sys.exit(1)
-
+  """
+  main();
+  sys.exit(0);
