@@ -55,10 +55,10 @@ def llnum2name(number):
 def lines_from_filehandle(filehandle, batchsize=0):
   global BUF_SIZE;
   batchsize = BUF_SIZE if not batchsize else batchsize;
-  line_count = 0;
   from itertools import islice;
   step_size = 0;
   while True:
+    line_count = 0;
     buf_file = islice(filehandle, batchsize);
     for line_count, line in enumerate(buf_file, start=1):
       yield line.decode('utf-8').strip();
@@ -72,11 +72,11 @@ def lines_from_filehandle(filehandle, batchsize=0):
 def lines_from_file(filename, large=False, batchsize=0):
   global BUF_SIZE;
   batchsize = BUF_SIZE if not batchsize else batchsize;
-  line_count = 0;
   from itertools import islice;
   step_size = 0;
   with smart_open(filename, large=large) as infile:
     while True:
+      line_count = 0;
       buf_file = islice(infile, batchsize);
       for line_count, line in enumerate(buf_file, start=1):
         yield line.decode('utf-8').strip();
@@ -90,10 +90,10 @@ def lines_from_file(filename, large=False, batchsize=0):
 def lines_to_filehandle(filehandle, lines, batchsize=0):
   global BUF_SIZE;
   batchsize = BUF_SIZE if not batchsize else batchsize;
-  line_count = 0;
   from itertools import islice;
   step_size = 0;
   while True:
+    line_count = 0;
     buf_lines = islice(lines, batchsize);
     for line_count, sent in enumerate(buf_lines, start=1):
       filehandle.write(u"{0}\n".format(sent.strip()).encode('utf-8'));
@@ -107,11 +107,11 @@ def lines_to_filehandle(filehandle, lines, batchsize=0):
 def lines_to_file(filename, lines, batchsize=0):
   global BUF_SIZE;
   batchsize = BUF_SIZE if not batchsize else batchsize;
-  line_count = 0;
   from itertools import islice;
   step_size = 0;
   with smart_open(filename, mode='wb') as outfile:
     while True:
+      line_count = 0;
       buf_lines = islice(lines, batchsize);
       for line_count, sent in enumerate(buf_lines, start=1):
         outfile.write(u"{0}\n".format(sent.strip()).encode('utf-8'));

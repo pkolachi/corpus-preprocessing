@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from __future__ import print_function;
+from __future__ import print_function, division;
 try:
   from globalimports import *
   import parallelize_utils as pu;
@@ -10,10 +10,11 @@ except ImportError:
     for this script");
   sys.exit(1);
 
+import sys;
+PY3 = False if sys.version_info < (3, 3) else True;
 import argparse;
 import multiprocessing;
 import re;
-import sys;
 import time;
 
 def read_mapping(mapfile):
@@ -56,9 +57,13 @@ def convert_tagged_text(gposmapfile, tagged_file='',
   map_tag = read_mapping(gposmapfile);
 
   delimold = delimnew = '_' if not delim else delim;
-  bufferSize = 50000;
+  bufferSize = 100000;
   if threads > 1:
-    pool = multiprocessing.Pool(threads, maxtasksperchild=1000);
+    pool = multiprocessing.Pool(threads, maxtasksperchild=10000);
+    mapper = pool.map if PY3 else pool.imap;
+    batchSize = int(bufferSize/threads);
+  else:
+    mapper = map;
 
   if keepTags:
     def outputWriter(args):
@@ -74,23 +79,22 @@ def convert_tagged_text(gposmapfile, tagged_file='',
   inputStream = ru.lines_from_file(tagged_file);
   ws = re.compile('\s+', flags=re.U);
   inputStream = map(lambda X: 
-      list(tuple(tok.rsplit(delimold, 1)) if tok.find(delimold) != -1 \
-        else (tok, '_UNK_') \
-      for tok in re.split(ws, X)), inputStream);
+      [tuple(tok.rsplit(delimold, 1)) if tok.find(delimold) != -1 \
+       else (tok, '_UNK_') \
+      for tok in re.split(ws, X)], inputStream);
 
   oldtime, newtime = time.time(), time.time();
   while True:
-    inputBuffer = list(islice(inputStream, bufferSize));
+    inputBuffer = [block for block in islice(inputStream, bufferSize)];
     formsBuffer = [[x for x, y in sentence] for sentence in inputBuffer];
     tagsBuffer  = [[y for x, y in sentence] for sentence in inputBuffer];
-
     if keepTags and threads > 1:
       outputBuffer = zip(
         formsBuffer, 
-        pool.imap(convert, tagsBuffer, chunksize=10000)
+        mapper(convert, tagsBuffer, chunksize=batchSize)
         );
     elif keepTags and threads <= 1:
-      outputBuffer = zip(formsBuffer, map(convert, tagsBuffer));
+      outputBuffer = zip(formsBuffer, mapper(convert, tagsBuffer));
     else:
       outputBuffer = formsBuffer;
     
@@ -126,7 +130,7 @@ def cmdLineParser():
       help='');
   return argparser;
 
-if __name__ == '__main__':
+def main():
   prog_opts = cmdLineParser().parse_args(sysargv[1:]);
   tagged_sequences = convert_tagged_text(
     prog_opts.mapping_file,
@@ -148,4 +152,17 @@ if __name__ == '__main__':
     lines = tagged_sequences;
 
   ru.lines_to_file(prog_opts.output_file, lines);
-  sysexit(0);
+  return 0;
+
+if __name__ == '__main__':
+  import cProfile, pstats, sys;   
+  try:
+    cProfile.run("main()", "profiler");
+    programStats = pstats.Stats("profiler");
+    programStats.sort_stats('tottime').print_stats();
+    sys.exit(0);
+  except KeyboardInterrupt:
+    programStats = pstats.Stats("profiler");
+    programStats.sort_stats('tottime').print_stats()
+    sys.exit(1)
+
