@@ -56,6 +56,7 @@ MORFETTE_COLUMNS = ('form', 'lemma', 'postag', );
 
 FIELDS = CONLLU_COLUMNS;
 BUF_SIZE = 100000;
+TAB_CHAR = re.compile('\t', flags=re.U);
 
 def words_from_conll(lines, fields):
   '''Read words for a single sentence from a CoNLL text file.'''
@@ -66,8 +67,9 @@ def words_from_conll(lines, fields):
       tuple(x.split('=', 1)) for x in fstruc.split('|')
     );
 
+  global TAB_CHAR;
   for line in lines:
-    entries = line.split('\t');
+    entries = re.split(TAB_CHAR, line);
     if fields == CONLLU_COLUMNS and isMultiWord(entries[0]):
       continue;
     entries = zip(fields, entries);
@@ -89,7 +91,7 @@ def lines_from_conll(lines):
 
 def sentences_from_conll(stream, comments=True):
   '''Read sentences from lines in an open CoNLL file handle.'''
-  global FIELDS;
+  global FIELDS, BUF_SIZE;
   sent_count = 0;
   while True:
     lines = tuple(lines_from_conll(stream));
@@ -125,12 +127,13 @@ def words_to_conll(sent, fields=CONLL07_COLUMNS):
   return '\n'.join(str_repr);
 
 def sentences_to_conll07(sentences):
-  global CONLL07_COLUMNS;
+  global CONLL07_COLUMNS, BUF_SIZE;
   if not sentences:
     print("(CoNLL07:%s)" %(llnum2name(0)), file=stderr);
     return;
   step_size = 0;
   while True:
+    sent_count = 0;
     buf_sents = islice(sentences, BUF_SIZE);
     for sent_count, sent in enumerate(buf_sents, start=1):
       yield fast_conll.words_to_conll(sent, fields=CONLL07_COLUMNS);
@@ -143,12 +146,13 @@ def sentences_to_conll07(sentences):
   return;
 
 def sentences_to_conll09(sentences):
-  global CONLL09_COLUMNS;
+  global CONLL09_COLUMNS, BUF_SIZE;
   if not sentences:
     print("(CoNLL09:%s)" %(llnum2name(0)), file=stderr);
     return;
   step_size = 0;
   while True:
+    sent_count = 0;
     buf_sents = islice(sentences, BUF_SIZE);
     for sent_count, sent in enumerate(buf_sents, start=1):
       yield fast_conll.words_to_conll(sent, fields=CONLL09_COLUMNS);
@@ -161,12 +165,13 @@ def sentences_to_conll09(sentences):
   return;
 
 def sentences_to_conll(sentences):
-  global FIELDS;
+  global FIELDS, BUF_SIZE;
   if not sentences:
     print("(CoNLL09:%s)" %(llnum2name(0)), file=stderr);
     return;
   step_size = 0;
   while True:
+    sent_count = 0;
     buf_sents = islice(sentences, BUF_SIZE);
     for sent_count, sent in enumerate(buf_sents, start=1):
       yield fast_conll.words_to_conll(sent, fields=FIELDS);
@@ -225,7 +230,7 @@ def tokenized_to_sentences(sentences):
         for tok_idx, tok in enumerate(tokens, start=1)];
     yield conll_sent;
 
-def tagged_to_sentences(sentences, delim='|'):
+def tagged_to_sentences(sentences, delim='_'):
   global FIELDS;
   pos_key = 'ppostag' if FIELDS == CONLL09_COLUMNS \
       else 'postag' if FIELDS == CONLLU_COLUMNS \
@@ -359,11 +364,11 @@ if __name__ == '__main__':
     inputstream = random_utils.lines_from_filehandle(inputfile);
     outputcontent = '';
 
-    outputcontent = sentences_to_tok(sentences_from_conll(inputstream));
+    #outputcontent = sentences_to_tok(sentences_from_conll(inputstream));
     #outputcontent = sentences_to_tagged(sentences_from_conll(inputstream));
     #outputcontent = sentences_to_propercased(sentences_from_conll(inputstream));
 
-    #outputcontent = sentences_to_conll07(tagged_to_sentences(inputstream));
+    outputcontent = sentences_to_conll07(tagged_to_sentences(inputstream));
     #outputcontent = sentences_to_conll07(tokenized_to_sentences(inputstream));
     #outputcontent = sentences_to_conll09(tagged_to_sentences(inputstream));
     #outputcontent = sentences_to_conll09(tokenized_to_sentences(inputstream));

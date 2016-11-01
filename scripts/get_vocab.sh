@@ -6,14 +6,12 @@ SORT_OPTS="-S 50% -T $PWD/tmp"
 
 mkdir -p "$PWD/tmp";
 bzcat $1 | grep -v "^#" | grep -v "^$" | \
-    head -n 100000 | \
     cut -f2,4 | LC_ALL="C" tr '[:upper:]' '[:lower:]' | \
     LC_ALL="C" sort $SORT_OPTS -k1 | uniq -c | \
     sed -e 's/^[ \t]*//g' -e $'s/ /\t/g' | \
     sort $SORT_OPTS -k1,1nr --stable -t"$TAB" > "$2.vcb"
 
 bzcat $1 | grep -v "^#" | grep -v "^$" | \
-    head -n 100000 | \
     cut -f2,3,4,6 | \
     LC_ALL="C" sort $SORT_OPTS | uniq -c | \
     sed -e 's/^[ \t]*//g' -e $'s/ /\t/g' | \
