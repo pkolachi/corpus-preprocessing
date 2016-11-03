@@ -89,9 +89,10 @@ def lines_from_conll(lines):
       return;
     yield line.strip();
 
-def sentences_from_conll(stream, comments=True):
+def sentences_from_conll(stream, comments=True, fields=None):
   '''Read sentences from lines in an open CoNLL file handle.'''
   global FIELDS, BUF_SIZE;
+  if not fields: fields = FIELDS;
   sent_count = 0;
   while True:
     lines = tuple(lines_from_conll(stream));
@@ -102,7 +103,7 @@ def sentences_from_conll(stream, comments=True):
       comm_lines = i.takewhile(lambda X: X.startswith('#'), lines);
       comm_lines = '\n'.join(comm_lines); 
     conll_lines = i.dropwhile(lambda X: X.startswith('#'), lines);
-    tree = list(fast_conll.words_from_conll(conll_lines, fields=FIELDS));
+    tree = list(fast_conll.words_from_conll(conll_lines, fields=fields));
     if len(comm_lines) and comments:
       # we are deliberately dropping all comment lines;
       yield tree;#(comm_lines, tree);
@@ -364,11 +365,11 @@ if __name__ == '__main__':
     inputstream = random_utils.lines_from_filehandle(inputfile);
     outputcontent = '';
 
-    #outputcontent = sentences_to_tok(sentences_from_conll(inputstream));
+    outputcontent = sentences_to_tok(sentences_from_conll(inputstream));
     #outputcontent = sentences_to_tagged(sentences_from_conll(inputstream));
     #outputcontent = sentences_to_propercased(sentences_from_conll(inputstream));
 
-    outputcontent = sentences_to_conll07(tagged_to_sentences(inputstream));
+    #outputcontent = sentences_to_conll07(tagged_to_sentences(inputstream));
     #outputcontent = sentences_to_conll07(tokenized_to_sentences(inputstream));
     #outputcontent = sentences_to_conll09(tagged_to_sentences(inputstream));
     #outputcontent = sentences_to_conll09(tokenized_to_sentences(inputstream));
