@@ -12,27 +12,34 @@ class EvaluationResult:
     # each key represents a property that is being evaluated
     # for e.g, key can be 'precision', 'recall', 'precision of unknown' so on 
     self.scores = defaultdict(list);
-    self._names = [('poseval-p', 'POS Precision'), \
-        ('poseval-unk-p', 'POS Precision (u)'), \
-        ('las-p', 'LAS Precision'), \
-        ('uas-p', 'UAS Precision'), \
-        ('lacc-p', 'LAcc Precision'), \
-        ('las-unk-p', 'LAS Precision (u)'), \
-        ('uas-unk-p', 'UAS Precision (u)'), \
-        ('lacc-unk-p', 'LAcc Precision (u)'), \
-        ('lemma-p', 'Lemma Precision'), \
-        ('lemma-unk-p', 'Lemma Precision (u)')];
+    self._names = [
+        ('poseval-p', 'POS Precision'),
+        ('poseval-unk-p', 'POS Precision (u)'),
+        ('las-p', 'LAS Precision'),
+        ('uas-p', 'UAS Precision'),
+        ('lacc-p', 'LAcc Precision'),
+        ('las-unk-p', 'LAS Precision (u)'),
+        ('uas-unk-p', 'UAS Precision (u)'),
+        ('lacc-unk-p', 'LAcc Precision (u)'),
+        ('lemma-p', 'Lemma Precision'),
+        ('lemma-unk-p', 'Lemma Precision (u)')
+        ];
     self.names = dict(self._names);
 
   def summarize(self):
     summary = [];
     # address how many words have been replaced by the mechanism;
-    correct = sum(replaced for replaced, total, _ \
-        in self.scores['eval-unk-repl']);
-    total   = sum(total    for replaced, total, _ \
-        in self.scores['eval-unk-repl']);
-    summary.append("Unknown replaced:%d %d(%.3f)" \
-        %(correct, total, 100*(correct/total)));
+    correct = sum(
+        replaced 
+        for replaced, total, _ in self.scores['eval-unk-repl']
+        );
+    total = sum(
+        total 
+        for replaced, total, _ in self.scores['eval-unk-repl']
+        );
+    summary.append(
+        "Unknown replaced:%d %d(%.3f)" %(correct, total, 100*(correct/total))
+        );
     for prop, propname in self._names:
       if prop not in self.scores:
         continue;

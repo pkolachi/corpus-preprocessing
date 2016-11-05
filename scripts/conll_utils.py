@@ -104,7 +104,7 @@ def sentences_from_conll(stream, comments=True, fields=None):
       comm_lines = '\n'.join(comm_lines); 
     conll_lines = i.dropwhile(lambda X: X.startswith('#'), lines);
     tree = list(fast_conll.words_from_conll(conll_lines, fields=fields));
-    if len(comm_lines) and comments:
+    if comments and len(comm_lines):
       # we are deliberately dropping all comment lines;
       yield tree;#(comm_lines, tree);
     else:
