@@ -5,7 +5,7 @@ PY3 = False if sys.version_info < (3, 3) else True;
 
 BUF_SIZE = 1000000;
 
-def smart_open(filename='', mode='rb', large=False, fast=True):
+def smart_open(filename='', mode='rb', large=False, fast=False):
   from bz2 import BZ2File;
   from gzip import GzipFile;
 
