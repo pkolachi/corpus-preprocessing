@@ -1,7 +1,8 @@
-
 annotators = tokenize, ssplit, pos, lemma, ner, regexner, parse
 outputFormat = xml 
+
 tokenize.options = americanize=false,strictTreebank3=true,untokenizable=allKeep
 pos.maxlen = 100
 parse.model = /Users/prakol/Documents/chalmers-work/parser-benchmarking/resources/parsers/constituency/stanford/stanford-parser-full-2013-11-12/edu/stanford/nlp/models/lexparser/englishRNN.ser.gz
+parse.maxlen = 100
 parse.maxlen = 100
