@@ -1,0 +1,5 @@
+
+annotators = tokenize, ssplit, pos, lemma, ner, parse
+outputFormat = xml 
+pos.maxlen = 100
+parse.maxlen = 100

@@ -1,0 +1,6 @@
+annotators = tokenize, ssplit, pos, lemma, ner
+outputFormat = xml 
+tokenize.options = americanize=false,strictTreebank3=true,untokenizable=allKeep
+ssplit.eolonly = true
+pos.model = /Users/prakol/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-postagger-full-2013-11-12/models/english-bidirectional-distsim.tagger
+pos.maxlen = 1000
