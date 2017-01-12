@@ -29,11 +29,13 @@ class EvaluationResult:
   def summarize(self):
     summary = [];
     # address how many words have been replaced by the mechanism;
-    correct = sum(
+    correct = \
+        sum(
         replaced 
         for replaced, total, _ in self.scores['eval-unk-repl']
         );
-    total = sum(
+    total = \
+        sum(
         total 
         for replaced, total, _ in self.scores['eval-unk-repl']
         );

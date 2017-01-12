@@ -29,13 +29,14 @@ def smart_open(filename='', mode='rb', large=False, fast=False):
 
   #-- does not work with python2, only with python3 (3.3 and later)
   #return io.BufferedReader(cstream) if filename.strip() and mode in ['r', 'rb'] \
-  #    else io.BufferedWriter(cstream) if filename.strip() and mode in ['w', 'wb'] \
-  #    else cstream;  # stdin and stdout can not be used with BufferedReader/Writer
+  #  else io.BufferedWriter(cstream) if filename.strip() and mode in ['w', 'wb'] \
+  #  else cstream;  # stdin and stdout can not be used with BufferedReader/Writer
 
   # HACK- to use Buffered* for everything other than bz2 in python2 & stdin/stdout;
-  return cstream if (filename.strip() and ext == '.bz2' and not PY3) or (not filename.strip()) \
-      else io.BufferedReader(cstream) if mode in ['r', 'rb'] \
-      else io.BufferedWriter(cstream);
+  return cstream \
+    if (filename.strip() and ext == '.bz2' and not PY3) or (not filename.strip()) \
+    else io.BufferedReader(cstream) if mode in ['r', 'rb'] \
+    else io.BufferedWriter(cstream);
 
 def llnum2name(number):
   num_map = {3: 'K', 6: 'M', 9: 'B', 12: 'T', 15: 'Q', 18: 'Qu', 21: 'S'};

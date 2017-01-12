@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 from globalimports import *;
-import random_utils;
-import conll_utils;
+import random_utils as ru;
+import conll_utils  as cu;
 import sys;
 
 
