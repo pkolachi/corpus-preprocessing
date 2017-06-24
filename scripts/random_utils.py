@@ -61,7 +61,7 @@ def llnum2name(number):
   fbase, fsuffix =  3, 'K';
   for (base, suf) in num_map:
     try:
-      if math.log(number, 10) >= base:
+      if log10(number) >= base:
         fbase, fsuffix = base, suf;
         break;
     except ValueError:
@@ -78,7 +78,7 @@ def lines_from_filehandle(filehandle, batchsize=0):
     lc = 0;
     bufblock = islice(filehandle, batchsize);
     for lc, line in enumerate(bufblock, start=1):
-      yield line.decode('utf-8').strip();
+      yield line.strip();
     print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
       file=sys.stderr, end=' ');
     if lc < batchsize:
@@ -95,7 +95,7 @@ def lines_from_file(filename, large=False, batchsize=0):
       lc = 0;
       bufblock = islice(infile, batchsize);
       for lc, line in enumerate(bufblock, start=1):
-        yield line.decode('utf-8').strip();
+        yield line.strip();
       print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
         file=sys.stderr, end=' ');
       if lc < batchsize:
@@ -111,7 +111,7 @@ def lines_to_filehandle(filehandle, lines, batchsize=0):
     lc = 0;
     bufblock = islice(lines, batchsize);
     for lc, sent in enumerate(bufblock, start=1):
-      filehandle.write(u"{0}\n".format(sent.strip()).encode('utf-8'));
+      filehandle.write(u"{0}\n".format(sent.strip()));
     print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
         file=sys.stderr, end=' ');
     if lc < batchsize:
@@ -122,14 +122,13 @@ def lines_to_filehandle(filehandle, lines, batchsize=0):
 def lines_to_file(filename, lines, batchsize=0):
   global BUF_SIZE;
   batchsize = BUF_SIZE if not batchsize else batchsize;
-  from itertools import islice;
   stepsize = 0;
   with smart_open(filename, mode='wb') as outfile:
     while True:
       lc = 0;
       bufblock = islice(lines, batchsize);
       for lc, sent in enumerate(bufblock, start=1):
-        outfile.write(u"{0}\n".format(sent.strip()).encode('utf-8'));
+        outfile.write(u"{0}\n".format(sent.strip()));
       print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
           file=sys.stderr, end=' ');
       if lc < batchsize:
@@ -137,7 +136,7 @@ def lines_to_file(filename, lines, batchsize=0):
       stepsize += 1;
   return True;
 
-def encode_sentence(sentence, vocabulary, id_gen=itertools.count(1)):
+def encode_sentence(sentence, vocabulary, id_gen=it.count(1)):
   enc_repr = [];
   for token in re.split('\s+', sentence.strip()):
     if token in vocabulary:
