@@ -1,7 +1,12 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 
+from builtins    import xrange as range;
+from builtins    import raw_input as input;
 from collections import defaultdict;
 from itertools   import \
+  imap    as map, \
+  ifilter as filter, \
+  izip    as zip, \
   count   as counter, \
   repeat  as replicate, \
   islice, starmap;

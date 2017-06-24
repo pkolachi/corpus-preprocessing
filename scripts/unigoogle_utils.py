@@ -42,11 +42,11 @@ def convert(tag_sequence, mapping=None):
       if len(best_match) < 1: 
         best_match = [key for key in \
           filter(lambda X: len(X) == 1, possible_matches)];
-      coarse_sequence.append( mapping[best_match[0]] );
+      coarse_sequence.append(mapping[best_match[0]]);
     elif tag == '_UNK_' or len(possible_matches) == 0:
-      coarse_sequence.append( 'X' );
+      coarse_sequence.append('X');
     else:
-      coarse_sequence.append( mapping[possible_matches[0]] );
+      coarse_sequence.append(mapping[possible_matches[0]]);
   return coarse_sequence;
 
 map_tag = defaultdict(lambda:'X');

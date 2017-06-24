@@ -75,11 +75,13 @@ def words_from_conll(lines, fields):
     entries = zip(fields, entries);
     #-- there doesn't to be any point in have this?
     #entries = ((x, y) for x, y in entries if y != '_'); 
-    entry = defaultdict(lambda: '_', entries);
+    entry = defaultdict(lambda: u'_', entries);
+    '''
     if 'feats' in fields and entry['feats'] != '_':
       entry['feats'] = parseFeats(entry['feats']);
     if 'pfeats' in fields and entry['pfeats'] != '_':
       entry['feats'] = parseFeats(entry['feats']);
+    '''
     yield entry;
 
 def lines_from_conll(lines):
@@ -99,18 +101,21 @@ def sentences_from_conll(stream, comments=True, fields=None):
     if not len(lines):
       break;
     sent_count += 1;
+
     if comments:
       comm_lines = i.takewhile(lambda X: X.startswith('#'), lines);
       comm_lines = '\n'.join(comm_lines); 
       conll_lines = i.dropwhile(lambda X: X.startswith('#'), lines);
     else:
       conll_lines = lines;
+    
     tree = list(fast_conll.words_from_conll(conll_lines, fields=fields));
     if comments and len(comm_lines):
       # we are deliberately dropping all comment lines;
-      yield tree;#(comm_lines, tree);
+      yield (comm_lines, tree);
     else:
       yield tree;
+    
     if not sent_count%BUF_SIZE:
       print("(CoNLL:%s)" %(llnum2name(sent_count)), file=stderr, end=' ');
   print("(CoNLL:%s)" %(llnum2name(sent_count)), file=stderr);
@@ -118,16 +123,16 @@ def sentences_from_conll(stream, comments=True, fields=None):
 def words_to_conll(sent, fields=CONLL07_COLUMNS):
   str_repr = [];
   if type(sent) == type(()) and len(sent) == 2:
-    str_repr.append(str(sent[0]));
+    str_repr.append(sent[0]);
     sent = sent[1];
   for token in sent:
     feat_repr = \
-        '|'.join('%s=%s' %(feat, value) for feat, value in token['feats']) \
+        u'|'.join('%s=%s' %(feat, value) for feat, value in token['feats']) \
         if 'feats' in token and type(token['feats']) == type(()) \
         else token['feats'];
     token['feats'] = feat_repr if feat_repr.strip() else '_';
     str_repr.append('\t'.join(token[feat] for feat in fields));
-  return '\n'.join(str_repr);
+  return u'\n'.join(str_repr);
 
 def sentences_to_conll07(sentences):
   global CONLL07_COLUMNS, BUF_SIZE;
