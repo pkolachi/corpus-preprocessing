@@ -6,11 +6,10 @@ from itertools   import \
   repeat  as replicate, \
   islice, starmap;
 from math        import log10;
-from operator    import itemgetter;
 from sys         import argv as sysargv, \
-  stdin  as stdin, \
-  stdout as stdout, \
-  stderr as stderr, \
+  stdin  as sysin, \
+  stdout as sysout, \
+  stderr as syserr, \
   exit   as sysexit;
 from bz2         import BZ2File;
 from gzip        import GzipFile;
@@ -21,16 +20,17 @@ import os;
 import random;
 import re;
 import subprocess;
-import sys;
 
 BUF_SIZE = 1000000;
+READ_MODES = ('rb', 'r', 'rt', );
+WRITE_MODES = ('wb', 'w', 'wt', );
 
 def smart_open(filename='', mode='rb', large=False, fast=False):
   bufferSize = ((2<<16)+8) if large == True else io.DEFAULT_BUFFER_SIZE;
   filename = filename.strip();
   if filename:
     _, ext = os.path.splitext(filename);
-    if ext in ['.bz2', '.gz'] and mode in ['r', 'rb'] and fast:
+    if ext in ('.bz2', '.gz') and mode in READ_MODES and fast:
       cmd = '/usr/bin/bzcat' if ext == '.bz2' else '/usr/bin/gzcat';
       proc = subprocess.Popen([cmd, filename], stdout=subprocess.PIPE);
       iostream = proc.stdout;
@@ -42,11 +42,15 @@ def smart_open(filename='', mode='rb', large=False, fast=False):
     else:
       iostream = io.open(filename,  mode=mode, buffering=bufferSize);
   else:
-    iostream = sys.stdin if mode in ['r', 'rb'] else sys.stdout;
-  #-- works only with python3 (3.3 and later)
-  return io.BufferedReader(iostream) if filename.strip() and mode in ['r', 'rb'] \
-    else io.BufferedWriter(iostream) if filename.strip() and mode in ['w', 'wb'] \
-    else iostream;  # stdin and stdout can not be used with BufferedReader/Writer
+    # trick to use BufferedReader/Writer objects with stdin, stdout
+    # https://stackoverflow.com/questions/6065173/making-io-bufferedreader-from-sys-stdin-in-python2
+    iostream = io.open(sysin.fileno(), mode=mode, buffering=bufferSize) \
+        if mode in ['r', 'rb'] \
+        else io.open(sysout.fileno(), mode=mode, buffering=bufferSize);
+
+  #-- works with python3 (3.3 and later)
+  return io.BufferedReader(iostream) if mode in READ_MODES \
+    else io.BufferedWriter(iostream);
 
 def llnum2name(number):
   num_map = [
@@ -54,9 +58,9 @@ def llnum2name(number):
     (18, 'Qu'),  # quintillion
     (15, 'Q'),   # quadrillion
     (12, 'T'),   # trillion
-    (9, 'B'),    # billion
-    (6, 'M'),    # million
-    (3, 'K')     # thousand
+    ( 9, 'B'),   # billion
+    ( 6, 'M'),   # million
+    ( 3, 'K')    # thousand
     ]
   fbase, fsuffix =  3, 'K';
   for (base, suf) in num_map:
@@ -65,7 +69,7 @@ def llnum2name(number):
         fbase, fsuffix = base, suf;
         break;
     except ValueError:
-      print(number, file=sys.stderr);
+      print(number, file=syserr);
   return '{:.3f}{}'.format(number/(10**fbase), fsuffix) \
       if (number%(10**fbase)) \
       else '{}{}'.format(number//(10**fbase), fsuffix);
@@ -80,7 +84,7 @@ def lines_from_filehandle(filehandle, batchsize=0):
     for lc, line in enumerate(bufblock, start=1):
       yield line.strip();
     print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
-      file=sys.stderr, end=' ');
+      file=syserr, end=' ');
     if lc < batchsize:
       break;
     stepsize += 1;
@@ -97,7 +101,7 @@ def lines_from_file(filename, large=False, batchsize=0):
       for lc, line in enumerate(bufblock, start=1):
         yield line.strip();
       print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
-        file=sys.stderr, end=' ');
+        file=syserr, end=' ');
       if lc < batchsize:
         break;
       stepsize += 1;
@@ -113,7 +117,7 @@ def lines_to_filehandle(filehandle, lines, batchsize=0):
     for lc, sent in enumerate(bufblock, start=1):
       filehandle.write(u"{0}\n".format(sent.strip()));
     print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
-        file=sys.stderr, end=' ');
+        file=syserr, end=' ');
     if lc < batchsize:
       break;
     stepsize += 1;
@@ -130,13 +134,13 @@ def lines_to_file(filename, lines, batchsize=0):
       for lc, sent in enumerate(bufblock, start=1):
         outfile.write(u"{0}\n".format(sent.strip()));
       print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
-          file=sys.stderr, end=' ');
+          file=syserr, end=' ');
       if lc < batchsize:
         break;
       stepsize += 1;
   return True;
 
-def encode_sentence(sentence, vocabulary, id_gen=it.count(1)):
+def encode_sentence(sentence, vocabulary, id_gen=counter(1)):
   enc_repr = [];
   for token in re.split('\s+', sentence.strip()):
     if token in vocabulary:
@@ -177,7 +181,7 @@ def splitTextFileIntoChunks(filename, outfileprefix=None):
   foldcount = len(folded_sentences);
   if outfileprefix:
     pid = os.getpid();
-    for foldidx in xrange(foldcount):
+    for foldidx in range(foldcount):
       if not lines_to_file('%s.%s.%d'%(outfileprefix, pid, foldidx+1), \
           folded_sentences[foldidx]):
         return False;

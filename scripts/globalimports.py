@@ -8,9 +8,9 @@ from itertools   import \
 from operator    import itemgetter;
 from sys         import \
   argv   as sysargv, \
-  stdin  as stdin, \
-  stdout as stdout, \
-  stderr as stderr, \
+  stdin  as sysin, \
+  stdout as sysout, \
+  stderr as syserr, \
   exit   as sysexit;
 
 import re;

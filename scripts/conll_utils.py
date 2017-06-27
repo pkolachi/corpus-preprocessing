@@ -2,22 +2,26 @@
 
 from __future__ import print_function, division;
 try:
+  import sys;
+  assert(sys.version_info > (3, 0, 0));
+  PY3 = True;
   from globalimports import *;
-  from random_utils import llnum2name as llnum2name;
-  import random_utils;
+  import random_utils as ru;
+  llnum2name = ru.llnum2name;
+except AssertionError:
+  PY3 = False;
+  from py2_globalimports import *;
+  import py2_random_utils as ru;
+  llnum2name = ru.llnum2name;
 except ImportError:
   sys.exit(1);
   llnum2name = lambda x: str(x);
 
-#from itertools import dropwhile, takewhile;
-import itertools as i;
 import re;
 
 # this allows to switch the module with any other module
 # for e.g. memopt_conll_utils or a faster cython version
 fast_conll = __import__('conll_utils');
-
-global CONLL07_COLUMNS, CONLL09_COLUMNS, FIELDS;
 
 # These are the labels on the columns in the CoNLL 2007 dataset.
 CONLL07_COLUMNS = (
@@ -103,9 +107,9 @@ def sentences_from_conll(stream, comments=True, fields=None):
     sent_count += 1;
 
     if comments:
-      comm_lines = i.takewhile(lambda X: X.startswith('#'), lines);
+      comm_lines = it.takewhile(lambda X: X.startswith('#'), lines);
       comm_lines = '\n'.join(comm_lines); 
-      conll_lines = i.dropwhile(lambda X: X.startswith('#'), lines);
+      conll_lines = it.dropwhile(lambda X: X.startswith('#'), lines);
     else:
       conll_lines = lines;
     
@@ -361,15 +365,17 @@ if __name__ == '__main__':
   #FIELDS = CONLL09_COLUMNS;
   FIELDS = CONLL07_COLUMNS;
 
+  """
   try:
     from mtutils import moses_deescapeseq;
   except ImportError:
     moses_deescapeseq = lambda x: x;
+  """
 
-  #augment_constparse(sentences_from_conll(sysargv[1]), random_utils.lines_from_file(sysargv[2]));
+  #augment_constparse(sentences_from_conll(sysargv[1]), ru.lines_from_file(sysargv[2]));
 
-  with random_utils.smart_open(inputFilePath, 'rb') as inputfile, random_utils.smart_open(outputFilePath, 'wb') as outputfile:
-    inputstream = random_utils.lines_from_filehandle(inputfile);
+  with ru.smart_open(inputFilePath, 'rb') as inputfile, ru.smart_open(outputFilePath, 'wb') as outputfile:
+    inputstream = ru.lines_from_filehandle(inputfile);
     outputcontent = '';
 
     outputcontent = sentences_to_tok(sentences_from_conll(inputstream));
@@ -386,6 +392,6 @@ if __name__ == '__main__':
     #wn_tag_mapping = dict((x.strip(), y.strip()) for x, y in map(lambda x: x.split('\t', 1), (line for line in stdin)));
     #outputcontent = sentences_to_conll07(addWNCategories(mapping, sentences_from_conll(inputstream)));
 
-    random_utils.lines_to_filehandle(outputfile, outputcontent);
+    ru.lines_to_filehandle(outputfile, outputcontent);
   sysexit(0);
   #'''

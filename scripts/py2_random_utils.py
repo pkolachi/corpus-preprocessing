@@ -8,10 +8,13 @@ from itertools   import count as counter, \
   islice;
 from math        import log10;
 from sys         import argv as sysargv, \
-  stdin  as stdin, \
-  stdout as stdout, \
-  stderr as stderr, \
+  stdin  as sysin, \
+  stdout as sysout, \
+  stderr as syserr, \
   exit   as sysexit;
+from bz2         import BZ2File;
+from gzip        import GzipFile;
+
 import io;
 import itertools as it;
 import os;
@@ -20,34 +23,35 @@ import re;
 import subprocess;
 
 BUF_SIZE = 1000000;
+READ_MODES = ('rb', 'r', 'rt', );
+WRITE_MODES = ('wb', 'w', 'wt', );
 
 def smart_open(filename='', mode='rb', large=False, fast=False):
   bufferSize = ((2<<16)+8) if large == True else io.DEFAULT_BUFFER_SIZE;
   filename = filename.strip();
   if filename:
     _, ext = os.path.splitext(filename);
-    if ext in ('.bz2', '.gz') and mode in ('r', 'rb') and fast:
+    if ext in ('.bz2', '.gz') and mode in READ_MODES and fast:
       cmd = '/usr/bin/bzcat' if ext == '.bz2' else '/usr/bin/gzcat';
       proc = subprocess.Popen([cmd, filename], stdout=subprocess.PIPE);
       iostream = proc.stdout;
       iostream.read1 = iostream.read; ## hack to get BufferedReader to work
     elif ext == '.bz2':
-      iostream = BZ2File (filename,  mode=mode, buffering=bufferSize);
+      iostream = BZ2File(filename,  mode=mode, buffering=bufferSize);
     elif ext == '.gz':
-      iostream = GzipFile(filename,  mode=mode);
+      iostream = GzipFile(filename, mode=mode);
     else:
-      iostream = io.open (filename,  mode=mode, buffering=bufferSize);
+      iostream = io.open(filename,  mode=mode, buffering=bufferSize);
   else:
-    iostream = sysin if mode in ['r', 'rb'] else sysout;
-  #-- does not work with python2, only with python3 (3.3 and later)
-  #return io.BufferedReader(iostream) if filename.strip() and mode in ['r', 'rb'] \
-  #  else io.BufferedWriter(iostream) if filename.strip() and mode in ['w', 'wb'] \
-  #  else iostream;  # stdin and stdout cannot be used with BufferedReader/Writer
+    # trick to use BufferedReader/Writer objects with stdin, stdout
+    # https://stackoverflow.com/questions/6065173/making-io-bufferedreader-from-sys-stdin-in-python2
+    iostream = io.open(sysin.fileno(), mode=mode, buffering=bufferSize) \
+        if mode in ['r', 'rb'] \
+        else io.open(sysout.fileno(), mode=mode, buffering=bufferSize);
 
-  # HACK- to use Buffered* for everything other than bz2 in python2 & stdin/stdout;
-  return iostream \
-    if (filename and ext == '.bz2' and not PY3) or (not filename) \
-    else io.BufferedReader(iostream) if mode in ['r', 'rb'] \
+  # HACK- to use Buffered* for everything other than bz2 in python2;
+  return iostream if (filename and ext == '.bz2') \
+    else io.BufferedReader(iostream) if mode in READ_MODES \
     else io.BufferedWriter(iostream);
 
 def llnum2name(number):
@@ -63,85 +67,79 @@ def llnum2name(number):
   fbase, fsuffix =  3, 'K';
   for (base, suf) in num_map:
     try:
-      if math.log(number, 10) >= base:
+      if log10(number) >= base:
         fbase, fsuffix = base, suf;
         break;
     except ValueError:
-      print(number, file=sys.stderr);
-  fstring = "{:.3f}{}" 
-  if (number%10**fbase):
-    return '%.3f%c' %(float(number)/10**good_base, num_map[good_base]);
-  else:
-    return '%d%c' %(number/10**good_base, num_map[good_base]);
-      
+      print(number, file=syserr);
+  return '{:.3f}{}'.format(number/(10**fbase), fsuffix) \
+      if (number%(10**fbase)) \
+      else '{}{}'.format(number//(10**fbase), fsuffix);
+
 def lines_from_filehandle(filehandle, batchsize=0):
   global BUF_SIZE;
   batchsize = BUF_SIZE if not batchsize else batchsize;
-  from itertools import islice;
-  step_size = 0;
+  stepsize = 0;
   while True:
-    line_count = 0;
-    buf_file = islice(filehandle, batchsize);
-    for line_count, line in enumerate(buf_file, start=1):
+    lc = 0;
+    bufblock = islice(filehandle, batchsize);
+    for lc, line in enumerate(bufblock, start=1):
       yield line.decode('utf-8').strip();
-    print('(%s)'%(llnum2name(line_count+step_size*batchsize)), \
-        file=sys.stderr, end=' ');
-    if line_count < batchsize:
+    print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
+      file=syserr, end=' ');
+    if lc < batchsize:
       break;
-    step_size += 1;
+    stepsize += 1;
   return;
 
 def lines_from_file(filename, large=False, batchsize=0):
   global BUF_SIZE;
   batchsize = BUF_SIZE if not batchsize else batchsize;
-  from itertools import islice;
-  step_size = 0;
+  stepsize = 0;
   with smart_open(filename, large=large) as infile:
     while True:
-      line_count = 0;
-      buf_file = islice(infile, batchsize);
-      for line_count, line in enumerate(buf_file, start=1):
+      lc = 0;
+      bufblock = islice(infile, batchsize);
+      for lc, line in enumerate(bufblock, start=1):
         yield line.decode('utf-8').strip();
-      print('(%s)'%(llnum2name(line_count+step_size*batchsize)), \
-          file=sys.stderr, end=' ');
-      if line_count < batchsize:
+      print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
+        file=syserr, end=' ');
+      if lc < batchsize:
         break;
-      step_size += 1;
+      stepsize += 1;
   return;
 
 def lines_to_filehandle(filehandle, lines, batchsize=0):
   global BUF_SIZE;
   batchsize = BUF_SIZE if not batchsize else batchsize;
-  from itertools import islice;
-  step_size = 0;
+  stepsize = 0;
   while True:
-    line_count = 0;
-    buf_lines = islice(lines, batchsize);
-    for line_count, sent in enumerate(buf_lines, start=1):
+    lc = 0;
+    bufblock = islice(lines, batchsize);
+    for lc, sent in enumerate(bufblock, start=1):
       filehandle.write(u"{0}\n".format(sent.strip()).encode('utf-8'));
-    print('(%s)'%(llnum2name(line_count+step_size*batchsize)), \
-        file=sys.stderr, end=' ');
-    if line_count < batchsize:
+    print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
+        file=syserr, end=' ');
+    if lc < batchsize:
       break;
-    step_size += 1;
+    stepsize += 1;
   return True;
 
 def lines_to_file(filename, lines, batchsize=0):
   global BUF_SIZE;
   batchsize = BUF_SIZE if not batchsize else batchsize;
-  from itertools import islice;
-  step_size = 0;
+  stepsize = 0;
   with smart_open(filename, mode='wb') as outfile:
     while True:
-      line_count = 0;
-      buf_lines = islice(lines, batchsize);
-      for line_count, sent in enumerate(buf_lines, start=1):
+      lc = 0;
+      bufblock = islice(lines, batchsize);
+      for lc, sent in enumerate(bufblock, start=1):
         outfile.write(u"{0}\n".format(sent.strip()).encode('utf-8'));
-      print('(%s)'%(llnum2name(line_count+step_size*batchsize)), \
-          file=sys.stderr, end=' ');
-      if line_count < batchsize:
+      print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
+          file=syserr, end=' ');
+      if lc < batchsize:
         break;
-      step_size += 1;
+      stepsize += 1;
   return True;
 
 def encode_sentence(sentence, vocabulary, id_gen=counter(1)):
@@ -195,11 +193,11 @@ def splitTextFileIntoChunks(filename, outfileprefix=None):
 
 def splitTextFileIntoSizedChunks(filename, outfileprefix=None, maxsize=5000):
   outfileprefix = outfileprefix if outfileprefix else repr(os.getpid());
-  line_count, buf, foldidx = 0, [], 1;
+  lc, buf, foldidx = 0, [], 1;
   for line in lines_from_file(filename):
-    line_count += 1;
+    lc += 1;
     buf.append(line.strip());
-    if not line_count%maxsize:
+    if not lc%maxsize:
       lines_to_file('%s.%d' %(outfileprefix, foldidx), buf);
       buf = [];
       foldidx += 1;
