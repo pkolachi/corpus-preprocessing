@@ -17,6 +17,7 @@ except ImportError:
   sys.exit(1);
   llnum2name = lambda x: str(x);
 
+import itertools as it;
 import re;
 
 # this allows to switch the module with any other module
@@ -47,7 +48,7 @@ CONLL09_COLUMNS = (
 # These are the labels on the columns in the ConllU format (UD treebanks).
 CONLLU_COLUMNS = (
     'id', 'form', 'lemma',
-    'cpostag', 'postag', 'feats',
+    'postag', 'xpostag', 'feats',
     'head', 'deprel',
     'deps', 'misc', 
     );
@@ -99,12 +100,12 @@ def sentences_from_conll(stream, comments=True, fields=None):
   '''Read sentences from lines in an open CoNLL file handle.'''
   global FIELDS, BUF_SIZE;
   if not fields: fields = FIELDS;
-  sent_count = 0;
+  sc = 0;
   while True:
     lines = tuple(lines_from_conll(stream));
     if not len(lines):
       break;
-    sent_count += 1;
+    sc += 1;
 
     if comments:
       comm_lines = it.takewhile(lambda X: X.startswith('#'), lines);
@@ -120,9 +121,9 @@ def sentences_from_conll(stream, comments=True, fields=None):
     else:
       yield tree;
     
-    if not sent_count%BUF_SIZE:
-      print("(CoNLL:%s)" %(llnum2name(sent_count)), file=stderr, end=' ');
-  print("(CoNLL:%s)" %(llnum2name(sent_count)), file=stderr);
+    if not sc%BUF_SIZE:
+      print("(CoNLL:%s)" %(llnum2name(sc)), file=syserr, end=' ');
+  print("(CoNLL:%s)" %(llnum2name(sc)), file=syserr);
 
 def words_to_conll(sent, fields=CONLL07_COLUMNS):
   str_repr = [];
@@ -141,58 +142,58 @@ def words_to_conll(sent, fields=CONLL07_COLUMNS):
 def sentences_to_conll07(sentences):
   global CONLL07_COLUMNS, BUF_SIZE;
   if not sentences:
-    print("(CoNLL07:%s)" %(llnum2name(0)), file=stderr);
+    print("(CoNLL07:%s)" %(llnum2name(0)), file=syserr);
     return;
-  step_size = 0;
+  stepsize = 0;
   while True:
-    sent_count = 0;
+    sc = 0;
     buf_sents = islice(sentences, BUF_SIZE);
-    for sent_count, sent in enumerate(buf_sents, start=1):
+    for sc, sent in enumerate(buf_sents, start=1):
       yield fast_conll.words_to_conll(sent, fields=CONLL07_COLUMNS);
       yield "";
-    print("(CoNLL07:%s)" %(llnum2name(sent_count+step_size*BUF_SIZE)),
-        file=stdout, end=' ');
-    if sent_count < BUF_SIZE:
+    print("(CoNLL07:%s)" %(llnum2name(sc+stepsize*BUF_SIZE)),
+        file=syserr, end=' ');
+    if sc < BUF_SIZE:
       break;
-    step_size += 1;
+    stepsize += 1;
   return;
 
 def sentences_to_conll09(sentences):
   global CONLL09_COLUMNS, BUF_SIZE;
   if not sentences:
-    print("(CoNLL09:%s)" %(llnum2name(0)), file=stderr);
+    print("(CoNLL09:%s)" %(llnum2name(0)), file=syserr);
     return;
-  step_size = 0;
+  stepsize = 0;
   while True:
-    sent_count = 0;
+    sc = 0;
     buf_sents = islice(sentences, BUF_SIZE);
-    for sent_count, sent in enumerate(buf_sents, start=1):
+    for sc, sent in enumerate(buf_sents, start=1):
       yield fast_conll.words_to_conll(sent, fields=CONLL09_COLUMNS);
       yield "";
-    print("(CoNLL07:%s)" %(llnum2name(sent_count+step_size*BUF_SIZE)),
-        file=stdout, end=' ');
-    if sent_count < BUF_SIZE:
+    print("(CoNLL07:%s)" %(llnum2name(sc+stepsize*BUF_SIZE)),
+        file=syserr, end=' ');
+    if sc < BUF_SIZE:
       break;
-    step_size += 1;
+    stepsize += 1;
   return;
 
 def sentences_to_conll(sentences):
   global FIELDS, BUF_SIZE;
   if not sentences:
-    print("(CoNLL09:%s)" %(llnum2name(0)), file=stderr);
+    print("(CoNLL09:%s)" %(llnum2name(0)), file=syserr);
     return;
-  step_size = 0;
+  stepsize = 0;
   while True:
-    sent_count = 0;
+    sc = 0;
     buf_sents = islice(sentences, BUF_SIZE);
-    for sent_count, sent in enumerate(buf_sents, start=1):
+    for sc, sent in enumerate(buf_sents, start=1):
       yield fast_conll.words_to_conll(sent, fields=FIELDS);
       yield "";
-    print("(CoNLL07:%s)" %(llnum2name(sent_count+step_size*BUF_SIZE)),
-        file=stderr, end=' ');
-    if sent_count < BUF_SIZE:
+    print("(CoNLL07:%s)" %(llnum2name(sc+stepsize*BUF_SIZE)),
+        file=syserr, end=' ');
+    if sc < BUF_SIZE:
       break;
-    step_size += 1;
+    stepsize += 1;
   return;
 
 def sentences_to_tok(sentences):
@@ -236,7 +237,7 @@ def tokenized_to_sentences(sentences):
       continue;
     tokens = re.split('\s+', sent.strip());
     if not len(tokens):
-      print('warning: empty sentence at %d' %(sent_idx), file=stderr);
+      print('warning: empty sentence at %d' %(sent_idx), file=syserr);
       continue;
     conll_sent = [defaultdict(lambda: '_', {'form': tok, 'id': str(tok_idx)})
         for tok_idx, tok in enumerate(tokens, start=1)];
@@ -252,7 +253,7 @@ def tagged_to_sentences(sentences, delim='_'):
       continue;
     tokens = re.split('\s+', sent.strip());
     if not len(tokens):
-      print('warning: empty sentence at %d' %(sent_idx), file=stderr);
+      print('warning: empty sentence at %d' %(sent_idx), file=syserr);
       continue;
     tagged_seq = (
       (tok.rsplit(delim, 1)[0], tok.rsplit(delim, 1)[1]) if tok.find(delim) != -1 
@@ -347,8 +348,8 @@ if __name__ == '__main__':
   #fast_conll = __import__('memopt_conll_utils');
   '''
   try:
-    #cProfile.run("sentences_to_tok(sys.stderr, sentences_from_conll(sys.stdin))", "profiler")
-    cProfile.run("fast_conll.sentences_to_conll07(sys.stderr, fast_conll.sentences_from_conll(sys.stdin))", "profiler")
+    #cProfile.run("sentences_to_tok(syserr, sentences_from_conll(sysin))", "profiler")
+    cProfile.run("fast_conll.sentences_to_conll07(syserr, fast_conll.sentences_from_conll(sysin))", "profiler")
     programStats = pstats.Stats("profiler")
     programStats.sort_stats('tottime').print_stats()
   except KeyboardInterrupt:
@@ -360,7 +361,7 @@ if __name__ == '__main__':
   inputFilePath  = '' if len(sysargv) < 2 else sysargv[1];
   outputFilePath = '' if len(sysargv) < 3 else sysargv[2];
   if inputFilePath and outputFilePath and (inputFilePath.endswith('bz2') or outputFilePath.endswith('bz2')):
-    print("Warning: When using bz2 files as input/output, its faster to use bash and redirect from stdin/stdout over using Python Bz2 library", file=stderr);
+    print("Warning: When using bz2 files as input/output, its faster to use bash and redirect from stdin/stdout over using Python Bz2 library", file=syserr);
   
   #FIELDS = CONLL09_COLUMNS;
   FIELDS = CONLL07_COLUMNS;
