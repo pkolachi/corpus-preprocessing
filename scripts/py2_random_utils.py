@@ -50,9 +50,8 @@ def smart_open(filename='', mode='rb', large=False, fast=False):
         else io.open(sysout.fileno(), mode=mode, buffering=bufferSize);
 
   # HACK- to use Buffered* for everything other than bz2 in python2;
-  return iostream if (filename and ext == '.bz2') \
-    else io.BufferedReader(iostream) if mode in READ_MODES \
-    else io.BufferedWriter(iostream);
+  #return iostream if (filename and ext == '.bz2') \else io.BufferedReader(iostream) if mode in READ_MODES \else io.BufferedWriter(iostream);
+  return iostream;
 
 def llnum2name(number):
   num_map = [

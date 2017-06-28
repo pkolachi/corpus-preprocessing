@@ -49,8 +49,8 @@ def smart_open(filename='', mode='rb', large=False, fast=False):
         else io.open(sysout.fileno(), mode=mode, buffering=bufferSize);
 
   #-- works with python3 (3.3 and later)
-  return io.BufferedReader(iostream) if mode in READ_MODES \
-    else io.BufferedWriter(iostream);
+  #return io.BufferedReader(iostream) if mode in READ_MODES \else io.BufferedWriter(iostream);
+  return iostream;
 
 def llnum2name(number):
   num_map = [
@@ -95,6 +95,7 @@ def lines_from_file(filename, large=False, batchsize=0):
   batchsize = BUF_SIZE if not batchsize else batchsize;
   stepsize = 0;
   with smart_open(filename, large=large) as infile:
+    infile = io.BufferedReader(infile);
     while True:
       lc = 0;
       bufblock = islice(infile, batchsize);
@@ -128,6 +129,7 @@ def lines_to_file(filename, lines, batchsize=0):
   batchsize = BUF_SIZE if not batchsize else batchsize;
   stepsize = 0;
   with smart_open(filename, mode='wb') as outfile:
+    outfile = io.BufferedWriter(outfile);
     while True:
       lc = 0;
       bufblock = islice(lines, batchsize);
