@@ -1,17 +1,17 @@
 #!/bin/bash
 
-TAB=`echo -e "\t"`
-#SORT_OPTS="-S 50% --parallel=8 -T $PWD/tmp";
-SORT_OPTS="-S 50% -T $PWD/tmp"
-export LC_ALL=C
-
 TMP="$PWD/tmp"   # temporary directory for gnu sort and intermediate outputs
 if [[ ! -d "${TMP}" ]] ; then
   mkdir -p "${TMP}";
 fi
 
-FRDR="";
-fileext="${1##*.}";
+TAB=`echo -e "\t"`
+#SORT_OPTS="-S 50% --parallel=8 -T $PWD/tmp";
+SORT_OPTS="-S 50% -T $PWD/tmp"
+export LC_ALL=C
+
+FRDR=""             # reader program for input file
+fileext="${1##*.}"  # get extension of input file
 if [[ "$fileext" == "bz2" ]] ; then
   FRDR="bzcat";
 elif [[ "$fileext" == "gz" ]] ; then
@@ -29,7 +29,7 @@ else
   transformer='{printf("%s\t%s\t",$1,$2);for(i=3;i<NF;i++){printf("%s\t",$i);}printf("%s\n",$i)}'
 fi
 
-if $MORPH_TAGGED ; then
+if [ $MORPH_TAGGED = true ] ; then
   FIELDS="-f2,3,4,6"
 else
   FIELDS="-f2,4"
@@ -43,21 +43,20 @@ eval $FRDR $1 | grep -v -e "^#" -e "^$" | \
 
 # lower-cased surface forms
 cat $BUFFER | \
-  awk '{print $1"\t"$3;}' | \
+  awk -F"$TAB" '{print $1"\t"$3;}' | \
   sort $SORT_OPTS -k1 | uniq -c | \
   sed -e 's/^[ \t]*//g' -e $'s/ /\t/g' | \
   sort $SORT_OPTS -k1,1nr --stable -t"$TAB" > "$2.vcb"
 
 cat "$2.vcb" | \
   sort $SORT_OPTS -k2,3 --stable -t"$TAB" | \
-  awk -F'\t' '
-{ 
+  awk -F"$TAB" '{ 
     if(key!=""$2) {
 	print count"\t"key"\t"value; count=$1; key=""$2; value=""$3;
     } else {
 	value=value":::"$3; count+=$1;
     } 
-}' | \
+  }' | \
   sort $SORT_OPTS -k1,1nr --stable -t"$TAB" > "$2.taglex"
 
 if $MORPH_TAGGED ; then
