@@ -2,10 +2,11 @@
 
 from __future__  import print_function;
 from builtins    import xrange    as range;
-from bz2         import BZ2File;
-from gzip        import GzipFile;
-from itertools   import count as counter, \
-  islice;
+from collections import defaultdict;
+from itertools   import \
+  count   as counter, \
+  repeat  as replicate, \
+  islice, starmap;
 from math        import log10;
 from sys         import argv as sysargv, \
   stdin  as sysin, \
@@ -23,7 +24,7 @@ import re;
 import subprocess;
 
 BUF_SIZE = 1000000;
-READ_MODES = ('rb', 'r', 'rt', );
+READ_MODES  = ('rb', 'r', 'rt', );
 WRITE_MODES = ('wb', 'w', 'wt', );
 
 def smart_open(filename='', mode='rb', large=False, fast=False):
@@ -46,13 +47,13 @@ def smart_open(filename='', mode='rb', large=False, fast=False):
     # trick to use BufferedReader/Writer objects with stdin, stdout
     # https://stackoverflow.com/questions/6065173/making-io-bufferedreader-from-sys-stdin-in-python2
     iostream = io.open(sysin.fileno(), mode=mode, buffering=bufferSize) \
-        if mode in ['r', 'rb'] \
-        else io.open(sysout.fileno(), mode=mode, buffering=bufferSize);
-
+        if mode in READ_MODES \
+        else io.open(sysout.fileno(),  mode=mode, buffering=bufferSize);
   # HACK- to use Buffered* for everything other than bz2 in python2;
   return iostream if (filename and ext == '.bz2') \
-    else io.BufferedReader(iostream) if mode in READ_MODES \
-    else io.BufferedWriter(iostream);
+      else io.BufferedReader(iostream) if mode in READ_MODES \
+      else io.BufferedWriter(iostream);
+  return iostream;
 
 def llnum2name(number):
   num_map = [

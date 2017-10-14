@@ -22,7 +22,7 @@ import re;
 import subprocess;
 
 BUF_SIZE = 1000000;
-READ_MODES = ('rb', 'r', 'rt', );
+READ_MODES  = ('rb', 'r', 'rt', );
 WRITE_MODES = ('wb', 'w', 'wt', );
 
 def smart_open(filename='', mode='rb', large=False, fast=False):
@@ -45,12 +45,11 @@ def smart_open(filename='', mode='rb', large=False, fast=False):
     # trick to use BufferedReader/Writer objects with stdin, stdout
     # https://stackoverflow.com/questions/6065173/making-io-bufferedreader-from-sys-stdin-in-python2
     iostream = io.open(sysin.fileno(), mode=mode, buffering=bufferSize) \
-        if mode in ['r', 'rb'] \
-        else io.open(sysout.fileno(), mode=mode, buffering=bufferSize);
-
+        if mode in READ_MODES \
+        else io.open(sysout.fileno(),  mode=mode, buffering=bufferSize);
   #-- works with python3 (3.3 and later)
   return io.BufferedReader(iostream) if mode in READ_MODES \
-    else io.BufferedWriter(iostream);
+      else io.BufferedWriter(iostream);
 
 def llnum2name(number):
   num_map = [
@@ -82,7 +81,7 @@ def lines_from_filehandle(filehandle, batchsize=0):
     lc = 0;
     bufblock = islice(filehandle, batchsize);
     for lc, line in enumerate(bufblock, start=1):
-      yield line.strip();
+      yield line.decode('utf-8').strip();
     print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
       file=syserr, end=' ');
     if lc < batchsize:
@@ -99,7 +98,7 @@ def lines_from_file(filename, large=False, batchsize=0):
       lc = 0;
       bufblock = islice(infile, batchsize);
       for lc, line in enumerate(bufblock, start=1):
-        yield line.strip();
+        yield line.decode('utf-8').strip();
       print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
         file=syserr, end=' ');
       if lc < batchsize:
@@ -115,7 +114,7 @@ def lines_to_filehandle(filehandle, lines, batchsize=0):
     lc = 0;
     bufblock = islice(lines, batchsize);
     for lc, sent in enumerate(bufblock, start=1):
-      filehandle.write(u"{0}\n".format(sent.strip()));
+      filehandle.write(u"{0}\n".format(sent.strip()).encode('utf-8'));
     print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
         file=syserr, end=' ');
     if lc < batchsize:
@@ -132,7 +131,7 @@ def lines_to_file(filename, lines, batchsize=0):
       lc = 0;
       bufblock = islice(lines, batchsize);
       for lc, sent in enumerate(bufblock, start=1):
-        outfile.write(u"{0}\n".format(sent.strip()));
+        outfile.write(u"{0}\n".format(sent.strip()).encode('utf-8'));
       print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
           file=syserr, end=' ');
       if lc < batchsize:
