@@ -11,6 +11,7 @@ SORT_OPTS="-S 50% -T $PWD/tmp"
 export LC_ALL=C
 
 FRDR=""             # reader program for input file
+#https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html#Shell-Parameter-Expansion
 fileext="${1##*.}"  # get extension of input file
 if [[ "$fileext" == "bz2" ]] ; then
   FRDR="bzcat";
