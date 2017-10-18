@@ -30,7 +30,7 @@ def smart_open(filename='', mode='rb', large=False, fast=False):
   filename = filename.strip();
   if filename:
     _, ext = os.path.splitext(filename);
-    if ext in ('.bz2', '.gz') and mode in READ_MODES and fast:
+    if ext in ('.bz2', '.gz', '.xz') and mode in READ_MODES and fast:
       cmd = '/usr/bin/bzcat' if ext == '.bz2' else '/usr/bin/gzcat';
       proc = subprocess.Popen([cmd, filename], stdout=subprocess.PIPE);
       iostream = proc.stdout;
@@ -93,7 +93,7 @@ def lines_from_file(filename, large=False, batchsize=0):
   global BUF_SIZE;
   batchsize = BUF_SIZE if not batchsize else batchsize;
   stepsize = 0;
-  with smart_open(filename, large=large) as infile:
+  with smart_open(filename, large=large, fast=True) as infile:
     while True:
       lc = 0;
       bufblock = islice(infile, batchsize);

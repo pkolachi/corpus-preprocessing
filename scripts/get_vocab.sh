@@ -25,8 +25,10 @@ MORPH_TAGGED=true           # extract morph-feats or not
 
 if [ $PREPROC_LC = true ] ; then
   transformer='{printf("%s\t%s\t",tolower($1),tolower($2));for(i=3;i<NF;i++){printf("%s\t",$i);}printf("%s\n",$i)}'
+  echo "lower-casing"
 else
   transformer='{printf("%s\t%s\t",$1,$2);for(i=3;i<NF;i++){printf("%s\t",$i);}printf("%s\n",$i)}'
+  echo "true-casing"
 fi
 
 if [ $MORPH_TAGGED = true ] ; then
