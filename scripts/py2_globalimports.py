@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-from builtins    import xrange as range;
+from builtins    import xrange    as range;
 from builtins    import raw_input as input;
 from collections import defaultdict;
 from itertools   import \

@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 
 from __future__  import print_function;
-from builtins    import xrange    as range;
+from future_builtins import range;
 from collections import defaultdict;
 from itertools   import \
   count   as counter, \
@@ -33,7 +33,13 @@ def smart_open(filename='', mode='rb', large=False, fast=False):
   if filename:
     _, ext = os.path.splitext(filename);
     if ext in ('.bz2', '.gz') and mode in READ_MODES and fast:
-      cmd = '/usr/bin/bzcat' if ext == '.bz2' else '/usr/bin/gzcat';
+      cmd = '/usr/bin/bzcat' if ext == '.bz2' else \
+          '/usr/bin/gzcat';
+      if not os.path.isfile(cmd):
+        # problem with finding gnuutils; 
+        print("Cannot find arxiv reader: {0}. Reverting to file \
+            reader".format(cmd), file=syserr);
+        return smart_open(filename, mode, large=large, fast=False);
       proc = subprocess.Popen([cmd, filename], stdout=subprocess.PIPE);
       iostream = proc.stdout;
       iostream.read1 = iostream.read; ## hack to get BufferedReader to work
@@ -97,7 +103,7 @@ def lines_from_file(filename, large=False, batchsize=0):
   global BUF_SIZE;
   batchsize = BUF_SIZE if not batchsize else batchsize;
   stepsize = 0;
-  with smart_open(filename, large=large) as infile:
+  with smart_open(filename, large=large, fast=large) as infile:
     while True:
       lc = 0;
       bufblock = islice(infile, batchsize);
