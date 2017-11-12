@@ -18,7 +18,8 @@ SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 JAVA="$JRE_HOME/bin/java"
 
-"$JAVA" -mx4G -cp "$STANFORD_CORENLP_DIR/*" edu.stanford.nlp.tagger.maxent.MaxentTagger \
+"$JAVA" -mx4G -cp "$STANFORD_CORENLP_DIR/*" \
+    edu.stanford.nlp.tagger.maxent.MaxentTagger \
     -sentenceDelimiter newline -tokenize false \
     -model "$scriptdir/models/english-bidirectional-distsim.tagger" \
     -textFile $1 \

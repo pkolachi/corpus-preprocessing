@@ -13,7 +13,8 @@ from sys         import argv as sysargv, \
   exit   as sysexit;
 from bz2         import BZ2File;
 from gzip        import GzipFile;
-
+from lzma        import LZMAFile;
+from sys import platform as _platform ;   # file reading executables differ 
 import io;
 import itertools as it;
 import os;
@@ -31,9 +32,16 @@ def smart_open(filename='', mode='rb', large=False, fast=False):
   if filename:
     _, ext = os.path.splitext(filename);
     if ext in ('.bz2', '.gz', '.xz') and mode in READ_MODES and fast:
-      cmd = '/usr/bin/bzcat' if ext == '.bz2' else \
-          '/usr/bin/xzcat' if ext == '.xz' else \
-          '/usr/bin/zcat';
+      if _platform == 'linux' or _platform == 'linux2':
+        cmd = '/usr/bin/bzcat' if ext == '.bz2' else \
+            '/usr/bin/xzcat' if ext == '.xz' else \
+            '/usr/bin/zcat';
+      elif _platform == 'darwin':
+        cmd = '/usr/bin/bzcat' if ext == '.bz2' else \
+            '/usr/bin/gzcat' if ext == '.xz' else \
+            '/usr/bin/gzcat';
+      else:
+        cmd = ''; 
       if not os.path.isfile(cmd):
         # problem with finding gnuutils; 
         print("Cannot find arxiv reader: {0}. Reverting to file \
@@ -46,6 +54,8 @@ def smart_open(filename='', mode='rb', large=False, fast=False):
       iostream = BZ2File(filename,  mode=mode, buffering=bufferSize);
     elif ext == '.gz':
       iostream = GzipFile(filename, mode=mode);
+    elif ext == '.xz':
+      iostream = LZMAFile(filename, mode=mode);
     else:
       iostream = io.open(filename,  mode=mode, buffering=bufferSize);
   else:

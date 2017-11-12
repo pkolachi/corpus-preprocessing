@@ -115,7 +115,7 @@ def sentences_from_conll(stream, comments=True, fields=None):
       conll_lines = lines;
     
     tree = list(fast_conll.words_from_conll(conll_lines, fields=fields));
-    if comments and len(comm_lines):
+    if comments:
       # we are deliberately dropping all comment lines;
       yield (comm_lines, tree);
     else:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 
 from __future__  import print_function;
-from future_builtins import range;
+from builtins import xrange as range;
 from collections import defaultdict;
 from itertools   import \
   count   as counter, \
@@ -15,7 +15,7 @@ from sys         import argv as sysargv, \
   exit   as sysexit;
 from bz2         import BZ2File;
 from gzip        import GzipFile;
-
+from sys import platform as _platform ;   # file reading executables differ 
 import io;
 import itertools as it;
 import os;
@@ -32,21 +32,34 @@ def smart_open(filename='', mode='rb', large=False, fast=False):
   filename = filename.strip();
   if filename:
     _, ext = os.path.splitext(filename);
-    if ext in ('.bz2', '.gz') and mode in READ_MODES and fast:
-      cmd = '/usr/bin/bzcat' if ext == '.bz2' else \
-          '/usr/bin/gzcat';
+    if ext in ('.bz2', '.gz', '.xz') and mode in READ_MODES and fast:
+      if _platform == 'linux' or _platform == 'linux2':
+        cmd = '/usr/bin/bzcat' if ext == '.bz2' else \
+            '/usr/bin/xzcat' if ext == '.xz' else \
+            '/usr/bin/zcat';
+      elif _platform == 'darwin':
+        cmd = '/usr/bin/bzcat' if ext == '.bz2' else \
+            '/usr/bin/gzcat' if ext == '.xz' else \
+            '/usr/bin/gzcat';
+      else:
+        cmd = ''; 
       if not os.path.isfile(cmd):
         # problem with finding gnuutils; 
         print("Cannot find arxiv reader: {0}. Reverting to file \
             reader".format(cmd), file=syserr);
         return smart_open(filename, mode, large=large, fast=False);
       proc = subprocess.Popen([cmd, filename], stdout=subprocess.PIPE);
+      """ failed to work in Python 2
       iostream = proc.stdout;
       iostream.read1 = iostream.read; ## hack to get BufferedReader to work
+      """
+      iostream = io.open(proc.stdout.fileno(), mode=mode, buffering=bufferSize);
     elif ext == '.bz2':
       iostream = BZ2File(filename,  mode=mode, buffering=bufferSize);
     elif ext == '.gz':
       iostream = GzipFile(filename, mode=mode);
+    elif ext == '.xz':
+      return smart_open(filename, mode, large=large, fast=True);
     else:
       iostream = io.open(filename,  mode=mode, buffering=bufferSize);
   else:
@@ -59,7 +72,6 @@ def smart_open(filename='', mode='rb', large=False, fast=False):
   return iostream if (filename and ext == '.bz2') \
       else io.BufferedReader(iostream) if mode in READ_MODES \
       else io.BufferedWriter(iostream);
-  return iostream;
 
 def llnum2name(number):
   num_map = [

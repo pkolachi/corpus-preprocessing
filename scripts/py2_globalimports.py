@@ -7,6 +7,7 @@ from itertools   import \
   imap    as map, \
   ifilter as filter, \
   izip    as zip, \
+  chain   as chainer, \
   count   as counter, \
   repeat  as replicate, \
   islice, starmap;

@@ -2,6 +2,7 @@
 
 from collections import defaultdict;
 from itertools   import \
+  chain   as chainer, \
   count   as counter, \
   repeat  as replicate, \
   islice, starmap;
