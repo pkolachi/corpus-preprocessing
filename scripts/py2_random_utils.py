@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 
 from __future__  import print_function;
-from builtins import xrange as range;
 from collections import defaultdict;
 from itertools   import \
   count   as counter, \

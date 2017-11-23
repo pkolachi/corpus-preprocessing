@@ -6,8 +6,8 @@ if [[ ! -d "${TMP}" ]] ; then
 fi
 
 TAB=`echo -e "\t"`
-#SORT_OPTS="-S 50% --parallel=8 -T $PWD/tmp";
-SORT_OPTS="-S 50% -T $PWD/tmp"
+#SORT_OPTS="-S 20% --parallel=8 -T $PWD/tmp";
+SORT_OPTS="-S 20% -T $PWD/tmp"
 export LC_ALL=C
 
 FRDR=""             # reader program for input file
