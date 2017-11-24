@@ -44,7 +44,7 @@ def smart_open(filename='', mode='rb', large=False, fast=False):
         cmd = ''; 
       if not os.path.isfile(cmd):
         # problem with finding gnuutils; 
-        print("Cannot find arxiv reader: {0}. Reverting to file \
+        print("Cannot find archive reader: {0}. Reverting to file \
             reader".format(cmd), file=syserr);
         return smart_open(filename, mode, large=large, fast=False);
       proc = subprocess.Popen([cmd, filename], stdout=subprocess.PIPE);
