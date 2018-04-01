@@ -6,8 +6,8 @@ if [[ ! -d "${TMP}" ]] ; then
 fi
 
 TAB=`echo -e "\t"`
-#SORT_OPTS="-S 20% --parallel=8 -T $PWD/tmp";
-SORT_OPTS="-S 20% -T $PWD/tmp"
+SORT_OPTS="-S 20% --parallel=4 -T $PWD/tmp";
+#SORT_OPTS="-S 20% -T $PWD/tmp"
 export LC_ALL=C
 
 FRDR=""             # reader program for input file
@@ -17,11 +17,13 @@ if [[ "$fileext" == "bz2" ]] ; then
   FRDR="bzcat";
 elif [[ "$fileext" == "gz" ]] ; then
   FRDR="gzcat";
+elif [[ "$fileext" == "xz" ]] ; then
+  FRDR="gzcat";
 else
   FRDR="cat";
 fi
 
-PREPROC_LC=false   #true    # lower-cased or not 
+PREPROC_LC=true #false   #true    # lower-cased or not 
 MORPH_TAGGED=true           # extract morph-feats or not
 
 if [ $PREPROC_LC = true ] ; then
