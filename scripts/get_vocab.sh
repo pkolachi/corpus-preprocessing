@@ -6,8 +6,8 @@ if [[ ! -d "${TMP}" ]] ; then
 fi
 
 TAB=`echo -e "\t"`
-SORT_OPTS="-S 20% --parallel=4 -T $PWD/tmp";
-#SORT_OPTS="-S 20% -T $PWD/tmp"
+#SORT_OPTS="-S 20% --parallel=4 -T $PWD/tmp";
+SORT_OPTS="-S 40% -T $PWD/tmp"
 export LC_ALL=C
 
 FRDR=""             # reader program for input file
@@ -18,7 +18,7 @@ if [[ "$fileext" == "bz2" ]] ; then
 elif [[ "$fileext" == "gz" ]] ; then
   FRDR="gzcat";
 elif [[ "$fileext" == "xz" ]] ; then
-  FRDR="gzcat";
+  FRDR="xzcat";
 else
   FRDR="cat";
 fi
