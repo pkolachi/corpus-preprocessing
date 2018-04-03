@@ -8,7 +8,7 @@ fi
 TAB=`echo -e "\t"`
 SORT_OPTS="-S 20% --parallel=4 -T $PWD/tmp";
 #SORT_OPTS="-S 20% -T $PWD/tmp"
-export LC_ALL=C
+export LC_ALL=C.UTF-8
 
 FRDR=""             # reader program for input file
 #https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html#Shell-Parameter-Expansion
@@ -18,7 +18,7 @@ if [[ "$fileext" == "bz2" ]] ; then
 elif [[ "$fileext" == "gz" ]] ; then
   FRDR="gzcat";
 elif [[ "$fileext" == "xz" ]] ; then
-  FRDR="gzcat";
+  FRDR="xzcat";
 else
   FRDR="cat";
 fi
