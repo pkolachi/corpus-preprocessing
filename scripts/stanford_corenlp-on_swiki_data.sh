@@ -4,10 +4,11 @@ export JRE_HOME="$HOME/Documents/softwares/java/jre1.8.0_111.jre/Contents/Home" 
 export JRE_HOME="/usr"  # -- laptop
 export JRE_HOME="$HOME/Documents/softwares/java/jre1.8.0_40"  # -- ttitania server
 
+export STANFORD_CORENLP_DIR="$HOME/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2018-02-27"
 #export STANFORD_CORENLP_DIR="$HOME/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2016-10-31"
 #export STANFORD_CORENLP_DIR="$HOME/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2015-12-09"
 #export STANFORD_CORENLP_DIR="$HOME/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2015-04-20"
-export STANFORD_CORENLP_DIR="$HOME/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2014-10-31"
+#export STANFORD_CORENLP_DIR="$HOME/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2014-10-31"
 #export STANFORD_CORENLP_DIR="$HOME/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2014-08-27"
 #export STANFORD_CORENLP_DIR="$HOME/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2014-01-04"
 #export STANFORD_CORENLP_DIR="$HOME/Documents/softwares/nlp-tools/language-specific/english/stanford-tools/stanford-corenlp-full-2013-11-12"
@@ -24,6 +25,6 @@ JAVA="$JRE_HOME/bin/java"
     -clean.allowflawedxml "true" \
     -clean.xmltags ".*" \
     -clean.sentenceendingtags "br" \
-    -threads 4 \
+    -threads 8 \
     -filelist $1 \
     -outputDirectory $2
