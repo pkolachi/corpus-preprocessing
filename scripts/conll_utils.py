@@ -52,6 +52,12 @@ CONLLU_COLUMNS = (
     'head', 'deprel',
     'deps', 'misc', 
     );
+AUG_CONLLU_COLUMNS = (
+    'id', 'form', 'lemma',
+    'postag', 'xpostag', 'const_parse', 'feats',
+    'head', 'deprel',
+    'deps', 'misc', 
+    );
 
 # These are the labels on the columns when Berkeley parser 
 # is given pre-tagged input
