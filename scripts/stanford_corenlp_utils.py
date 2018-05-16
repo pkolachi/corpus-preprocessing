@@ -2,11 +2,12 @@
 import codecs, multiprocessing, os, os.path, random, re, shlex, string, subprocess, sys;
 from math import log10;
 try:
-  import random_utils;
+  import py2_random_utils as ru ;
   import lxml.etree as etree;
 except ImportError:
   import xml.etree.cElementTree as etree; #incompatible due to pretty_print functionality of writing xml
   #import xml.etree.ElementTree as etree;  #same reason as above
+from collections import defaultdict ; 
 
 sys.stdout = codecs.getwriter('utf-8')(sys.stdout);
 
@@ -117,7 +118,7 @@ def parallelRunCoreNLPStanford(filename, threadCount=0):
       line_count += 1;
       sentences.append(line.strip());
   folded_sentences = [];
-  for foldrange in random_utils.epartition_indices(0, line_count):
+  for foldrange in ru.epartition_indices(0, line_count):
     folded_sentences.append( sentences[foldrange[0]:foldrange[1]] );
   foldcount = len(folded_sentences);
   outputFiles = multiprocessing.Pool(threadCount).map(runCoreNLPStanford_multi, [(foldidx, folded_sentences[foldidx]) for foldidx in xrange(foldcount)], chunksize=int(log10(len(sentences))));
@@ -158,18 +159,30 @@ def constparse_chunks(const_repr, terminalTokens=None):
       print "could not find %s in %s" %(key, const_repr);
   return;
 
-def convertSentenceToConLL(sent_xml_repr):
-  import conll_utils;
+def convertSentenceToConLL(sent_xml_repr, oformat='conll07'):
+  """
+  Adapted for CoNLL to CoNLLU 
+  """
+  import conll_utils as cu ;
+  if oformat == 'conllu':
+    cu.FIELDS = cu.AUG_CONLLU_COLUMNS ; 
+  else:
+    cu.FIELDS = cu.AUG_CONLL07_COLUMNS ;
+
+  pos_field = 'xpostag' if oformat == 'conllu' else 'cpostag' ;
+  deps_field = 'deps'   if oformat == 'conllu' else 'phead'  ;
   sent_node = etree.fromstring(sent_xml_repr);
   conll_sentence = [];
-  terminalNodes = [];
+  terminalNodes  = [];
   for token_node in sent_node.findall(".//token"):
-    conll_line, isNer = {}, False;
+    conll_line, isNer = defaultdict(lambda: '_'), False;
     conll_line['id'] = token_node.attrib['id'];
     for child in token_node:
-      if child.tag == 'word': conll_line['form'] = child.text;
-      if child.tag == 'lemma': conll_line['lemma'] = child.text;
-      if child.tag == 'POS': conll_line['cpostag'] = child.text.strip();
+      if child.tag == 'word':  conll_line['form']    = child.text;
+      if child.tag == 'lemma': conll_line['lemma']   = child.text;
+      if child.tag == 'POS':   
+        conll_line[pos_field] = child.text.strip();
+        conll_line['postag']  = child.text.strip();
       if child.tag == 'NER' and child.text != 'O':
         conll_line.setdefault('feats', {})['nertype'] = child.text.strip();
         isNer = True;
@@ -177,30 +190,33 @@ def convertSentenceToConLL(sent_xml_repr):
         conll_line.setdefault('feats', {})['normalized_ner'] = child.text.strip();
       #if child.tag == 'TrueCaseText': 
       #  conll_line['form'] = child.text.strip(); # Truecaser performance seems worse. 
+    conll_line['feats'] = '|'.join('%s=%s'%(f,v) for f,v in conll_line.get('feats', {}).items());
+    if not conll_line['feats']:
+      conll_line['feats'] = '_' ;
     terminalNodes.append(conll_line['form']);
     conll_sentence.append(conll_line);
   const_parse = '';
   for parse_node in sent_node.findall("parse"):
     const_parse = parse_node.text.strip();
-  if not const_parse.strip():
+  if not const_parse.strip():   # parser failed ; no dependency information available either
     return conll_sentence;
-  if const_parse not in ['(())', '(ROOT ())', '(ROOT())']:
+  if const_parse not in ['(())', '(ROOT ())', '(ROOT())']:  # similar situation 
     for conll_line, chunk in zip(conll_sentence, constparse_chunks(const_parse, terminalNodes)):
-      conll_line['postag'] = chunk;
+      conll_line['const_parse'] = chunk;
       #print conll_line['form'], conll_line['postag'];
   try:
-    assert( const_parse == ' '.join(conll_line['postag'].replace('_', ' ').replace('*', conll_line['form']) for conll_line in conll_sentence) );
+    assert( const_parse == ' '.join(conll_line['const_parse'].replace('_', ' ').replace('*', conll_line['form']) for conll_line in conll_sentence) );
   except AssertionError:
     print const_parse;
-    print ' '.join(conll_line['postag'].replace('_', ' ').replace('*', conll_line['form']) for conll_line in conll_sentence);
+    print ' '.join(conll_line['const_parse'].replace('_', ' ').replace('*', conll_line['form']) for conll_line in conll_sentence);
     sys.exit(1);
   except KeyError:
     print const_parse;
-    print ' '.join(conll_line.get('postag', 'NONE').replace('_', ' ').replace('*', conll_line['form']) for conll_line in conll_sentence);
+    print ' '.join(conll_line.get('const_parse', 'NONE').replace('_', ' ').replace('*', conll_line['form']) for conll_line in conll_sentence);
     sys.exit(1);
   for depann_node in sent_node.findall(".//dependencies"):
     if depann_node.attrib['type'] == 'basic-dependencies':
-      # only convert basic dependencies in annotation
+      # convert basic dependencies in annotation
       for dep_node in depann_node.findall(".//dep"):
         depLabel, head, token = '', -1, -1
         depLabel = dep_node.attrib['type']
@@ -211,6 +227,17 @@ def convertSentenceToConLL(sent_xml_repr):
             token = int(child.attrib['idx'])
         conll_sentence[token-1]['head'] = str(head)
         conll_sentence[token-1]['deprel'] = depLabel
+    elif depann_node.attrib['type'] == 'enhanced-dependencies':
+      # convert enhanced dependencies in annotation
+      for dep_node in depann_node.findall(".//dep"):
+        depLabel, head, token = '', -1, -1
+        depLabel = dep_node.attrib['type']
+        for child in dep_node:
+          if child.tag == 'governor': 
+            head = int(child.attrib['idx'])
+          if child.tag == 'dependent': 
+            token = int(child.attrib['idx'])
+        conll_sentence[token-1][deps_field] = str(head)+':'+depLabel
     else:
       continue;
   # meta-information from stanford core nlp
@@ -218,17 +245,22 @@ def convertSentenceToConLL(sent_xml_repr):
   #return (metainfo, conll_sentence);
   return conll_sentence;
 
-def convertStanfordCoreNLPXMLtoCoNLL(doc):
+def convertStanfordCoreNLPXMLtoCoNLL(doc, oformat='conll07'):
   root = doc.getroot();
-  conll_sentences = [];
+  conll_sentences = [convertSentenceToConLL(sent_repr, oformat=oformat) \
+      for sent_repr in (etree.tostring(node, encoding='utf-8', method='xml') for node in root.findall(".//sentence"))
+      ];
+  """
   for sent_node in root.findall(".//sentence"):
     conll_sentences.append( convertSentenceToConLL(etree.tostring(sent_node, encoding='utf-8', method='xml')) );
+  """
   return conll_sentences;
 
-def convertSegmentedOutputtoCoNLL(inputdirectory, outputfile):
-  import conll_utils;
+def convertSegmentedOutputtoCoNLL(inputdirectory, outputfile, oformat='conll07'):
+  import conll_utils as cu;
   conll_sentences = [];
   with codecs.open(outputfile, 'w', 'utf-8') as outfile:
+    cu.FIELDS = cu.AUG_CONLLU_COLUMNS if oformat=='conllu' else cu.AUG_CONLL07_COLUMNS;
     for inputfile in sortFileNamesByNumber( os.listdir(inputdirectory) ):
       inputfile = os.path.join(inputdirectory, inputfile);
       print >>sys.stderr, inputfile;
@@ -237,24 +269,24 @@ def convertSegmentedOutputtoCoNLL(inputdirectory, outputfile):
       except:
         print inputfile;
         sys.exit(1);
-      conll_sentences.extend( convertStanfordCoreNLPXMLtoCoNLL(doc) );
+      conll_sentences.extend( convertStanfordCoreNLPXMLtoCoNLL(doc, oformat=oformat) );
       if len(conll_sentences) > 50000:
         print >>sys.stderr, "Writing CoNLL sentences"
-        conll_utils.sentences_to_conll07(outfile, conll_sentences);
+        cu.sentences_to_conll(outfile, conll_sentences);
         conll_sentences = [];
     if len(conll_sentences):
       print >>sys.stderr, "Writing CoNLL sentences"
-      conll_utils.sentences_to_conll07(outfile, conll_sentences);
+      cu.sentences_to_conll(outfile, conll_sentences);
   return;
 
-def convertOutputtoCoNLL(inputfile, outputfile):
-  import conll_utils;
+def convertOutputtoCoNLL(inputfile, outputfile, oformat='conll07'):
+  import conll_utils as cu;
   conll_sentences = [];
-  with codecs.open(outputfile, 'w', 'utf-8') as outfile:
-    print >>sys.stderr, inputfile;
-    doc = etree.parse(inputfile);
-    conll_sentences.extend( convertStanfordCoreNLPXMLtoCoNLL(doc) );
-    conll_utils.sentences_to_conll07(outfile, conll_sentences);
+  print >>sys.stderr, inputfile;
+  doc = etree.parse(inputfile);
+  conll_sentences.extend( convertStanfordCoreNLPXMLtoCoNLL(doc, oformat=oformat) );
+  cu.FIELDS = cu.AUG_CONLLU_COLUMNS if oformat=='conllu' else cu.AUG_CONLL07_COLUMNS;
+  ru.lines_to_file(outputfile, cu.sentences_to_conll(conll_sentences));
   return;
 
 def readPtbParses(treebank):
@@ -325,11 +357,11 @@ def indentXMLNodes(elem, level=0):
       elem.tail = i
     
 def addParsestoXMLFromOtherSources(xmlfile, parsesfile, depfile):
-  import conll_utils;
+  import conll_utils as cu;
   parser = etree.XMLParser(remove_blank_text=True);
   doc          = etree.parse(xmlfile, parser);
   const_parses = [line for line in codecs.open(parsesfile, 'r', 'utf-8')];
-  dep_parses   = [parse for parse in conll_utils.sentences_from_conll(codecs.open(depfile, 'r', 'utf-8'))];
+  dep_parses   = [parse for parse in cu.sentences_from_conll(codecs.open(depfile, 'r', 'utf-8'))];
   mod_root     = updateSyntacticInformation(doc, const_parses, dep_parses);
   # NECESSARY BECAUSE LXML does not allow pretty printing for nodes with text data. 
   # EXACT INFORMATION CAN BE FOUND AT
@@ -338,9 +370,9 @@ def addParsestoXMLFromOtherSources(xmlfile, parsesfile, depfile):
   print etree.tostring(mod_root, method='xml');
 
 def addParsestoSegmentedXMLFromOtherSources(xmlinputdirectory, parsesfile, depfile, xmloutputdirectory):
-  import conll_utils;
+  import conll_utils as cu;
   const_parses = codecs.open(parsesfile, 'r', 'utf-8');
-  dep_parses = conll_utils.sentences_from_conll(codecs.open(depfile, 'r', 'utf-8'));
+  dep_parses = cu.sentences_from_conll(codecs.open(depfile, 'r', 'utf-8'));
   for xmlfile in sortFileNamesByNumber( os.listdir(xmlinputdirectory) ):
     xmlfilepath = os.path.join(xmlinputdirectory, xmlfile);
     print >>sys.stderr, xmlfilepath
@@ -435,10 +467,10 @@ if __name__ == '__main__':
   #runCoreNLPLarge(sys.argv[1], sys.argv[2]);
   #writeSegmentedCoreNLPOutputIntoDirectory(sys.argv[2:], sys.argv[1]);
   #writeSegmentedWikiOutputIntoDocuments(sys.argv[2:], sys.argv[1]);
-  #convertSegmentedOutputtoCoNLL(sys.argv[1], sys.argv[2]) if os.path.isdir(sys.argv[1]) else True;
-  convertOutputtoCoNLL(sys.argv[1], sys.argv[2]) if os.path.isfile(sys.argv[1]) else True;
-  #addParsestoXMLFromOtherSources(sys.argv[1], sys.argv[2], sys.argv[3]);
+  #convertSegmentedOutputtoCoNLL(sys.argv[1], sys.argv[2], oformat='conllu' if len(sys.argv) > 3 and sys.argv[3] == 'conllu' else 'conll07') if os.path.isdir(sys.argv[1]) else True;
+  convertOutputtoCoNLL(sys.argv[1], sys.argv[2], oformat='conllu' if len(sys.argv) > 3 and sys.argv[3] == 'conllu' else 'conll07') if os.path.isfile(sys.argv[1]) else True;
   #addParsestoSegmentedXMLFromOtherSources(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]);
+  #addParsestoXMLFromOtherSources(sys.argv[1], sys.argv[2], sys.argv[3]);
   #convertCoNLLToMosesTokenized(sys.argv[1], sys.argv[2])#, sys.argv[3]);
   sys.exit(0);
 
