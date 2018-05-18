@@ -28,6 +28,9 @@ fi
 PREPROC_LC=true #false   #true    # lower-cased or not 
 MORPH_TAGGED=true           # extract morph-feats or not
 
+INFILES=${@:1:$(($#-1))}
+OUTPREFIX=${@:${#@}}
+
 if [ $PREPROC_LC = true ] ; then
   transformer='{printf("%s\t%s\t",tolower($1),tolower($2));for(i=3;i<NF;i++){printf("%s\t",$i);}printf("%s\n",$i)}'
   echo "lower-casing"
@@ -43,7 +46,7 @@ else
 fi
 
 BUFFER="$TMP/$$.buffer"
-eval $FRDR $1 | grep -v -e "^#" -e "^$" | \
+eval $FRDR "$INFILES" | grep -v -e "^#" -e "^$" | \
   cut "$FIELDS" | \
   awk "$transformer" \
   > $BUFFER
@@ -53,9 +56,9 @@ cat $BUFFER | \
   awk -F"$TAB" '{print $1"\t"$3;}' | \
   $BINSORT $SORTOPTS -k1 | uniq -c | \
   sed -e 's/^[ \t]*//g' -e $'s/^\([0-9]*\) /\1\t/g' | \
-  $BINSORT $SORTOPTS -k1,1nr --stable -t"$TAB" > "$2.vcb"
+  $BINSORT $SORTOPTS -k1,1nr --stable -t"$TAB" > "$OUTPREFIX.vcb"
 
-cat "$2.vcb" | \
+cat "$OUTPREFIX.vcb" | \
   $BINSORT $SORTOPTS -k2,3 --stable -t"$TAB" | \
   awk -F"$TAB" '{ 
     if(key!=""$2) {
@@ -64,19 +67,19 @@ cat "$2.vcb" | \
         value=value":::"$3; count+=$1;
     } 
   }' | \
-  $BINSORT $SORTOPTS -k1,1nr --stable -t"$TAB" > "$2.taglex"
+  $BINSORT $SORTOPTS -k1,1nr --stable -t"$TAB" > "$OUTPREFIX.taglex"
 
 if $MORPH_TAGGED ; then
   cat $BUFFER | cut -f2,3 | \
     $BINSORT $SORTOPTS -k1 | uniq -c | \
     sed -e 's/^[ \t]*//g' -e $'s/^\([0-9]*\) /\1\t/g' | \
-    $BINSORT $SORTOPTS -k1,1nr --stable -t"$TAB" > "$2.lemmas"
+    $BINSORT $SORTOPTS -k1,1nr --stable -t"$TAB" > "$OUTPREFIX.lemmas"
     
   cat $BUFFER | \
     $BINSORT $SORTOPTS -k1 | uniq -c | \
     sed -e 's/^[ \t]*//g' -e $'s/^\([0-9]*\) /\1\t/g' | \
     $BINSORT $SORTOPTS -k4,4 -k3,3 -k2,2 | \
-    awk '{print $1"\t"$4"\t"$3"\t"$2"\t"$5;}' > "$2.morphlex"
+    awk '{print $1"\t"$4"\t"$3"\t"$2"\t"$5;}' > "$OUTPREFIX.morphlex"
 fi
 
-#rm -v $BUFFER
+rm -v $BUFFER
