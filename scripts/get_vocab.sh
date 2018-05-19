@@ -56,7 +56,7 @@ eval $FRDR "$INFILES" | grep -e "^[0-9]*\s" | \
 cat $BUFFER | \
   awk -F"$TAB" '{print $1"\t"$3;}' | \
   $BINSORT $SORTOPTS -k1 | uniq -c | \
-  sed -e 's/^[ \t]*//g' -e $'s/^\([0-9]*\) /\1\t/g' | \
+  sed -e 's/^[ \t]*//g' -e $'s/^\([0-9]*\) /\\1\t/g' | \
   $BINSORT $SORTOPTS -k1,1nr --stable -t"$TAB" > "$OUTPREFIX.vcb"
 
 cat "$OUTPREFIX.vcb" | \
@@ -73,12 +73,12 @@ cat "$OUTPREFIX.vcb" | \
 if $MORPH_TAGGED ; then
   cat $BUFFER | cut -f2,3 | \
     $BINSORT $SORTOPTS -k1 | uniq -c | \
-    sed -e 's/^[ \t]*//g' -e $'s/^\([0-9]*\) /\1\t/g' | \
+    sed -e 's/^[ \t]*//g' -e $'s/^\([0-9]*\) /\\1\t/g' | \
     $BINSORT $SORTOPTS -k1,1nr --stable -t"$TAB" > "$OUTPREFIX.lemmas"
     
   cat $BUFFER | \
     $BINSORT $SORTOPTS -k1 | uniq -c | \
-    sed -e 's/^[ \t]*//g' -e $'s/^\([0-9]*\) /\1\t/g' | \
+    sed -e 's/^[ \t]*//g' -e $'s/^\([0-9]*\) /\\1\t/g' | \
     $BINSORT $SORTOPTS -k4,4 -k3,3 -k2,2 | \
     awk '{print $1"\t"$4"\t"$3"\t"$2"\t"$5;}' > "$OUTPREFIX.morphlex"
 fi
