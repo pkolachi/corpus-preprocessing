@@ -32,10 +32,14 @@ INFILES=${@:1:$(($#-1))}
 OUTPREFIX=${@:${#@}}
 
 if [ $PREPROC_LC = true ] ; then
-  transformer='{printf("%s\t%s\t",tolower($1),tolower($2));for(i=3;i<NF;i++){printf("%s\t",$i);}printf("%s\n",$i)}'
+  transformer='{printf("%s\t%s\t",tolower($1),tolower($2));
+                for(i=3;i<NF;i++){printf("%s\t",$i);}
+                printf("%s\n",$i)}'
   echo "lower-casing"
 else
-  transformer='{printf("%s\t%s\t",$1,$2);for(i=3;i<NF;i++){printf("%s\t",$i);}printf("%s\n",$i)}'
+  transformer='{printf("%s\t%s\t",$1,$2);
+                for(i=3;i<NF;i++){printf("%s\t",$i);}
+                printf("%s\n",$i)}'
   echo "true-casing"
 fi
 
@@ -45,7 +49,9 @@ else
   FIELDS="-f2,4"
 fi
 
-#eval $FRDR "$INFILES" | grep -v -e "^#" -e "^$"  # filter empty lines and comments from CoNLLU text
+#eval $FRDR "$INFILES" | \
+#    grep -v -e "^#" -e "^$"  # filter empty lines and comments from CoNLLU
+
 BUFFER="$TMP/$$.buffer"
 eval $FRDR "$INFILES" | grep -e "^[0-9]*\s" | \
   cut "$FIELDS" | \
