@@ -25,7 +25,7 @@ else
   FRDR="cat";
 fi
 
-PREPROC_LC=true #false   #true    # lower-cased or not 
+PREPROC_LC=true    #false   #true    # lower-cased or not 
 MORPH_TAGGED=true           # extract morph-feats or not
 
 INFILES=${@:1:$(($#-1))}
@@ -54,11 +54,11 @@ fi
 
 BUFFER="$TMP/$$.buffer"
 eval $FRDR "$INFILES" | grep -e "^[0-9]*\s" | \
-  cut "$FIELDS" | \
-  awk "$transformer" \
+  cut -d"$TAB" "$FIELDS" | \
+  awk -F"$TAB" "$transformer" \
   > $BUFFER
 
-# lower-cased surface forms
+# surface forms (lower-cased or true-cased)
 cat $BUFFER | \
   awk -F"$TAB" '{print $1"\t"$3;}' | \
   $BINSORT $SORTOPTS -k1 | uniq -c | \
@@ -77,7 +77,7 @@ cat "$OUTPREFIX.vcb" | \
   $BINSORT $SORTOPTS -k1,1nr --stable -t"$TAB" > "$OUTPREFIX.taglex"
 
 if $MORPH_TAGGED ; then
-  cat $BUFFER | cut -f2,3 | \
+  cat $BUFFER | cut -f2,3 -d"$TAB" | \
     $BINSORT $SORTOPTS -k1 | uniq -c | \
     sed -e 's/^[ \t]*//g' -e $'s/^\([0-9]*\) /\\1\t/g' | \
     $BINSORT $SORTOPTS -k1,1nr --stable -t"$TAB" > "$OUTPREFIX.lemmas"
@@ -85,8 +85,8 @@ if $MORPH_TAGGED ; then
   cat $BUFFER | \
     $BINSORT $SORTOPTS -k1 | uniq -c | \
     sed -e 's/^[ \t]*//g' -e $'s/^\([0-9]*\) /\\1\t/g' | \
-    $BINSORT $SORTOPTS -k4,4 -k3,3 -k2,2 | \
-    awk '{print $1"\t"$4"\t"$3"\t"$2"\t"$5;}' > "$OUTPREFIX.morphlex"
+    $BINSORT $SORTOPTS -k4,4 -k3,3 -k2,2 -t"$TAB" | \
+    awk -F"$TAB" '{print $1"\t"$4"\t"$3"\t"$2"\t"$5;}' > "$OUTPREFIX.morphlex"
 fi
 
 rm -v $BUFFER
