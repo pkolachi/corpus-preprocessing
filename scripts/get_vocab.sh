@@ -25,7 +25,7 @@ else
   FRDR="cat";
 fi
 
-PREPROC_LC=true    #false   #true    # lower-cased or not 
+PREPROC_LC=false   #true    # lower-cased or not 
 MORPH_TAGGED=true           # extract morph-feats or not
 
 INFILES=${@:1:$(($#-1))}
