@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+
+"""
+A script to run a command/script on all files in a given directory
+You can simulate this using a combination of xargs + diff -dir
+"""
 
 import os, sys;
 
@@ -8,8 +14,8 @@ target_directory = os.path.abspath(target_directory);
 #source_directory, target_directory, target_directory2 = os.path.abspath(source_directory), os.path.abspath(target_directory), os.path.abspath(target_directory2);
 
 for dirpath, dirsList, filesList in os.walk(source_directory):
-    for filename in filesList:
-	filepath = os.path.join(dirpath, filename);	
+  for filename in filesList:
+    filepath = os.path.join(dirpath, filename);	
 	#outfilename = filename;
 	outfilename = os.path.splitext(filename)[0]+'.conll';
 	#outfilename = os.path.splitext(filename)[0]+'.tok';
@@ -27,12 +33,13 @@ for dirpath, dirsList, filesList in os.walk(source_directory):
 	runCmd = 'sh /Users/prakol/Documents/chalmers-work/gf-translation/translator-benchmarking/scripts/ptbTok2gfTok.sh < %s > %s 2> /dev/null' %(filepath, outfilepath));
 	
 	if os.system(runCmd):
-	    print >>sys.stderr, filepath; 
-    for dirname in dirsList:
-	fulldirpath = os.path.join(dirpath, dirname);
-	outdirpath = fulldirpath.replace(source_directory, target_directory);
-	if not os.path.isdir(outdirpath):
-	    os.makedirs(outdirpath);
-	outdirpath = fulldirpath.replace(source_directory, target_directory2);
-	if not os.path.isdir(outdirpath):
-	    os.makedirs(outdirpath);
+      print >>sys.stderr, filepath; 
+  
+  for dirname in dirsList:
+    fulldirpath = os.path.join(dirpath, dirname);
+    outdirpath = fulldirpath.replace(source_directory, target_directory);
+    if not os.path.isdir(outdirpath):
+      os.makedirs(outdirpath);
+    #outdirpath = fulldirpath.replace(source_directory, target_directory2);
+    #if not os.path.isdir(outdirpath):
+    #  os.makedirs(outdirpath);

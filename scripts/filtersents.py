@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 
 from globalimports import *;
 import random_utils, conll_utils;

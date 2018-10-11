@@ -2,7 +2,7 @@
 
 if [ $# -eq 0 ]
 then
-    echo "score.sh reffile testfile [-c]"
+    echo "$0 reffile testfile [-c]"
     exit
 fi
 
