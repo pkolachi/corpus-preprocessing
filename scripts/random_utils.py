@@ -21,6 +21,8 @@ import os;
 import random;
 import re;
 import subprocess;
+from functools import partial ; 
+print = partial(print, flush=True) ;
 
 BUF_SIZE = 1000000;
 READ_MODES  = ('rb', 'r', 'rt', );
