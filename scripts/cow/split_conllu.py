@@ -11,8 +11,8 @@ if not os.path.isdir(sys.argv[2]) :
 cls = ru.lines_from_file(sys.argv[1]) ; 
 
 def main_loop() :
-  BATCH_SIZE  = 5000 ; 
-  BUNDLE_SIZE = 100 ;
+  BATCH_SIZE  = 5000 ;   # no. of sentences in one chunk 
+  BUNDLE_SIZE = 100 ;    # no. of files     in one directory
   lines       = [] ; 
   sentc       = 0  ;
   batchdirs   = [] ; 
