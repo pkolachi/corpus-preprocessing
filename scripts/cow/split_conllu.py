@@ -22,7 +22,7 @@ def main_loop() :
       lines.append(l.strip()) ; 
       if not (sentc % BATCH_SIZE) : 
         # write all sentences to buffer
-        bid  = int(sentc/BATCH_SIZE ) ;
+        bid  = int(sentc/BATCH_SIZE) ;
         buid = int(bid  /BUNDLE_SIZE) ;
         dirp = os.path.join(sys.argv[2], str(buid).zfill(4)) ;
         if not os.path.isdir(dirp) :

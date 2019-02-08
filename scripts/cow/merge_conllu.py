@@ -11,8 +11,8 @@ BUNDLE_SIZE = 100 ;
 
 def main_loop() : 
   splitsdir = sys.argv[1] ; 
-  for arnm in os.listdir(splitsdir) : 
-    arpt = os.path.join(splitsdir, arnm) ; # path to the archive file
+  for arnm in sorted(os.listdir(splitsdir)) : 
+    arpt = os.path.join(splitsdir, arnm) ;     # path to the archive file
     os.system('tar -xvzf {0} -C {1} 2> /dev/null'.format(arpt, splitsdir)) ; 
     ardr = os.path.splitext(arnm)[0] ; 
     ardp = os.path.join(splitsdir, ardr) ; # path to the extracted directory
