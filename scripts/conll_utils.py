@@ -385,7 +385,7 @@ if __name__ == '__main__':
     inputstream = ru.lines_from_filehandle(inputfile);
     outputcontent = '';
 
-    outputcontent = sentences_to_tok(sentences_from_conll(inputstream));
+    outputcontent = sentences_to_tok(sentences_from_conll(inputstream, comments=False));
     #outputcontent = sentences_to_tagged(sentences_from_conll(inputstream));
     #outputcontent = sentences_to_propercased(sentences_from_conll(inputstream));
 

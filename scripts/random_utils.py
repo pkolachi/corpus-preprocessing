@@ -100,7 +100,7 @@ def lines_from_filehandle(filehandle, batchsize=0):
     lc = 0;
     bufblock = islice(filehandle, batchsize);
     for lc, line in enumerate(bufblock, start=1):
-      yield line.decode('utf-8').strip();
+      yield line.decode('utf-8').strip() ;
     print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
       file=syserr, end=' ');
     if lc < batchsize:
@@ -117,7 +117,7 @@ def lines_from_file(filename, large=False, batchsize=0):
       lc = 0;
       bufblock = islice(infile, batchsize);
       for lc, line in enumerate(bufblock, start=1):
-        yield line.decode('utf-8').strip();
+        yield line.decode('utf-8').strip() ;
       print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
         file=syserr, end=' ');
       if lc < batchsize:

@@ -22,8 +22,9 @@ def main_loop() :
     for fp in cfps :
       c = 0 ; 
       for l in ru.lines_from_file(fp) :
-        if l.startswith('# sent_id') : 
+        if not l.strip() :
           c += 1 ; 
+        if l.startswith('# sent_id') : 
           # also check that sentences are in ascending order
           meta = l.split('=', 1)[1].strip().split('-') ;
           if prev and prev > meta :
