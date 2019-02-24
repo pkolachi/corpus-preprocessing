@@ -5,6 +5,10 @@ import random_utils as ru ;
 import sys ; 
 import os.path ; 
 
+if len(sys.argv) < 2:
+  print("./{0} <cleanids-file> <prefix> <docid> <conllu-in> <conllu-out>".format(sys.argv[0])) ;
+  sys.exit(1) ; 
+
 DEF = 5 ; 
 INFILE  = '' if len(sys.argv) < DEF    else sys.argv[DEF-1] ; 
 OUTFILE = '' if len(sys.argv) < DEF+1  else sys.argv[DEF]   ; 
