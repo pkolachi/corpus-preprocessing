@@ -94,7 +94,7 @@ def llnum2name(number):
       if (number%(10**fbase)) \
       else '{}{}'.format(number//(10**fbase), fsuffix);
 
-def lines_from_filehandle(filehandle, batchsize=0):
+def lines_from_filehandle(filehandle, batchsize=0, progress=True):
   global BUF_SIZE;
   batchsize = BUF_SIZE if not batchsize else batchsize;
   stepsize = 0;
@@ -102,15 +102,16 @@ def lines_from_filehandle(filehandle, batchsize=0):
     lc = 0;
     bufblock = islice(filehandle, batchsize);
     for lc, line in enumerate(bufblock, start=1):
-      yield line.decode('utf-8').strip();
-    print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
-      file=syserr, end=' ');
+      yield line.decode('utf-8').strip() ;
+    if progress: 
+      print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
+          file=syserr, end=' ');
     if lc < batchsize:
       break;
     stepsize += 1;
   return;
 
-def lines_from_file(filename, large=False, batchsize=0):
+def lines_from_file(filename, batchsize=0, large=False, progress=True):
   global BUF_SIZE;
   batchsize = BUF_SIZE if not batchsize else batchsize;
   stepsize = 0;
@@ -119,15 +120,16 @@ def lines_from_file(filename, large=False, batchsize=0):
       lc = 0;
       bufblock = islice(infile, batchsize);
       for lc, line in enumerate(bufblock, start=1):
-        yield line.decode('utf-8').strip();
-      print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
-        file=syserr, end=' ');
+        yield line.decode('utf-8').strip() ;
+      if progress:
+        print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
+            file=syserr, end=' ');
       if lc < batchsize:
         break;
       stepsize += 1;
   return;
 
-def lines_to_filehandle(filehandle, lines, batchsize=0):
+def lines_to_filehandle(filehandle, lines, batchsize=0, progress=True):
   global BUF_SIZE;
   batchsize = BUF_SIZE if not batchsize else batchsize;
   stepsize = 0;
@@ -136,14 +138,15 @@ def lines_to_filehandle(filehandle, lines, batchsize=0):
     bufblock = islice(lines, batchsize);
     for lc, sent in enumerate(bufblock, start=1):
       filehandle.write(u"{0}\n".format(sent.strip()).encode('utf-8'));
-    print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
-        file=syserr, end=' ');
+    if progress:
+      print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
+          file=syserr, end=' ');
     if lc < batchsize:
       break;
     stepsize += 1;
   return True;
 
-def lines_to_file(filename, lines, batchsize=0):
+def lines_to_file(filename, lines, batchsize=0, progress=True):
   global BUF_SIZE;
   batchsize = BUF_SIZE if not batchsize else batchsize;
   stepsize = 0;
@@ -153,8 +156,9 @@ def lines_to_file(filename, lines, batchsize=0):
       bufblock = islice(lines, batchsize);
       for lc, sent in enumerate(bufblock, start=1):
         outfile.write(u"{0}\n".format(sent.strip()).encode('utf-8'));
-      print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
-          file=syserr, end=' ');
+      if progress:
+        print('(%s)'%(llnum2name(lc+stepsize*batchsize)), \
+            file=syserr, end=' ');
       if lc < batchsize:
         break;
       stepsize += 1;
