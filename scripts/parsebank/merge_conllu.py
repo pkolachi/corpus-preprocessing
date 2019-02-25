@@ -15,16 +15,18 @@ def main_loop() :
   MDELIM = '='; # delimiter used in meta information
   for arnm in sorted(os.listdir(splitsdir)) : 
     arpt = os.path.join(splitsdir, arnm) ;     # path to the archive file
-    os.system('tar -xvzf {0} -C {1} 2> /dev/null'.format(arpt, splitsdir)) ; 
+    #os.system('tar -xvzf {0} -C {1} 2> /dev/null'.format(arpt, splitsdir)) ; 
     ardr = os.path.splitext(arnm)[0] ; 
     ardp = os.path.join(splitsdir, ardr) ; # path to the extracted directory
     cfiles = sorted(os.listdir(ardp)) ; 
     cfps = [os.path.join(ardp, f) for f in cfiles] ;
+    #"""
     prev = None ; 
     tok_buf  = [] ; 
     sent_buf = [] ; 
     for fp in cfps :
-      c = 0 ; 
+      c = 0 ;
+      print(fp, file=sys.stderr) ; 
       for l in ru.lines_from_file(fp) :
         if not l.strip() :
           c += 1 ; 
@@ -62,7 +64,9 @@ def main_loop() :
       if c != BATCH_SIZE : 
         print("File doesnot have sufficient sentences. {0}".format(fp), file=sys.stderr) ;
     #os.system('cat {0}'.format(' '.join(cfps))) ;
-    os.system('rm -r {0}'.format(ardp)) ;
+    #os.system('rm -r {0}'.format(ardp)) ;
+    #"""
+  #yield str(scount) ; 
 
 ru.lines_to_file(sys.argv[2], main_loop()) ;
 
