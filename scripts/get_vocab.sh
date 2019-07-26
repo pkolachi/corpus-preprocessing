@@ -52,8 +52,8 @@ fi
 #eval $FRDR "$INFILES" | \
 #    grep -v -e "^#" -e "^$"  # filter empty lines and comments from CoNLLU
 
-BUFFER="$TMP/$$.buffer"
-eval $FRDR "$INFILES" | grep -e "^[0-9]*\s" | \
+BUFFER=$TMP/$$.buffer
+eval $FRDR $INFILES | grep -e "^[0-9]*\s" | \
   cut -d"$TAB" "$FIELDS" | \
   awk -F"$TAB" "$transformer" \
   > $BUFFER
